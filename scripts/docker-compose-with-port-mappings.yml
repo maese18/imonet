@@ -1,0 +1,86 @@
+# Use root/example as user/password credentials
+version: "3.1"
+
+services:
+  api:
+    image: node:13.6.0-alpine3.10
+    restart: "no"
+    volumes:
+      - ../api:/usr/src/app # map code
+
+    working_dir: /usr/src/app
+    command: "yarn start"
+    env_file:
+      - ./.env-${ENV}
+    environment:
+      API_SERVER_PORT: ${API_SERVER_PORT}
+    ports:
+      - ${API_SERVER_PUBLIC_PORT}:${API_SERVER_PORT}
+    depends_on:
+      - db
+    networks:
+      proxy:
+
+  db:
+    image: mariadb/server
+    # !!! command is a must if using with mariaDb driver -- otherwise you'll have connection issues !!!
+    #
+    # command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_INITDB_SKIP_TZINFO: "true"
+    volumes:
+      - ../db/data:/var/lib/mysql
+      - ../db/db-setup/default:/docker-entrypoint-initdb.d
+    ports:
+      - ${DB_PORT}:3306
+
+    networks:
+      - proxy
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - ${DB_ADMIN_PORT}:8080
+    networks:
+      - proxy
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      - MONGO_INITDB_DATABASE="test"
+      - MONGO_INITDB_ROOT_USERNAME="root"
+      - MONGO_INITDB_ROOT_PASSWORD="pw"
+      - MONGO_INITDB_USERNAME="dbuser"
+      - MONGO_INITDB_PASSWORD="pw"
+      - MONGODB_DATA_DIR="/data/db"
+    volumes:
+      - ./data:/data/db
+      - ./init/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+    networks:
+      proxy:
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pw
+    networks:
+      proxy:
+
+networks:
+  proxy:
+volumes:
+  api:
+  mysql:
+  data:
+    driver: local

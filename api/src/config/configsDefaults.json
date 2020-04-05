@@ -1,0 +1,47 @@
+{
+  "env": "$NODE_ENV|test",
+  "server": {
+    "host": "localhost",
+    "protocol": "$API_PROTOCOL",
+    "port": "$API_SERVER_PORT"
+  },
+  "jwt": {
+    "secret": "$JWT_SECRET|test"
+  },
+  "db": {
+    "type": "$DB_DRIVER",
+    "host": "$DB_HOST",
+    "user": "$DB_USER",
+    "port": "$DB_PORT_SERVICE",
+    "password": "$DB_PASSWORD",
+    "database": "$DB_DATABASE|test_db",
+    "connectionLimit": 0,
+    "migrationsMode": "$DB_MIGRATIONS_MODE|up"
+  },
+  "domain": {
+    "tenantDomain": "tenant",
+    "tenantIdField": "fk_tenant_id",
+    "userDomain": "user",
+    "multiTenantDomains": [
+      "user",
+      "task"
+    ],
+    "commonDomains": [
+      "product"
+    ]
+  },
+  "api": {
+    "basePath": "api",
+    "defaults": {
+      "pageSize": 20
+    }
+  },
+  "graylog": {
+    "host": "$API_GRAYLOG_HOST",
+    "port": "$API_GRAYLOG_PORT"
+  },
+  "email": {
+    "user": "",
+    "pass": ""
+  }
+}

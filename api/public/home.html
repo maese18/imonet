@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>REST API</title>
+	</head>
+
+	<body>
+		<h1>API DOCS</h1>
+		<ul>
+			<li><a href="/api/lifeSign">api/lifeSign</a></li>
+		</ul>
+		<ul>
+			<li>
+				<a href="/api/mediaFiles?filter=fileName.eq(z-file).OR.id.lt(10),id.eq(8)&pageNum=0&pageSize=4&sort=-id&prettyFormat&tenantId=1"
+					>api/:domainPlural</a
+				>
+			</li>
+		</ul>
+		<table>
+			<thead>
+				<tr>
+					<td>Resource</td>
+					<td>GET</td>
+					<td>DELETE</td>
+					<td>PATCH</td>
+					<td>POST</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td><a href="/api/lifeSign">/api/lifeSign</a></td>
+					<td>Simple smoke test endpoint</td>
+					<td></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
+	</body>
+</html>
