@@ -9,11 +9,9 @@ services:
       - ../api:/usr/src/app # map code
 
     working_dir: /usr/src/app
-    command:
-      - "yarn install"
-      - "yarn start"
+    command: "yarn prod"
     env_file:
-      - ./.env-${ENV}
+      - ./.env
     environment:
       API_SERVER_PORT: ${API_SERVER_PORT}
     ports:

@@ -1,14 +1,14 @@
 #!/bin/bash
 
 # Get commandline parameters
-ENV=${1:-dev}             # dev / prod
-OPS=${2:-up}              # up or down
-SERVICE_SET=${3:-db}      # db or all
-INTERACTIVE=${4:-no}      # no for not-interactive / i for interactive
+OPS=${1:-up}              # up or down
+SERVICE_SET=${2:-db}      # db or all
+INTERACTIVE=${3:-no}      # no for not-interactive / i for interactive
+
 IMAGE_PREFIX="imonet"
 
-if [ $ENV == 'help' ]; then
-   echo 'usage: docker-mapped.sh ENV(dev|prod) OPS(up|down) SERVICE_SET(all|db) INTERACTIVE(i|no)'
+if [ $OPS == 'help' ]; then
+   echo 'usage: docker-mapped.sh OPS(up|down) SERVICE_SET(all|db) INTERACTIVE(i|no)'
    exit 0
 fi
 # Assert SERVICE_SET is all or db
@@ -18,7 +18,7 @@ elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
    echo SERVICE_SET ${SERVICE_SET} not defined
-   echo 'usage: docker-mapped.sh ENV(dev|prod) OPS(up|down) SERVICE_SET(all|db)'
+   echo 'usage: docker-mapped.sh OPS(up|down) SERVICE_SET(all|db)'
    exit 0
 fi
 
@@ -28,18 +28,14 @@ printf "Loading environment variables from\n"
 
 set -o allexport
 
-printf "\t.env-${ENV}\n"
-source ./.env-${ENV}
+printf "\t.env\n"
+source ./.env
 
 set +o allexport
 # END IMPORT
 
-export ENV
-if [ $ENV == 'dev' ]; then
-   export NODE_ENV=development
-else
-   export NODE_ENV=production
-fi
+export ENV=prod
+export NODE_ENV=production
 
 export DEPLOYMENT=docker-mapped
 export API_HOST_SCHEME=localhost # Allows WebApp to derive correct API url
@@ -80,7 +76,7 @@ if [ $OPS == 'up' ]; then
 
    # Start stack
    docker-compose \
-      -f docker-compose-with-port-mappings.yml \
+      -f docker-compose-prod.yml \
       --project-name "${IMAGE_PREFIX}-${ENV}" \
       --project-directory . \
       $OPS  $INTERACTIVE_FLAG $SERVICES
@@ -90,7 +86,7 @@ if [ $OPS == 'up' ]; then
       echo Stopping imonet stack for environment=${ENV}
       echo
       docker-compose \
-      -f docker-compose-with-port-mappings.yml \
+      -f docker-compose-prod.yml \
       --project-name "${IMAGE_PREFIX}-${ENV}" \
       --project-directory . \
       down
