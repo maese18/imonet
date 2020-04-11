@@ -10,3 +10,6 @@ CREATE TABLE `user` (
   KEY `fk_tenant_id_idx` (`fk_tenant_id`),
   CONSTRAINT `fk_user-tenant` FOREIGN KEY (`fk_tenant_id`) REFERENCES `tenant` (`id`) ON DELETE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+INSERT INTO `user` (`email`,`passwordHash`,`firstName`,`lastName`,`fk_tenant_id`) VALUE('demo@imonet.ch','tbd','Vorname','Nachname',1);

@@ -72,7 +72,7 @@ if [ $SERVICE == 'api' ]; then
  elif [ $SERVICE == 'web' ]; then
     cd ../ui-vuetify/
    if [ $OPS == 'run' ]; then
-    yarn serve  
+     yarn serve --port ${WEBAPP_PORT}
    fi
     
    if [ $OPS == 'test' ]; then

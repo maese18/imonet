@@ -1,0 +1,14 @@
+[req]
+default_bits = 2048
+prompt = no
+default_md = sha256
+distinguished_name = dn
+
+[dn]
+C=CH
+ST=zurich
+L=moenchaltorf
+O=imonet
+OU=online
+emailAddress=imfo@imonet.ch
+CN = localhost

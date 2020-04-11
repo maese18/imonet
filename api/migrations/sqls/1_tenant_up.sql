@@ -4,4 +4,5 @@ CREATE TABLE `tenant` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
+INSERT INTO `tenant` (`tenantName`) VALUE('demo');
 
