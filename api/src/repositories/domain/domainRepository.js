@@ -13,7 +13,7 @@ import AuthorizationException from '../../errors/AuthorizationException';
 import IllegalArgumentException from '../../errors/IllegalArgumentException';
 import mariaDb from '../../database/mariaDbAdaptor';
 //import mysql from '../../database/mySqlDbAdaptor';
-import domainTypeService from '../../services/DomainTypeService';
+import domainTypeService from '../../services/domainTypeService';
 
 const TAG = 'DomainRepository';
 let db;
