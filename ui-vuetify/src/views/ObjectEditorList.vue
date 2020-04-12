@@ -1,6 +1,7 @@
 <template>
   <v-row justify="center" align="center">
     <v-col xs="12" sm="12" md="6" class="pa-0">
+      <camera></camera>
       <v-card class="purple ma-0" elevation="1">
         <v-list three-line>
           <template v-for="(item, index) in items">
@@ -48,7 +49,9 @@
   </v-row>
 </template>
 <script>
+import Camera from '../components/Camera';
 export default {
+  components: { Camera },
   data: () => ({
     items: [
       { header: 'Today' },
