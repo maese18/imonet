@@ -1,7 +1,10 @@
+# See here: https://vuejs.org/v2/cookbook/dockerize-vuejs-app.html
+#           https://mherman.org/blog/dockerizing-a-vue-app/
+#           
 # build stage
 FROM node:lts-alpine as build-stage
 WORKDIR /app
-COPY package*.json ./
+COPY package-prod*.json ./
 RUN npm install
 COPY . .
 RUN npm run build
