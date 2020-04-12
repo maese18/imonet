@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import AppBar from './components/AppBar';
+import AppBar from './components/ApplicationBar';
 import BottomNavigation from './components/BottomNavigation';
 import NavigationDrawer from './components/NavigationDrawer';
 export default {
