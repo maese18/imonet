@@ -9,6 +9,7 @@ services:
     restart: "no"
     volumes:
       - ../ui-vuetify:/usr/src/app
+    command: /bin/bash
     environment:
       VUE_APP_API_URL: ${VUE_APP_API_URL}
     env_file:
