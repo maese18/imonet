@@ -42,7 +42,7 @@ export default {
         return this.$store.state.isNavigationDrawerOpen;
       },
       set(value) {
-        console.log('set navigation drawer to ', value);
+        this.$log.info('set navigation drawer to ', value);
         if (value !== this.$store.state.isNavigationDrawerOpen) {
           this.$store.commit('toggleNavigationDrawer', value);
         }

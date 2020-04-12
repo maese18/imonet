@@ -14,6 +14,8 @@ fi
 # Assert SERVICE_SET is all or db
 if [ $SERVICE_SET == 'all' ]; then
    SERVICES="db adminer api web"
+elif [ $SERVICE_SET == 'web' ]; then
+   SERVICES="web"   
 elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
