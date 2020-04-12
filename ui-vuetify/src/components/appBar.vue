@@ -62,7 +62,5 @@ export default {
       return this.$vuetify.theme.dark ? '/img/logo-white-text.png' : '/img/logo.png';
     },
   },
-
-  name: 'appBar',
 };
 </script>
