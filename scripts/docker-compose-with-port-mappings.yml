@@ -2,6 +2,21 @@
 version: "3.1"
 
 services:
+  web:
+    image: node:13.6.0-alpine3.10
+    restart: "no"
+    volumes:
+      - ../ui-vuetify:/usr/src/app
+    working_dir: /usr/src/app
+    command: "yarn serve --port 8080"
+    environment:
+      VUE_APP_API_URL: ${VUE_APP_API_URL}
+    env_file:
+      - ./.env-${ENV}
+    ports:
+      - ${WEBAPP_PORT}:8080
+    networks:
+      proxy:
   api:
     image: node:13.6.0-alpine3.10
     restart: "no"
@@ -9,9 +24,7 @@ services:
       - ../api:/usr/src/app # map code
 
     working_dir: /usr/src/app
-    command:
-      - "yarn install"
-      - "yarn start"
+    command: yarn start
     env_file:
       - ./.env-${ENV}
     environment:

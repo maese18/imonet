@@ -13,7 +13,7 @@ if [ $ENV == 'help' ]; then
 fi
 # Assert SERVICE_SET is all or db
 if [ $SERVICE_SET == 'all' ]; then
-   SERVICES="db adminer api"
+   SERVICES="db adminer api web"
 elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
@@ -23,7 +23,7 @@ else
 fi
 
 
-# START IMPORT
+# Import environment variables
 printf "Loading environment variables from\n"
 
 set -o allexport
@@ -59,7 +59,6 @@ export VUE_APP_API_URL=$API_SERVER_PROTOCOL://localhost:$API_SERVER_PUBLIC_PORT
 # ---------------------------------------------------------------------------------------------------
 # up/down for dev environment
 # ---------------------------------------------------------------------------------------------------
-
 if [ $OPS == 'up' ]; then
    echo ------------------------------------------------------------------------------------------
    echo Starting imonet stack for environment=${ENV} in mapped-docker mode
