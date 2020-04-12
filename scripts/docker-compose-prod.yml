@@ -12,7 +12,7 @@ services:
     environment:
       VUE_APP_API_URL: ${VUE_APP_API_URL}
     env_file:
-      - ./.env-${ENV}
+      - ./.env
     ports:
       - ${WEBAPP_PORT}:8080
     networks:
