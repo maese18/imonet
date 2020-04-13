@@ -12,7 +12,7 @@ services:
       - ../proxy/config2/certbot/conf:/etc/letsencrypt
       - ../proxy/config2/certbot/www:/var/www/certbot
     networks:
-      - proxy:  
+      - proxy
 
   certbot:
     image: certbot/certbot
