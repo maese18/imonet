@@ -52,7 +52,7 @@ services:
     volumes:
       - ../ui-vuetify/dist:/usr/share/nginx/html
       - ../ui-vuetify/nginx/nginx.conf:/etc/nginx/nginx.conf
-       - ../proxy/prod/certs:/etc/ssl/private
+      # - ../proxy/prod/certs:/etc/ssl/private
     command: [nginx, "-g", "daemon off;"]
     networks:
       - proxy
