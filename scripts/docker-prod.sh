@@ -80,7 +80,7 @@ if [ $OPS == 'up' ]; then
    # Start stack
    docker-compose \
       -f docker-compose-prod.yml \
-      -p ${IMAGE_PREFIX}_prod \
+      -p imonet_prod \
       --project-directory . \
       $OPS  $INTERACTIVE_FLAG $SERVICES
 
