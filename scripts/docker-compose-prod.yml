@@ -40,8 +40,8 @@ services:
       - ../ui-vuetify/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     command: [nginx, "-g", "daemon off;"]
     networks:
-      - proxy:
-      - webproxy:
+      - proxy
+      - webproxy
   web-build:
     image: node:13.6.0-alpine3.10
     restart: "no"
