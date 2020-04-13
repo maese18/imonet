@@ -15,7 +15,7 @@ fi
 if [ $SERVICE_SET == 'all' ]; then
    SERVICES="db adminer api web"
 elif [ $SERVICE_SET == 'web' ]; then
-   SERVICES="web-prepared"   
+   SERVICES="web"   
 elif [ $SERVICE_SET == 'proxy' ]; then
    SERVICES="proxy"      
 elif [ $SERVICE_SET == 'db' ]; then
