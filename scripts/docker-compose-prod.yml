@@ -137,6 +137,7 @@ services:
 
 networks:
   proxy:
+  imonetprod_proxy:
 volumes:
   api:
   mysql:
