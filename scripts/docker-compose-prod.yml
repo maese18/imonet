@@ -41,7 +41,7 @@ services:
     command: [nginx, "-g", "daemon off;"]
     networks:
       - proxy:
-      - webproxy
+      - webproxy:
   web-build:
     image: node:13.6.0-alpine3.10
     restart: "no"
