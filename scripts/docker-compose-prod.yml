@@ -10,7 +10,7 @@ services:
       - 443:443
     volumes:
       # config folder MAY NOT exist when first starting
-      - ../proxy/prod/config:/etc/nginx
+      - ../proxy/prod/config/nginx.conf:/etc/nginx/nginx.conf
       - ../proxy/prod/certs:/etc/ssl/private
   web-build:
     build:
