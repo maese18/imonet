@@ -43,8 +43,8 @@ services:
       proxy:
   web:
     image: nginx:stable-alpine
-    ports:
-      - 80:80
+    #ports:
+    #  - 80:80
     environment:
       - VIRTUAL_HOST=adivo.ch \
       - LETSENCRYPT_HOST=adivo.ch \
