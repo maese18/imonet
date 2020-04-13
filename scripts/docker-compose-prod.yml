@@ -59,7 +59,6 @@ services:
     command: [nginx, "-g", "daemon off;"]
     networks:
       - proxy
-      - imonetprod_proxy
   web-build:
     image: node:13.6.0-alpine3.10
     restart: "no"
@@ -155,7 +154,6 @@ services:
 
 networks:
   proxy:
-  imonetprod_proxy:
 volumes:
   api:
   mysql:
