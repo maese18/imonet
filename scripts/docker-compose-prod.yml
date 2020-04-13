@@ -11,6 +11,9 @@ services:
       - ../proxy/config2/nginx:/etc/nginx/conf.d
       - ../proxy/config2/certbot/conf:/etc/letsencrypt
       - ../proxy/config2/certbot/www:/var/www/certbot
+    networks:
+      proxy:  
+
   certbot:
     image: certbot/certbot
     volumes:
