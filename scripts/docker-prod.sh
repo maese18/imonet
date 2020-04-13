@@ -80,7 +80,7 @@ if [ $OPS == 'up' ]; then
    # Start stack
    docker-compose \
       -f docker-compose-prod.yml \
-      --project-name ${IMAGE_PREFIX}_prod \
+      -p ${IMAGE_PREFIX}_prod \
       --project-directory . \
       $OPS  $INTERACTIVE_FLAG $SERVICES
 
