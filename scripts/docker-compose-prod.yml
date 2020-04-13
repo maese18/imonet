@@ -12,7 +12,7 @@ services:
       # config folder MAY NOT exist when first starting
       - ../proxy/prod/config:/etc/nginx
       - ../proxy/prod/certs:/etc/ssl/private
-  web:
+  web-build:
     build:
       context: ../ui-vuetify
       dockerfile: Dockerfile
@@ -27,7 +27,7 @@ services:
       - ${WEBAPP_PORT}:80
     networks:
       proxy:
-  web-prepared:
+  web:
     image: nginx:stable-alpine
     #ports:
     #  - 80:80
