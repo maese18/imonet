@@ -11,7 +11,7 @@ services:
     volumes:
       # config folder MAY NOT exist when first starting
       - ../proxy/prod/config:/etc/nginx
-      - ../proxy/prod/certs/etc/ssl/private
+      - ../proxy/prod/certs:/etc/ssl/private
   web:
     build:
       context: ../ui-vuetify
