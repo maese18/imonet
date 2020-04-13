@@ -15,7 +15,7 @@ fi
 if [ $SERVICE_SET == 'all' ]; then
    SERVICES="db adminer api web"
 elif [ $SERVICE_SET == 'web' ]; then
-   SERVICES="web"   
+   SERVICES="web-prepared"   
 elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
