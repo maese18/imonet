@@ -17,7 +17,9 @@ if [ $SERVICE_SET == 'all' ]; then
 elif [ $SERVICE_SET == 'web' ]; then
    SERVICES="web"   
 elif [ $SERVICE_SET == 'proxy' ]; then
-   SERVICES="proxy"      
+   SERVICES="nginx" 
+elif [ $SERVICE_SET == 'certbot' ]; then
+   SERVICES="certbot"      
 elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
