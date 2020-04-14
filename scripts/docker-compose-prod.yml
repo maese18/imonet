@@ -4,6 +4,10 @@ version: "3.1"
 services:
   proxy:
     image: nginx:1.15-alpine
+    depends_on:
+      - web
+      - api
+      - adminer
     ports:
       - "80:80"
       - "443:443"
