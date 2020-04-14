@@ -6,7 +6,7 @@
   "scripts": {
     "db-migrate": "db-migrate up --config migrations/database.json -e ALL",
     "setupData": "NODE_ENV=DEV node -r esm src/controllers/domain/DomainController.datatest.js",
-    "prod": "yarn install & node -r esm src/index.js",
+    "prod": "yarn install && node -r esm src/index.js",
     "start": "nodemon -r esm src/index.js",
     "debug": "nodemon -r esm --inspect src/index.js --trace-sync-io",
     "pretty": "prettier 'src/**/*.js' --write ",
