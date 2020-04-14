@@ -93,6 +93,7 @@ if [ $OPS == 'up' ]; then
       docker-compose \
       -f docker-compose-prod.yml \
       --project-name ${IMAGE_PREFIX}_prod \
+      --verbose
       --project-directory . \
       down
  fi
