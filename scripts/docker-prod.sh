@@ -84,7 +84,6 @@ if [ $OPS == 'up' ]; then
       -f docker-compose-prod.yml \
       -p imonet_prod \
       --project-directory . \
-      --verbose
       $OPS  $INTERACTIVE_FLAG $SERVICES
 
  else
