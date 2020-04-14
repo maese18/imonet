@@ -8,14 +8,14 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ../proxy/config2/nginx:/etc/nginx/conf.d
+      - ../proxy/config2:/etc/nginx
+      #- ../proxy/config2/nginx:/etc/nginx/conf.d
       #- ../proxy/config2/certbot/conf:/etc/letsencrypt
       - /etc/letsencrypt:/etc/letsencrypt
-      - ../proxy/config2/certbot/www:/var/www/certbot
+      # - ../proxy/config2/certbot/www:/var/www/certbot
       - ../proxy/config2/logs:/var/log/nginx
-
     networks:
-      - proxy
+      proxy:
 
   certbot:
     image: certbot/certbot
@@ -57,7 +57,7 @@ services:
       # - ../proxy/prod/certs:/etc/ssl/private
     command: [nginx, "-g", "daemon off;"]
     networks:
-      - proxy
+      proxy:
 
   web-build-2:
     image: node:13.6.0-alpine3.10
