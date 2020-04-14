@@ -13,11 +13,11 @@ if [ $OPS == 'help' ]; then
 fi
 # Assert SERVICE_SET is all or db
 if [ $SERVICE_SET == 'all' ]; then
-   SERVICES="db adminer api web"
+   SERVICES="db adminer api web proxy"
 elif [ $SERVICE_SET == 'web' ]; then
    SERVICES="web"   
 elif [ $SERVICE_SET == 'proxy' ]; then
-   SERVICES="nginx" 
+   SERVICES="proxy" 
 elif [ $SERVICE_SET == 'certbot' ]; then
    SERVICES="certbot"      
 elif [ $SERVICE_SET == 'db' ]; then
