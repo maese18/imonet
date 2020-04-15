@@ -50,6 +50,8 @@ services:
       - ../ui-vuetify/nginx/nginx.conf:/etc/nginx/nginx.conf
       # - ../proxy/prod/certs:/etc/ssl/private
     command: [nginx, "-g", "daemon off;"]
+    environment:
+      VUE_APP_API_URL: ${VUE_APP_API_URL}
     networks:
       proxy:
   pwa:
@@ -87,7 +89,7 @@ services:
     restart: "no"
     volumes:
       - ../api:/usr/src/app # map code
-      - ../api/media:/usr/src/media 
+      - ../api/media:/usr/src/media
     working_dir: /usr/src/app
     command: "yarn prod"
     env_file:

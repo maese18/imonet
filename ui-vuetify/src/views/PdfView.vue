@@ -25,7 +25,7 @@ export default {
     },
   },
   mounted: function() {
-    console.log('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
     this.files.forEach(file => axios.get(`${process.env.VUE_APP_API_URL}/medias/${file}`));
   },
 };
