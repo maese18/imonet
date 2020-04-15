@@ -87,7 +87,7 @@ services:
     restart: "no"
     volumes:
       - ../api:/usr/src/app # map code
-
+      - ../api/media:/usr/src/media 
     working_dir: /usr/src/app
     command: "yarn prod"
     env_file:

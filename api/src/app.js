@@ -13,6 +13,7 @@ import lifeSign from './controllers/lifeSign';
 import configureErrorHandler from './errors/errorHandler';
 import UrlNotDefinedException from './errors/UrlNotDefinedException';
 import domainController from './controllers/domain/domainController';
+import mediaController from './controllers/mediaController';
 const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
@@ -37,6 +38,7 @@ logger.info(TAG, 'Configure to allow CORS');
 /* Routes */
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/lifeSign', lifeSign);
+app.use('/api/medias', mediaController.getRouter());
 app.use('/api', domainController.getRouter());
 
 logger.info(TAG, '/api/lifeSign,/api/:domainPlural, /api/users endpoints registered');

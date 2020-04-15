@@ -22,6 +22,7 @@ services:
     restart: "no"
     volumes:
       - ../api:/usr/src/app # map code
+      - ../api/media:/usr/src/app/media 
 
     working_dir: /usr/src/app
     command: yarn start

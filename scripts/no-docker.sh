@@ -40,7 +40,7 @@ export WEBAPP_PORT=`expr $PORT_RANGE_START + 20`
 export DB_HOST=localhost
 export DB_PORT_SERVICE=`expr $PORT_RANGE_START + 21`
 # UI env variables
-export VUE_APP_API_URL=$API_SERVER_PROTOCOL://localhost:$API_SERVER_PORT
+export VUE_APP_API_URL=$API_SERVER_PROTOCOL://localhost:$API_SERVER_PORT/api
 
 # ---------------------------------------------------------------------------------------------------
 # up/down for dev environment

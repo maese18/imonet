@@ -46,6 +46,7 @@ export default {
         { title: 'Dashboard', icon: 'mdi-view-dashboard', route: { params: { lang: 'en' }, name: 'Home' } },
         { title: 'Objekt Verwaltung', icon: 'mdi-image', route: { params: { lang: 'en' }, name: 'ObjectListEditor' } },
         { title: 'About', icon: 'mdi-help-box', route: { params: { lang: 'en' }, name: 'About' } },
+        { title: 'Pdf', icon: 'mdi-document', route: { params: { lang: 'en' }, name: 'PdfViewer' } },
       ],
       color: 'primary',
       colors: ['primary', 'blue', 'success', 'red', 'teal'],

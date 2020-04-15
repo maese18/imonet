@@ -30,6 +30,9 @@
       "product"
     ]
   },
+  "paths": {
+    "files": "$FILE_PATH"
+  },
   "api": {
     "basePath": "api",
     "defaults": {
