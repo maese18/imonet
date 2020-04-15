@@ -1,6 +1,6 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>Stream</h1>
     <div class="button-group">
       <button id="btn-start" type="button" class="button" @click="startStreaming">Start Streaming</button>
       <button id="btn-stop" type="button" class="button" @click="stopStreaming">Stop Streaming</button>

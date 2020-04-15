@@ -3,6 +3,16 @@
     <navigation-drawer />
     <app-bar />
     <v-content id="content">
+      <v-snackbar v-model="snackWithButtons" :timeout="timeout" bottom left class="snack">
+        {{ snackWithBtnText }}
+        <v-spacer />
+        <v-btn dark flat color="#00f500" @click.native="refreshApp">
+          {{ snackBtnText }}
+        </v-btn>
+        <v-btn icon @click="snackWithButtons = false">
+          <v-icon>close</v-icon>
+        </v-btn>
+      </v-snackbar>
       <!--  <v-sheet id="scrolling-techniques" class="overflow-y-auto" max-height="600"><router-view /> </v-sheet> -->
       <!--  <v-container class="fill-height" fluid pa-0>
         <v-row justify="center" align="center" no-gutters>
@@ -29,8 +39,47 @@ export default {
   props: {
     source: String,
   },
+  created() {
+    // default theme can be set here
+    // this.$vuetify.theme.dark = false;
+    // Listen for swUpdated event and display refresh snackbar as required.
+    document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
+    // Refresh all open app tabs when a new service worker is installed.
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (this.refreshing) return;
+      this.refreshing = true;
+      window.location.reload();
+    });
+  },
+  methods: {
+    showRefreshUI(e) {
+      // Display a snackbar inviting the user to refresh/reload the app due
+      // to an app update being available.
+      // The new service worker is installed, but not yet active.
+      // Store the ServiceWorkerRegistration instance for later use.
+      this.registration = e.detail;
+      this.snackBtnText = 'Refresh';
+      this.snackWithBtnText = 'New version available!';
+      this.snackWithButtons = true;
+    },
+    refreshApp() {
+      this.snackWithButtons = false;
+      // Protect against missing registration.waiting.
+      if (!this.registration || !this.registration.waiting) {
+        return;
+      }
+      this.registration.waiting.postMessage('skipWaiting');
+    },
+  },
   data: () => ({
     items: [],
+    refreshing: false,
+    registration: null,
+    updateExists: false,
+    snackBtnText: '',
+    snackWithBtnText: '',
+    snackWithButtons: false,
+    timeout: 0,
   }),
   computed: {
     theme() {
@@ -49,15 +98,15 @@ export default {
       },
     },
   },
-  created() {
-    // default theme can be set here
-    // this.$vuetify.theme.dark = false;
-  },
 };
 </script>
 <style>
 body,
 #v-app {
   background-color: var(--v-background-base);
+}
+/* Provide better right-edge spacing when using an icon button there. */
+.snack >>> .v-snack__content {
+  padding-right: 16px;
 }
 </style>

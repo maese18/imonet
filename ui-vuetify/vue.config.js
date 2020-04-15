@@ -7,4 +7,12 @@ module.exports = {
       cert: fs.readFileSync('./certs/server.crt'),
     },
   },
+  pwa: {
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: './src/sw.js',
+      swDest: 'service-worker.js',
+      //skipWaiting: true,
+    },
+  },
 };
