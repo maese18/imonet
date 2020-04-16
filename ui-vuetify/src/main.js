@@ -22,7 +22,7 @@ if (Notification.permission == 'granted') {
       icon: 'images/example.png',
       vibrate: [100, 50, 100],
       data: {
-        dateOfArrival: Date.now(),
+        dateOfArrival: Date.now() + 1000 * 60,
         primaryKey: 1,
       },
     };

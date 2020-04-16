@@ -9,14 +9,15 @@
     </template>
 
     <v-app-bar-nav-icon @click.stop="$store.commit('toggleNavigationDrawer')"></v-app-bar-nav-icon>
-    <v-toolbar-title
+    <v-toolbar-title dark>App {{ appName }} {{ appVersion }}</v-toolbar-title>
+
+    <!-- <v-toolbar-title
       ><v-tabs background="transparent">
         <v-tab>Tab 1</v-tab>
         <v-tab>Tab 2</v-tab>
         <v-tab>Tab 3</v-tab>
       </v-tabs></v-toolbar-title
-    >
-    <!--  <v-toolbar-title>Title</v-toolbar-title> -->
+    > -->
 
     <v-spacer></v-spacer>
     <v-btn icon>
@@ -55,7 +56,10 @@
 <script>
 export default {
   data() {
-    return {};
+    return {
+      appName: process.env.VUE_APP_NAME,
+      appVersion: process.env.VUE_APP_VERSION,
+    };
   },
   computed: {
     logo() {

@@ -7,7 +7,7 @@ SERVICE=${3:-api}         # api or web
 
 
 if [ $ENV == 'help' ]; then
-   echo 'usage: ${0} ENV(dev|prod) OPS(run|debug(api only)|test) SERVICE(api|web) '
+   echo 'usage: ${0} ENV(dev|prod) OPS(run|debug(api only)|test|build(web only)) SERVICE(api|web) '
    exit 0
 fi
 
@@ -75,6 +75,11 @@ if [ $SERVICE == 'api' ]; then
      yarn serve --port ${WEBAPP_PORT}
    fi
     
+    if [ $OPS == 'build' ]; then
+     rm -r dist
+     yarn build
+   fi
+
    if [ $OPS == 'test' ]; then
     yarn test  
    fi

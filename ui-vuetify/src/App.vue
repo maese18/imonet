@@ -50,6 +50,8 @@ export default {
       this.refreshing = true;
       window.location.reload();
     });
+
+    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
   },
   methods: {
     showRefreshUI(e) {

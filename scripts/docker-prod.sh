@@ -8,7 +8,7 @@ INTERACTIVE=${3:-no}      # no for not-interactive / i for interactive
 IMAGE_PREFIX="imonet"
 
 if [ $OPS == 'help' ]; then
-   echo 'usage: docker-mapped.sh OPS(up|down) SERVICE_SET(all|db) INTERACTIVE(i|no)'
+   echo 'usage: docker-mapped.sh OPS(up|down|build) SERVICE_SET(all|db) INTERACTIVE(i|no)'
    exit 0
 fi
 # Assert SERVICE_SET is all or db
@@ -61,6 +61,7 @@ echo VUE_APP_API_URL=$VUE_APP_API_URL
 # ---------------------------------------------------------------------------------------------------
 # up/down for dev environment
 # ---------------------------------------------------------------------------------------------------
+
 if [ $OPS == 'up' ]; then
    echo ------------------------------------------------------------------------------------------
    echo Starting imonet stack for environment=${ENV} in mapped-docker mode
@@ -85,7 +86,10 @@ if [ $OPS == 'up' ]; then
       -p imonet_prod \
       --project-directory . \
       $OPS  $INTERACTIVE_FLAG $SERVICES
-
+ elif [ $OPS == 'build' ]; then
+   cd ../ui-vuetify/
+     rm -r dist
+     yarn build
  else
       echo
       echo Stopping imonet stack for environment=${ENV}
