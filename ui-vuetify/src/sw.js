@@ -21,7 +21,7 @@ self.addEventListener('message', e => {
 });
 self.addEventListener('fetch', e => {
   var request = e.request;
-  console.log(`onFetch ${request}`);
+  console.log(`onFetch ${JSON.stringify(request, null, 2)}`);
   e.respondWith(
     fetch(request)
       .then(function(res) {

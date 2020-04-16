@@ -26,6 +26,8 @@ if (Notification.permission == 'granted') {
         primaryKey: 1,
       },
     };
-    reg.showNotification('Hello world!', options);
+    if (reg) {
+      reg.showNotification('Hello world!', options);
+    }
   });
 }
