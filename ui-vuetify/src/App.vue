@@ -17,11 +17,12 @@
       </v-sheet>
     </v-content>
     <bottom-navigation></bottom-navigation>
-    <v-snackbar v-model="snackWithButtons" :timeout="timeout" bottom left class="snack">
-      {{ snackWithBtnText }}
+
+    <v-snackbar v-model="appUpdateExists" :timeout="timeout" bottom left class="snack">
+      New version available
       <v-spacer />
       <v-btn dark flat color="primary" @click.native="refreshApp">
-        {{ snackBtnText }}
+        Refresh
       </v-btn>
       <v-btn icon @click="snackWithButtons = false">
         <v-icon>close</v-icon>
@@ -44,9 +45,18 @@ export default {
     // default theme can be set here
     // this.$vuetify.theme.dark = false;
 
-    // Listen for swUpdated event and display refresh snackbar as required.
+    // ---
+    // Custom code to let user update the app
+    // when a new service worker is available
+    // ---
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
 
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (this.refreshing) return;
+      this.refreshing = true;
+      // Here the actual reload of the page occurs
+      window.location.reload();
+    });
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
   },
   methods: {
@@ -56,12 +66,10 @@ export default {
       // The new service worker is installed, but not yet active.
       // Store the ServiceWorkerRegistration instance for later use.
       this.registration = e.detail;
-      this.snackBtnText = 'Refresh';
-      this.snackWithBtnText = 'New version available!';
-      this.snackWithButtons = true;
+      this.appUpdateExists = true;
     },
     refreshApp() {
-      this.snackWithButtons = false;
+      this.appUpdateExists = false;
 
       // Protect against missing registration.waiting.
       if (!this.registration || !this.registration.waiting) {
@@ -71,12 +79,13 @@ export default {
       // Assuming the user accepted the update, set up a listener
       // that will reload the page as soon as the previously waiting
       // service worker has taken control.
-      navigator.serviceWorker.addEventListener('controllerchange', () => {
+      /* navigator.serviceWorker.addEventListener('controllerchange', () => {
         this.$log.info('onControllerChange');
         window.location.reload();
-      });
+      }); */
 
       // Send a message to the waiting service worker instructing
+      // send message to SW to skip the waiting and activate the new SW
       // it to skip waiting, which will trigger the `controlling`
       // event listener above.
       // The sw.js got a 'message' listener to handle this event
@@ -86,9 +95,7 @@ export default {
   data: () => ({
     items: [],
     registration: null,
-    updateExists: false,
-    snackBtnText: '',
-    snackWithBtnText: '',
+    appUpdateExists: false,
     snackWithButtons: false,
     timeout: 0,
   }),
