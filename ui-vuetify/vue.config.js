@@ -7,13 +7,20 @@ module.exports = {
       cert: fs.readFileSync('./certs/server.crt'),
     }, */
   },
-  pwa: {
+  /* pwa: {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: './src/sw.js',
       swDest: 'service-worker.js',
       //skipWaiting: true,
     },
+  }, */
+  pwa: {
+    workboxPluginMode: 'InjectManifest',
+    workboxOptions: {
+      swSrc: 'src/service-worker.js',
+    },
+    themeColor: '#1da025',
   },
 };
 process.env.VUE_APP_VERSION = require('./package.json').version;
