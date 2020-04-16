@@ -17,16 +17,16 @@ self.addEventListener('message', e => {
 });
 self.addEventListener('fetch', e => {
   var request = e.request;
-  event.respondWith(
+  e.respondWith(
     fetch(request)
       .then(function(res) {
         return caches.open(DYNAMIC_CACHE).then(function(cache) {
-          cache.put(event.request.url, res.clone());
+          cache.put(request.url, res.clone());
           return res;
         });
       })
       .catch(function(err) {
-        return caches.match(e.request);
+        return caches.match(request);
       }),
     /* caches.match(event.request).then(response => {
       return response || fetch(event.request);
