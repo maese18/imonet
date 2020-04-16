@@ -16,7 +16,7 @@ import axios from 'axios';
 export default {
   components: { PdfComponent },
   data: function() {
-    return { files: ['file-1.pdf', 'file-2.pdf', 'file-3.pdf'], selectedFileUrl: `${process.env.VUE_APP_API_URL}/medias/file-1.pdf` };
+    return { files: ['file-1.pdf', 'file-2.pdf', 'file-3.pdf', 'file-4.pdf'], selectedFileUrl: `${process.env.VUE_APP_API_URL}/medias/file-1.pdf` };
   },
   methods: {
     selectFile: function(file) {
