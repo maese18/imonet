@@ -4,6 +4,7 @@
 # Data
 data
 media
+gen
 # Logs
 logs
 *.log
