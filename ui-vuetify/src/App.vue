@@ -47,14 +47,6 @@ export default {
     // Listen for swUpdated event and display refresh snackbar as required.
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
 
-    // Assuming the user accepted the update, set up a listener
-    // that will reload the page as soon as the previously waiting
-    // service worker has taken control.
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      this.$log.info('onControllerChange');
-      window.location.reload();
-    });
-
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
   },
   methods: {
@@ -75,10 +67,19 @@ export default {
       if (!this.registration || !this.registration.waiting) {
         return;
       }
+
+      // Assuming the user accepted the update, set up a listener
+      // that will reload the page as soon as the previously waiting
+      // service worker has taken control.
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        this.$log.info('onControllerChange');
+        window.location.reload();
+      });
+
       // Send a message to the waiting service worker instructing
       // it to skip waiting, which will trigger the `controlling`
       // event listener above.
-      // The sw.js got a 'message' listener to receive this messsage
+      // The sw.js got a 'message' listener to handle this event
       this.registration.waiting.postMessage('skipWaiting');
     },
   },
