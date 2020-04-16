@@ -19,7 +19,7 @@ if (Notification.permission == 'granted') {
   navigator.serviceWorker.getRegistration().then(function(reg) {
     var options = {
       body: 'Here is a notification body!',
-      icon: 'images/example.png',
+      icon: 'img/logo-white-text.png',
       vibrate: [100, 50, 100],
       data: {
         dateOfArrival: Date.now() + 1000 * 60,
