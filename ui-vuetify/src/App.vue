@@ -3,16 +3,6 @@
     <navigation-drawer />
     <app-bar />
     <v-content id="content">
-      <v-snackbar v-model="snackWithButtons" :timeout="timeout" bottom left class="snack">
-        {{ snackWithBtnText }}
-        <v-spacer />
-        <v-btn dark flat color="#00f500" @click.native="refreshApp">
-          {{ snackBtnText }}
-        </v-btn>
-        <v-btn icon @click="snackWithButtons = false">
-          <v-icon>close</v-icon>
-        </v-btn>
-      </v-snackbar>
       <!--  <v-sheet id="scrolling-techniques" class="overflow-y-auto" max-height="600"><router-view /> </v-sheet> -->
       <!--  <v-container class="fill-height" fluid pa-0>
         <v-row justify="center" align="center" no-gutters>
@@ -27,6 +17,16 @@
       </v-sheet>
     </v-content>
     <bottom-navigation></bottom-navigation>
+    <v-snackbar v-model="snackWithButtons" :timeout="timeout" bottom left class="snack">
+      {{ snackWithBtnText }}
+      <v-spacer />
+      <v-btn dark flat color="primary" @click.native="refreshApp">
+        {{ snackBtnText }}
+      </v-btn>
+      <v-btn icon @click="snackWithButtons = false">
+        <v-icon>close</v-icon>
+      </v-btn>
+    </v-snackbar>
   </v-app>
 </template>
 
@@ -34,6 +34,7 @@
 import AppBar from './components/ApplicationBar';
 import BottomNavigation from './components/BottomNavigation';
 import NavigationDrawer from './components/NavigationDrawer';
+
 export default {
   components: { AppBar, NavigationDrawer, BottomNavigation },
   props: {
@@ -42,12 +43,15 @@ export default {
   created() {
     // default theme can be set here
     // this.$vuetify.theme.dark = false;
+
     // Listen for swUpdated event and display refresh snackbar as required.
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
-    // Refresh all open app tabs when a new service worker is installed.
+
+    // Assuming the user accepted the update, set up a listener
+    // that will reload the page as soon as the previously waiting
+    // service worker has taken control.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (this.refreshing) return;
-      this.refreshing = true;
+      this.$log.info('onControllerChange');
       window.location.reload();
     });
 
@@ -66,16 +70,20 @@ export default {
     },
     refreshApp() {
       this.snackWithButtons = false;
+
       // Protect against missing registration.waiting.
       if (!this.registration || !this.registration.waiting) {
         return;
       }
+      // Send a message to the waiting service worker instructing
+      // it to skip waiting, which will trigger the `controlling`
+      // event listener above.
+      // The sw.js got a 'message' listener to receive this messsage
       this.registration.waiting.postMessage('skipWaiting');
     },
   },
   data: () => ({
     items: [],
-    refreshing: false,
     registration: null,
     updateExists: false,
     snackBtnText: '',

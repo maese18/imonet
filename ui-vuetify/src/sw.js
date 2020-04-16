@@ -1,4 +1,4 @@
-const DYNAMIC_CACHE = 'dynamicCache';
+//const DYNAMIC_CACHE = 'dynamicCache';
 // This is the code piece that GenerateSW mode can't provide for us.
 // This code listens for the user's confirmation to update the app.
 self.addEventListener('message', e => {
@@ -8,6 +8,10 @@ self.addEventListener('message', e => {
 
   switch (e.data) {
     case 'skipWaiting':
+      // The ServiceWorkerGlobalScope. skipWaiting() method of the ServiceWorkerGlobalScope
+      // forces the waiting service worker to become the active service worker. ... claim()
+      // to ensure that updates to the underlying service worker take effect immediately for
+      // both the current client and all other active clients
       self.skipWaiting();
       break;
     default:
@@ -17,10 +21,12 @@ self.addEventListener('message', e => {
 });
 self.addEventListener('fetch', e => {
   var request = e.request;
+  console.log(`onFetch ${request}`);
   e.respondWith(
     fetch(request)
       .then(function(res) {
-        return caches.open(DYNAMIC_CACHE).then(function(cache) {
+        const cacheName = cacheNames.runtime;
+        return caches.open(cacheName).then(function(cache) {
           cache.put(request.url, res.clone());
           return res;
         });
