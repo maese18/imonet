@@ -19,8 +19,10 @@ module.exports = {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: 'src/service-worker.js',
+      navigateFallback: 'index.html',
+      importScripts: ['src/service-worker.js'],
     },
-    themeColor: '#1da025',
+    themeColor: process.VUE_APP_THEME_COLOR,
   },
 };
 process.env.VUE_APP_VERSION = require('./package.json').version;

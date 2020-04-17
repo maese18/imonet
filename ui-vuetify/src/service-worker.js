@@ -10,7 +10,24 @@ if (workbox) {
   // Make sure to return a specific response for all navigation requests.
   // Since we have a SPA here, this should be index.html always.
   // https://stackoverflow.com/questions/49963982/vue-router-history-mode-with-pwa-in-offline-mode
-  workbox.routing.registerNavigationRoute('/index.html');
+  //workbox.routing.registerNavigationRoute('/index.html');
+
+  // eg. https://randomuser.me/api/portraits/men/81.jpg
+  workbox.routing.registerRoute(
+    /^https:\/\/randomuser\.me/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'randomuser',
+    }),
+  );
+
+  // eg. https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css
+  // Setup cache strategy for Material Design Icons.
+  workbox.routing.registerRoute(
+    /^https:\/\/cdn\.jsdelivr\.net/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'google-fonts-stylesheets',
+    }),
+  );
 
   // Setup cache strategy for Google Fonts. They consist of two parts, a static one
   // coming from fonts.gstatic.com (strategy CacheFirst) and a more ferquently updated on

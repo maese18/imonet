@@ -50,6 +50,7 @@ services:
     command: [nginx, "-g", "daemon off;"]
     environment:
       VUE_APP_API_URL: ${VUE_APP_API_URL}
+      VUE_APP_THEME_COLOR: ${VUE_APP_THEME_COLOR}
     networks:
       proxy:
   pwa:
