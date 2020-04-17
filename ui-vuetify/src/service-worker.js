@@ -20,6 +20,14 @@ if (workbox) {
     }),
   );
 
+  // https://adivo.ch/img
+  workbox.routing.registerRoute(
+    '/img/',
+    new workbox.strategies.CacheFirst({
+      cacheName: 'img',
+    }),
+  );
+
   // eg. https://randomuser.me/api/portraits/men/81.jpg
   workbox.routing.registerRoute(
     /^https:\/\/randomuser\.me/,
