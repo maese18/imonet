@@ -56,9 +56,9 @@ self.addEventListener('fetch', event => {
         return caches.open('v1').then(function(cache) {
           cache.put(event.request, response.clone());
           return response;
-        });  
+        });
       });
-    })
+    }),
   );
   /* e.respondWith(
     fetch(request)
@@ -74,10 +74,10 @@ self.addEventListener('fetch', event => {
         console.log('Failed to fetch from network, Fallback to cache');
         return caches.match(request);
       }), */
-    /* caches.match(event.request).then(response => {
+  /* caches.match(event.request).then(response => {
       return response || fetch(event.request);
-    }), */
-  );
+    }), 
+  );*/
 });
 
 // This code listens for the user's confirmation to update the app.
