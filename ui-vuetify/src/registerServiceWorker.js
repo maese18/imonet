@@ -13,6 +13,7 @@ if (process.env.NODE_ENV === 'production') {
       Notification.requestPermission(function(status) {
         console.log('Notification permission status:', status);
       });
+      // Check every minute for app updates
       setInterval(() => {
         console.log('Check for app updates', Date.now());
         registration.update();
