@@ -9,7 +9,7 @@
     </template>
 
     <v-app-bar-nav-icon @click.stop="$store.commit('toggleNavigationDrawer')"></v-app-bar-nav-icon>
-    <v-toolbar-title dark>Imonet {{ appName }} {{ appVersion }}</v-toolbar-title>
+    <v-toolbar-title dark>{{ appName }} {{ appVersion }}</v-toolbar-title>
 
     <!-- <v-toolbar-title
       ><v-tabs background="transparent">
