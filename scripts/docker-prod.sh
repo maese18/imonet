@@ -56,7 +56,7 @@ export DB_PORT=`expr $PORT_RANGE_START + 21`
 export DB_ADMIN_PORT=`expr $PORT_RANGE_START + 22`
 export DB_PORT_SERVICE=3306
 # UI env variables
-export VUE_APP_API_URL=https://adivo.ch/api
+export VUE_APP_API_URL=https://api.adivo.ch/api
 echo VUE_APP_API_URL=$VUE_APP_API_URL
 # ---------------------------------------------------------------------------------------------------
 # up/down for dev environment
