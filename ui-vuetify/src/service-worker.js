@@ -54,12 +54,14 @@ self.addEventListener('fetch', e => {
     fetch(request)
       .then(function(res) {
         const cacheName = cacheNames.runtime;
+        console.log('Resource loaded from network, store to cache named ' + cacheName);
         return caches.open(cacheName).then(function(cache) {
           cache.put(request.url, res.clone());
           return res;
         });
       })
       .catch(function(err) {
+        console.log('Failed to fetch from network, Fallback to cache');
         return caches.match(request);
       }),
     /* caches.match(event.request).then(response => {
