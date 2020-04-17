@@ -10,13 +10,29 @@ if (workbox) {
   // Make sure to return a specific response for all navigation requests.
   // Since we have a SPA here, this should be index.html always.
   // https://stackoverflow.com/questions/49963982/vue-router-history-mode-with-pwa-in-offline-mode
-  //workbox.routing.registerNavigationRoute('/index.html');
+  workbox.routing.registerNavigationRoute('/index.html');
+
+  // https://api.adivo.ch
+  workbox.routing.registerRoute(
+    /^https:\/\/api\.adivo\.ch/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'api',
+    }),
+  );
 
   // eg. https://randomuser.me/api/portraits/men/81.jpg
   workbox.routing.registerRoute(
     /^https:\/\/randomuser\.me/,
     new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'randomuser',
+    }),
+  );
+
+  // https://cdn.vuetifyjs.com/images/lists/2.jpg
+  workbox.routing.registerRoute(
+    /^https:\/\/cdn\.vuetifyjs\.com/,
+    new workbox.strategies.StaleWhileRevalidate({
+      cacheName: 'vuetifyjs',
     }),
   );
 
