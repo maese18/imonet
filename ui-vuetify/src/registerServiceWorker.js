@@ -9,12 +9,12 @@ if (process.env.NODE_ENV === 'production') {
     },
     registered(registration) {
       console.log('Service worker has been registered.');
-      console.log('request push permission');
+      console.log('Request push permission');
       Notification.requestPermission(function(status) {
         console.log('Notification permission status:', status);
       });
       setInterval(() => {
-        console.log('Check for app updates');
+        console.log('Check for app updates', Date.now);
         registration.update();
       }, 1000 * 60); // e.g. hourly checks
     },
@@ -25,10 +25,8 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.');
     },
     updated(registration) {
-      console.log("New content is available! We'll show a refresh button for the user to click on and refresh");
-      /* setTimeout(() => {
-        window.location.reload(true);
-      }, 1000); */
+      console.log("New content is available! We'll show a refresh button for the user to click on and refresh", Date.now);
+
       // Add a custom event and dispatch it.
       // Used to display of a 'refresh' banner following a service worker update.
       // Set the event payload to the service worker registration object.
