@@ -85,7 +85,8 @@ export default {
       // The sw.js got a 'message' listener to handle this event
       // this.registration.waiting.postMessage('skipWaiting');
       if (navigator.serviceWorker) {
-        navigator.serviceWorker.postMessage('skipWaiting');
+        this.registration.waiting.postMessage('skipWaiting');
+        //navigator.serviceWorker.postMessage('skipWaiting');
         // Assuming the user accepted the update, set up a listener
         // that will reload the page as soon as the previously waiting
         // service worker has taken control.
