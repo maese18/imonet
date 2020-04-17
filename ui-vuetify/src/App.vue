@@ -45,21 +45,9 @@ export default {
     // default theme can be set here
     // this.$vuetify.theme.dark = false;
 
-    // ---
-    // Custom code to let user update the app
-    // when a new service worker is available
-    // ---
+    // EventListener to be notified when a service-worker has been updated.
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
-    /*
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (this.refreshing) return;
-      this.refreshing = true;
-      // Here the actual reload of the page occurs
-      window.location.reload();
-    });
-   
-  */
   },
   methods: {
     showRefreshUI(e) {
