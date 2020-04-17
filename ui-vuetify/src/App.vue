@@ -90,10 +90,11 @@ export default {
         // Assuming the user accepted the update, set up a listener
         // that will reload the page as soon as the previously waiting
         // service worker has taken control.
-        navigator.serviceWorker.addEventListener('controllerchange', () => {
+        window.location.reload();
+        /* navigator.serviceWorker.addEventListener('controllerchange', () => {
           this.$log.info('onControllerChange');
           window.location.reload();
-        });
+        }); */
       }
     },
   },
