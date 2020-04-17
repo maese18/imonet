@@ -63,7 +63,7 @@ export default {
   },
   methods: {
     showRefreshUI(e) {
-      this.$log.info('new version is available');
+      this.$log.info('Received a swUpdated event form the registerServiceWorker.');
       // Display a snackbar inviting the user to refresh/reload the app due
       // to an app update being available.
       // The new service worker is installed, but not yet active.
