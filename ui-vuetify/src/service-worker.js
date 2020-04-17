@@ -12,6 +12,7 @@ if (workbox) {
   // https://stackoverflow.com/questions/49963982/vue-router-history-mode-with-pwa-in-offline-mode
   workbox.routing.registerNavigationRoute('/index.html');
 
+  // The following routes need explicit caching as registerNavigationRoute would avoid loading those resources
   // https://api.adivo.ch
   workbox.routing.registerRoute(
     /^https:\/\/api\.adivo\.ch/,
@@ -27,6 +28,26 @@ if (workbox) {
       cacheName: 'images',
     }),
   );
+  // media
+  /*
+  // In your service worker:
+  // It's up to you to either precache or explicitly call cache.add('movie.mp4')
+  // to populate the cache.
+  //
+  // This route will go against the network if there isn't a cache match,
+  // but it won't populate the cache at runtime.
+  // If there is a cache match, then it will properly serve partial responses.
+  registerRoute(
+    /.*\.mp4/,
+    new CacheFirst({
+      cacheName: 'your-cache-name-here',
+      plugins: [
+        new CacheableResponsePlugin({statuses: [200]}),
+        new RangeRequestsPlugin(),
+      ],
+    }),
+  );*/
+
   workbox.routing.registerRoute(
     '/img/',
     new workbox.strategies.CacheFirst({
@@ -92,6 +113,19 @@ if (workbox) {
     }),
   );
 }
+// ---------------------------------------------------------------
+// ---------------------------------------------------------------
+// Lifecycle
+
+/*
+It's actually easy. You can add an event listeners inside your service worker that listens for the install event. 
+Whenever it fires, send a message via postmessage to your main thread and show a update info to your users.
+When users presses ok send another message to the service worker back that triggers a "self.skipWaiting()" and afterwards a location.reload()
+*/
+self.addEventListener('install', event => {
+  console.log('service-worker installed');
+  document.dispatchEvent(new CustomEvent('swUpdated', { detail: registration }));
+});
 
 // Fetch interceptor to make sure dynamic content is cached
 self.addEventListener('fetch', event => {
@@ -129,12 +163,14 @@ self.addEventListener('fetch', event => {
 
 // This code listens for the user's confirmation to update the app.
 self.addEventListener('message', e => {
+  console.log('service-worker received message');
   if (!e.data) {
     return;
   }
 
   switch (e.data) {
     case 'skipWaiting':
+      console.log('message was "skipWaiting"');
       self.skipWaiting();
       break;
     default:

@@ -24,8 +24,8 @@
       <v-btn dark color="primary" @click.native="refreshApp">
         Refresh
       </v-btn>
-      <v-btn icon @click="snackWithButtons = false">
-        <v-icon>close</v-icon>
+      <v-btn icon @click="appUpdateExists = false">
+        <v-icon>mdi-close</v-icon>
       </v-btn>
     </v-snackbar>
   </v-app>
@@ -51,6 +51,7 @@ export default {
     // ---
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
 
+    /*
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (this.refreshing) return;
       this.refreshing = true;
@@ -58,9 +59,11 @@ export default {
       window.location.reload();
     });
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+  */
   },
   methods: {
     showRefreshUI(e) {
+      this.$log.info('new version is available');
       // Display a snackbar inviting the user to refresh/reload the app due
       // to an app update being available.
       // The new service worker is installed, but not yet active.
@@ -75,21 +78,22 @@ export default {
       if (!this.registration || !this.registration.waiting) {
         return;
       }
-
-      // Assuming the user accepted the update, set up a listener
-      // that will reload the page as soon as the previously waiting
-      // service worker has taken control.
-      /* navigator.serviceWorker.addEventListener('controllerchange', () => {
-        this.$log.info('onControllerChange');
-        window.location.reload();
-      }); */
-
       // Send a message to the waiting service worker instructing
       // send message to SW to skip the waiting and activate the new SW
       // it to skip waiting, which will trigger the `controlling`
       // event listener above.
       // The sw.js got a 'message' listener to handle this event
-      this.registration.waiting.postMessage('skipWaiting');
+      // this.registration.waiting.postMessage('skipWaiting');
+      if (navigator.serviceWorker) {
+        navigator.serviceWorker.postMessage('skipWaiting');
+        // Assuming the user accepted the update, set up a listener
+        // that will reload the page as soon as the previously waiting
+        // service worker has taken control.
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          this.$log.info('onControllerChange');
+          window.location.reload();
+        });
+      }
     },
   },
   data: () => ({
