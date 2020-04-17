@@ -129,7 +129,7 @@ self.addEventListener('install', event => {
 // Fetch interceptor to make sure dynamic content is cached
 self.addEventListener('fetch', event => {
   var request = event.request;
-  console.log(`onFetch ${JSON.stringify(request, null, 2)}`);
+  console.log(`onFetch`);
   event.respondWith(
     caches.match(event.request).catch(function() {
       return fetch(event.request).then(function(response) {
