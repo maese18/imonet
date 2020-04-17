@@ -124,8 +124,6 @@ When users presses ok send another message to the service worker back that trigg
 */
 self.addEventListener('install', event => {
   console.log('service-worker installed');
-  //in registerServiceWorker
-  // document.dispatchEvent(new CustomEvent('swUpdated', { detail: registration }));
 });
 
 // Fetch interceptor to make sure dynamic content is cached

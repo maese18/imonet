@@ -61,7 +61,7 @@ export default {
     },
     refreshApp() {
       this.appUpdateExists = false;
-
+      this.$log.info('send skipWaiting and reload app');
       // Protect against missing registration.waiting.
       if (!this.registration || !this.registration.waiting) {
         return;
@@ -79,10 +79,6 @@ export default {
         // that will reload the page as soon as the previously waiting
         // service worker has taken control.
         window.location.reload();
-        /* navigator.serviceWorker.addEventListener('controllerchange', () => {
-          this.$log.info('onControllerChange');
-          window.location.reload();
-        }); */
       }
     },
   },
