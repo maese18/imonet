@@ -19,8 +19,6 @@ module.exports = {
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       swSrc: 'src/service-worker.js',
-      navigateFallback: 'index.html',
-      importScripts: ['src/service-worker.js'],
     },
     themeColor: process.VUE_APP_THEME_COLOR,
   },
