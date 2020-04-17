@@ -15,7 +15,7 @@ if (workbox) {
   // https://api.adivo.ch
   workbox.routing.registerRoute(
     /^https:\/\/api\.adivo\.ch/,
-    new workbox.strategies.StaleWhileRevalidate({
+    new workbox.strategies.NetworkFirst({
       cacheName: 'api',
     }),
   );
@@ -23,7 +23,7 @@ if (workbox) {
   // eg. https://randomuser.me/api/portraits/men/81.jpg
   workbox.routing.registerRoute(
     /^https:\/\/randomuser\.me/,
-    new workbox.strategies.StaleWhileRevalidate({
+    new workbox.strategies.CacheFirst({
       cacheName: 'randomuser',
     }),
   );
@@ -31,7 +31,7 @@ if (workbox) {
   // https://cdn.vuetifyjs.com/images/lists/2.jpg
   workbox.routing.registerRoute(
     /^https:\/\/cdn\.vuetifyjs\.com/,
-    new workbox.strategies.StaleWhileRevalidate({
+    new workbox.strategies.CacheFirst({
       cacheName: 'vuetifyjs',
     }),
   );
@@ -40,8 +40,8 @@ if (workbox) {
   // Setup cache strategy for Material Design Icons.
   workbox.routing.registerRoute(
     /^https:\/\/cdn\.jsdelivr\.net/,
-    new workbox.strategies.StaleWhileRevalidate({
-      cacheName: 'google-fonts-stylesheets',
+    new workbox.strategies.CacheFirst({
+      cacheName: 'mdi-icons',
     }),
   );
 
