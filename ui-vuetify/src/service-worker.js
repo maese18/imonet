@@ -21,7 +21,7 @@ if (workbox) {
   );
 
   // https://adivo.ch/img
-  workbox.registerRoute(
+  workbox.routing.registerRoute(
     new RegExp('/img/'),
     new workbox.strategies.CacheFirst({
       cacheName: 'images',
