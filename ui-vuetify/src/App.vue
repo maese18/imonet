@@ -50,7 +50,7 @@ export default {
     // when a new service worker is available
     // ---
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true });
-
+    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
     /*
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (this.refreshing) return;
@@ -58,7 +58,7 @@ export default {
       // Here the actual reload of the page occurs
       window.location.reload();
     });
-    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+   
   */
   },
   methods: {
