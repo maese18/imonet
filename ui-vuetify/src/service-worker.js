@@ -47,10 +47,20 @@ if (workbox) {
 }
 
 // Fetch interceptor to make sure dynamic content is cached
-self.addEventListener('fetch', e => {
-  var request = e.request;
+self.addEventListener('fetch', event => {
+  var request = event.request;
   console.log(`onFetch ${JSON.stringify(request, null, 2)}`);
-  e.respondWith(
+  event.respondWith(
+    caches.match(event.request).catch(function() {
+      return fetch(event.request).then(function(response) {
+        return caches.open('v1').then(function(cache) {
+          cache.put(event.request, response.clone());
+          return response;
+        });  
+      });
+    })
+  );
+  /* e.respondWith(
     fetch(request)
       .then(function(res) {
         const cacheName = cacheNames.runtime;
@@ -63,7 +73,7 @@ self.addEventListener('fetch', e => {
       .catch(function(err) {
         console.log('Failed to fetch from network, Fallback to cache');
         return caches.match(request);
-      }),
+      }), */
     /* caches.match(event.request).then(response => {
       return response || fetch(event.request);
     }), */
