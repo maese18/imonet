@@ -21,8 +21,8 @@
     <v-snackbar v-model="appUpdateExists" :timeout="timeout" bottom left class="snack">
       New version available
       <v-spacer />
-      <v-btn dark color="primary" @click.native="refreshApp">
-        Refresh
+      <v-btn dark color="accent" @click.native="refreshApp">
+        Update
       </v-btn>
       <v-btn icon @click="appUpdateExists = false">
         <v-icon>mdi-close</v-icon>
