@@ -14,7 +14,7 @@ if (process.env.NODE_ENV === 'production') {
         console.log('Notification permission status:', status);
       });
       setInterval(() => {
-        console.log('Check for app updates', Date.now().getTime());
+        console.log('Check for app updates', Date.now());
         registration.update();
       }, 1000 * 60); // e.g. hourly checks
     },
@@ -25,7 +25,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is downloading.');
     },
     updated(registration) {
-      console.log("New content is available! We'll show a refresh button for the user to click on and refresh", Date.now().getTime());
+      console.log("New content is available! We'll show a refresh button for the user to click on and refresh", Date.now());
 
       // The service worker has been updated.
       // Dispatch a custom event 'swUpdated' which is caught in app.js. The app displays an update banner
