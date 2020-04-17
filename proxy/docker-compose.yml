@@ -1,14 +1,21 @@
 version: "3"
 
 services:
-  reverse:
-    hostname: reverseproxy
-    image: nginx
+  proxy:
+    image: nginx:1.15-alpine
+    depends_on:
+      - web
+      - api
+      - adminer
     ports:
-      - 80:80
+      - "80:80"
+      - "443:443"
     volumes:
-      - ./config:/etc/nginx
-      #- <path/to/your/certs>:/etc/ssl/private
+      - ../proxy/config2:/etc/nginx
+      #- ../proxy/config2/certbot/conf:/etc/letsencrypt
+      - /etc/letsencrypt:/etc/letsencrypt
+      # - ../proxy/config2/certbot/www:/var/www/certbot
+      - ../proxy/config2/logs:/var/log/nginx
     networks:
       proxy:
 
