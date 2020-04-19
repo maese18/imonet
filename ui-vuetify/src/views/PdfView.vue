@@ -44,7 +44,7 @@ export default {
       axios
         .post(`${process.env.VUE_APP_API_URL}/mediaFiles/${tenantId}/files`, formData, {
           headers: {
-            'Content-Type': 'multipart/form-data',
+            // 'Content-Type': 'multipart/form-data',
             tenantId: '1',
           },
         })
