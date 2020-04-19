@@ -5,6 +5,7 @@ import app from './app';
 import socket from 'socket.io';
 import migrationController from './database/migrationController';
 import mariaDbAdaptor from './database/mariaDbAdaptor';
+import sequelizeAdapter from './database/sequelizeAdapter';
 const TAG = 'index.js';
 const port = configs.server.port;
 
@@ -13,16 +14,19 @@ const server = app.listen(port, () => {
 		facility: 'index.mariaDb.js',
 	});
 });
+let dbMigrationMode = 'none'; //configs.db.migrationsMode;
 
-migrationController
-	.runDbMigrations()
-	.then(() => {
-		logger.info(TAG, 'DB migrations completed necessary migration steps');
-	})
-	.catch(err => {
-		logger.error(TAG, 'Stopping because no db connection could be established', err);
-		process.exit(0);
-	});
+if ((dbMigrationMode === 'up') | (dbMigrationMode === 'down')) {
+	migrationController
+		.runDbMigrations()
+		.then(() => {
+			logger.info(TAG, 'DB migrations completed necessary migration steps');
+		})
+		.catch(err => {
+			logger.error(TAG, 'Stopping because no db connection could be established', err);
+			process.exit(0);
+		});
+}
 
 const io = socket(server);
 io.on('connection', function(socket) {
@@ -40,6 +44,7 @@ io.on('connection', function(socket) {
 
 process.on('beforeExit', code => {
 	mariaDbAdaptor.getPool().end();
+	sequelizeAdapter.close();
 	// Can make asynchronous calls
 	setTimeout(() => {
 		console.log(`Process will exit with code: ${code}`);
@@ -49,18 +54,21 @@ process.on('beforeExit', code => {
 
 process.on('exit', code => {
 	mariaDbAdaptor.getPool().end();
+	sequelizeAdapter.close();
 	// Only synchronous calls
 	console.log(`Process exited with code: ${code}`);
 });
 
 process.on('SIGTERM', signal => {
 	mariaDbAdaptor.getPool().end();
+	sequelizeAdapter.close();
 	console.log(`Process ${process.pid} received a SIGTERM signal`);
 	process.exit(0);
 });
 
 process.on('SIGINT', signal => {
 	mariaDbAdaptor.getPool().end();
+	sequelizeAdapter.close();
 	console.log(`Process ${process.pid} has been interrupted`);
 	process.exit(0);
 });

@@ -23,7 +23,7 @@ class RepositoryUtil {
 
 	getAllTableColumnsExceptTenantId = (schema, tableName, isMultiTenantTable) => {
 		return new Promise(resolve => {
-			let tableIdentifier = `${schema}.${tableName}`;
+			let tableIdentifier = `${schema}.${tableName}s`;
 			let cacheIdentifier = `${isMultiTenantTable}:${tableIdentifier}`;
 			let cachedAttributes = tableColumnsCache[cacheIdentifier];
 			if (cachedAttributes) {

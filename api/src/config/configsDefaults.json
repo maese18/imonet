@@ -24,7 +24,8 @@
     "userDomain": "user",
     "multiTenantDomains": [
       "user",
-      "task"
+      "mediaFile",
+      "realEstate"
     ],
     "commonDomains": [
       "product"

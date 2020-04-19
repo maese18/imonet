@@ -68,9 +68,9 @@ class DomainRepository {
 					.then(visibleAttributes => {
 						let attributesString = buildSelectAttributesPart(requestedAttributes, visibleAttributes);
 
-						let query = `SELECT ${attributesString} FROM ${schema}.${domain} ${filterExpression} ${sortExpression} LIMIT :pageSize OFFSET :offset`;
+						let query = `SELECT ${attributesString} FROM ${schema}.${domain}s ${filterExpression} ${sortExpression} LIMIT :pageSize OFFSET :offset`;
 						let needCount = orDefault(paginationArgs.hasPagination, false);
-						let countStatement = `SELECT COUNT(*) as count FROM ${schema}.${domain} ${filterExpression}`;
+						let countStatement = `SELECT COUNT(*) as count FROM ${schema}.${domain}s ${filterExpression}`;
 
 						let countPromise = this.repositoryUtil.executeGetCountConditionally(needCount, countStatement);
 
@@ -103,7 +103,7 @@ class DomainRepository {
 			let filterExpression = buildFilterExpression(filters, isMultiTenantDomain, tenantId);
 
 			logger.info(TAG, 'findOne');
-			return this.dbAdaptor.getPool().query(`SELECT * FROM ${this.schema}.${domain} ${filterExpression}`, []);
+			return this.dbAdaptor.getPool().query(`SELECT * FROM ${this.schema}.${domain}s ${filterExpression}`, []);
 		} catch (e) {
 			return Promise.reject(e);
 		}
@@ -129,7 +129,7 @@ class DomainRepository {
 					values.push(tenantId);
 				}
 
-				let sql = `INSERT INTO ${this.schema}.${domain} (${insertAttributes.join(',')}) VALUES (${valuesPlaceholder.join(',')})`;
+				let sql = `INSERT INTO ${this.schema}.${domain}s (${insertAttributes.join(',')}) VALUES (${valuesPlaceholder.join(',')})`;
 				this.dbAdaptor
 					.executeStmt(sql, values)
 					.then(insertResponse => {
@@ -154,7 +154,7 @@ class DomainRepository {
 
 			this.dbAdaptor
 				.getPool()
-				.query(`DELETE FROM ${this.schema}.${domain} ${filterExpression}`, [])
+				.query(`DELETE FROM ${this.schema}.${domain}s ${filterExpression}`, [])
 				.then(result => {
 					console.log('DELETE_ONE', result);
 					if (result.affectedRows > 0) {
@@ -187,7 +187,7 @@ class DomainRepository {
 				wheres.push(`${configs.domain.tenantIdField}=${tenantId}`);
 			}
 			let setExpression = setAttributeAndValueParts.length > 0 ? 'SET ' + setAttributeAndValueParts.join(',') : '';
-			let updateSql = `UPDATE ${schema}.${tableName} ${setExpression} WHERE (${wheres.join(' AND ')})`;
+			let updateSql = `UPDATE ${schema}.${tableName}s ${setExpression} WHERE (${wheres.join(' AND ')})`;
 			logger.info(TAG, `UpdateSql=${updateSql}`);
 			this.dbAdaptor
 				.getPool()
@@ -211,7 +211,7 @@ class DomainRepository {
 	count = ({ schema, tableName, multiTenancyFilter = 'client_id.eq(-1)', filters = [] }) => {
 		let filterExpression = buildFilterExpression(filters, multiTenancyFilter);
 		return new Promise((resolve, reject) => {
-			const queryCount = `SELECT COUNT(*) as count FROM ${schema}.${tableName} ${filterExpression}`;
+			const queryCount = `SELECT COUNT(*) as count FROM ${schema}.${tableName}s ${filterExpression}`;
 			db.executeStmt(queryCount)
 				.then(result => {
 					logger.info(TAG, `${queryCount} result=${JSON.stringify(result, null, 2)}`);

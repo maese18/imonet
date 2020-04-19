@@ -103,8 +103,7 @@ class MigrationController {
 			console.log('Failed to execute stmt', ex);
 		}
 	}
-	async runDbMigrations() {
-		let mode = configs.db.migrationsMode;
+	async runDbMigrations(mode) {
 		try {
 			let pool = this.db.getPool();
 

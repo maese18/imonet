@@ -4,7 +4,7 @@ import express from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-
+import fileUpload from 'express-fileupload';
 import compressionConfig from './config/compressionConfig';
 import morganRequestLogger from './utils/logger/morganRequestLogger';
 import logger from './utils/logger/logger';
@@ -13,7 +13,7 @@ import lifeSign from './controllers/lifeSign';
 import configureErrorHandler from './errors/errorHandler';
 import UrlNotDefinedException from './errors/UrlNotDefinedException';
 import domainController from './controllers/domain/domainController';
-import mediaController from './controllers/mediaController';
+import mediaFileController from './controllers/mediaFile/mediaFileController';
 const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
@@ -25,20 +25,25 @@ app.use(helmet());
 app.use(compressionConfig());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 morganRequestLogger(app, configs);
-
-//app.use(bodyParser.urlencoded());
-app.use(bodyParser.json());
 
 app.use(cors());
 logger.info(TAG, 'Configure to allow CORS');
 // more fine-grain configuration can be found on expressjs.com/en/resources/middleware/cors.html
 
+// enable files upload
+app.use(
+	fileUpload({
+		createParentPath: true,
+	})
+);
+
 /* Routes */
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/lifeSign', lifeSign);
-app.use('/api/medias', mediaController.getRouter());
+app.use('/api/mediaFiles', mediaFileController.getRouter());
 app.use('/api', domainController.getRouter());
 
 logger.info(TAG, '/api/lifeSign,/api/:domainPlural, /api/users endpoints registered');
