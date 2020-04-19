@@ -1,5 +1,5 @@
 import configs from '../config/configs';
-import Sequelize from 'Sequelize';
+import Sequelize from 'sequelize';
 import user from '../models/user';
 import tenant from '../models/tenant';
 import mediaFile from '../models/mediaFile';
