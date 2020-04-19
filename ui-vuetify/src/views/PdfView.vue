@@ -32,7 +32,7 @@ export default {
       this.$log.info(`selected file=${this.selectedFileUrl}`);
     },
     onUpload() {
-      console.log(this.uploadFiles);
+      this.$log.info(this.uploadFiles);
       let formData = new FormData();
       for (var i = 0; i < this.uploadFiles.length; i++) {
         let file = this.uploadFiles[i];
@@ -49,10 +49,10 @@ export default {
           },
         })
         .then(function() {
-          console.log('SUCCESS!!');
+          this.$log.info('SUCCESS!!');
         })
         .catch(function() {
-          console.log('FAILURE!!');
+          this.$log.info('FAILURE!!');
         });
     },
   },
