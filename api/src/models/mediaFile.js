@@ -1,4 +1,4 @@
-import Sequelize from 'Sequelize';
+import Sequelize from 'sequelize';
 export default function mediaFile(sequelizeAdapter) {
 	const MediaFile = sequelizeAdapter.define(
 		'mediaFile',

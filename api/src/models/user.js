@@ -1,4 +1,4 @@
-import Sequelize from 'Sequelize';
+import Sequelize from 'sequelize';
 export default function userModel(sequelizeAdapter) {
 	const User = sequelizeAdapter.define(
 		'user',

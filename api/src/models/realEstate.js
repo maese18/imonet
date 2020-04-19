@@ -1,4 +1,4 @@
-import Sequelize from 'Sequelize';
+import Sequelize from 'sequelize';
 export default function realEstate(sequelizeAdapter) {
 	const RealEstate = sequelizeAdapter.define(
 		'realEstate',

@@ -1,4 +1,4 @@
-import Sequelize from 'Sequelize';
+import Sequelize from 'sequelize';
 export default function tenant(sequelizeAdapter) {
 	const Tenant = sequelizeAdapter.define(
 		'tenant',
