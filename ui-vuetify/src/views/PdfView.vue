@@ -48,10 +48,10 @@ export default {
             tenantId: '1',
           },
         })
-        .then(function() {
+        .then(() => {
           this.$log.info('SUCCESS!!');
         })
-        .catch(function() {
+        .catch(err => {
           this.$log.info('FAILURE!!');
         });
     },
