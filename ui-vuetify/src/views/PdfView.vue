@@ -52,7 +52,7 @@ export default {
           this.$log.info('SUCCESS!!');
         })
         .catch(err => {
-          this.$log.info('FAILURE!!');
+          this.$log.info('FAILURE!!', err);
         });
     },
   },

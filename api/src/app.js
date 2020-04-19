@@ -18,8 +18,13 @@ const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
 
+app.use(cors());
+logger.info(TAG, 'Configure to allow CORS');
+
 // Multiple protection mechanismens
 app.use(helmet());
+
+// more fine-grain configuration can be found on expressjs.com/en/resources/middleware/cors.html
 
 // compress all responses
 app.use(compressionConfig());
@@ -28,10 +33,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 morganRequestLogger(app, configs);
-
-app.use(cors());
-logger.info(TAG, 'Configure to allow CORS');
-// more fine-grain configuration can be found on expressjs.com/en/resources/middleware/cors.html
 
 // enable files upload
 app.use(
