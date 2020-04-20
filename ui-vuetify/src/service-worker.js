@@ -1,4 +1,21 @@
+function subscribeUserToPush() {
+  return navigator.serviceWorker
+    .register('/service-worker.js')
+    .then(function(registration) {
+      const subscribeOptions = {
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array('BFeD5yPAsk5ife9147C9vI6ENZAZeFJtXVg6UUq7lXJSlJvT2-rPcWvlUlJK45ctcNW80Y23F0_0a6g6RPubTKE'),
+      };
+
+      return registration.pushManager.subscribe(subscribeOptions);
+    })
+    .then(function(pushSubscription) {
+      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
+      return pushSubscription;
+    });
+}
 if (workbox) {
+  subscribeUserToPush();
   // adjust log level for displaying workbox logs
   //workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 

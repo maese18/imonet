@@ -5,6 +5,11 @@
     "protocol": "$API_PROTOCOL",
     "port": "$API_SERVER_PORT"
   },
+  "webpush": {
+    "publicVapidKey": "$PUBLIC_VAPID_KEY",
+    "privateVapidKey": "$PRIVATE_VAPID_KEY",
+    "vapidEmail": "$VAPID_EMAIL"
+  },
   "jwt": {
     "secret": "$JWT_SECRET|test"
   },

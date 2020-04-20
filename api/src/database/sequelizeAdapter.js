@@ -31,7 +31,7 @@ sequelizeAdapter
 		for (let key in models) {
 			models[key].associate(models);
 		}
-		sequelizeAdapter.sync({ force: true }).then(() => {
+		sequelizeAdapter.sync({ force: false }).then(() => {
 			// Add some data if not present
 			Tenant.findAll()
 				.then(tenants => {

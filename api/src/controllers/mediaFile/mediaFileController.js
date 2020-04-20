@@ -14,6 +14,7 @@ class MediaFileController {
 		//let checkAuth = this.authenticationService.checkAuth;
 
 		router.get('/:fileName', this.downloadFile);
+		router.get('/:realEstateId/:fileName', this.downloadMediaFile);
 		router.get('/:id', this.download);
 		router.post('/:realEstateId', this.upload);
 		router.post('/:realEstateId/files', this.uploadFiles);
@@ -96,6 +97,19 @@ class MediaFileController {
 			}
 		} catch (err) {
 			res.status(500).send(err);
+		}
+	};
+	downloadMediaFile = async (req, res, next) => {
+		//let tenant = configs.customer; //TODO: Tenant needs to be extracted from JWT
+		let tenantId = req.query.tenantId;
+		let realEstateId = req.params.realEstateId;
+		let fileName = req.params.fileName;
+		const filePath = path.join(process.env.PWD, 'media', 'tenant_' + realEstateId, fileName);
+		logger.info(TAG, `Download file. Path=${filePath}`);
+		try {
+			res.download(filePath); // Set disposition and send it.
+		} catch (err) {
+			next(err);
 		}
 	};
 	uploadFiles = async (req, res, next) => {
