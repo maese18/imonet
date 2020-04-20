@@ -1,4 +1,6 @@
-<template> <video autoplay ref="video"></video></template>
+<template>
+  <video ref="video" autoplay />
+</template>
 <script>
 const hdConstraints = {
   video: { width: { min: 1280 }, height: { min: 720 } },

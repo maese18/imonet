@@ -1,10 +1,12 @@
 <template>
-  <v-navigation-drawer clipped-left v-model="isNavigationDrawerOpen" app :expand-on-hover="expandOnHover" :mini-variant="miniVariant">
+  <v-navigation-drawer v-model="isNavigationDrawerOpen" clipped-left app :expand-on-hover="expandOnHover" :mini-variant="miniVariant">
     <v-list dense nav class="py-0">
       <div class="d-flex ma-5 justify-center" @click.stop="$store.commit('toggleNavigationDrawer')">
         <img class="mt-1 ml-4 mr-4" alt="imonet logo" :src="logo" height="50" />
 
-        <v-icon @click.stop="$store.commit('toggleNavigationDrawer')">mdi-close</v-icon>
+        <v-icon @click.stop="$store.commit('toggleNavigationDrawer')">
+          mdi-close
+        </v-icon>
       </div>
 
       <v-list-item two-line :class="miniVariant && 'px-0'" @click.stop="$store.commit('toggleNavigationDrawer')">
@@ -17,13 +19,17 @@
           <v-list-item-subtitle>Subtext</v-list-item-subtitle>
         </v-list-item-content>
       </v-list-item>
-      <v-divider></v-divider>
+      <v-divider />
 
-      <v-list-item style="height:80px" v-for="item in items" :key="item.title" :to="item.route" link exact class="d-flex flex-column">
-        <v-icon class="mt-3 mb-2 d-flex justify-center">{{ item.icon }}</v-icon>
-        <div class="d-flex justify-center">{{ item.title }}</div>
+      <v-list-item v-for="item in items" :key="item.title" style="height:80px" :to="item.route" link exact class="d-flex flex-column">
+        <v-icon class="mt-3 mb-2 d-flex justify-center">
+          {{ item.icon }}
+        </v-icon>
+        <div class="d-flex justify-center">
+          {{ item.title }}
+        </div>
       </v-list-item>
-      <v-divider></v-divider>
+      <v-divider />
 
       <!--  <v-list-item v-for="item in items" :key="item.title" :to="item.route" link exact>
         <v-list-item-icon>

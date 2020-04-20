@@ -16,8 +16,8 @@ new Vue({
 }).$mount('#app');
 
 if (Notification.permission == 'granted') {
-  navigator.serviceWorker.getRegistration().then(function(reg) {
-    var options = {
+  navigator.serviceWorker.getRegistration().then(reg => {
+    let options = {
       body: 'Here is a notification body!',
       icon: 'img/logo-white-text.png',
       vibrate: [100, 50, 100],

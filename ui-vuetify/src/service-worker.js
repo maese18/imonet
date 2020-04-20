@@ -1,7 +1,7 @@
 function subscribeUserToPush() {
   return navigator.serviceWorker
     .register('/service-worker.js')
-    .then(function(registration) {
+    .then(registration => {
       const subscribeOptions = {
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array('BFeD5yPAsk5ife9147C9vI6ENZAZeFJtXVg6UUq7lXJSlJvT2-rPcWvlUlJK45ctcNW80Y23F0_0a6g6RPubTKE'),
@@ -9,7 +9,7 @@ function subscribeUserToPush() {
 
       return registration.pushManager.subscribe(subscribeOptions);
     })
-    .then(function(pushSubscription) {
+    .then(pushSubscription => {
       console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
       return pushSubscription;
     });
@@ -135,22 +135,21 @@ if (workbox) {
 // Lifecycle
 
 /*
-It's actually easy. You can add an event listeners inside your service worker that listens for the install event. 
+It's actually easy. You can add an event listeners inside your service worker that listens for the install event.
 Whenever it fires, send a message via postmessage to your main thread and show a update info to your users.
 When users presses ok send another message to the service worker back that triggers a "self.skipWaiting()" and afterwards a location.reload()
 */
 self.addEventListener('install', event => {
-  console.log('service-worker installed');
+  console.log('service-worker installed', event);
 });
 
 // Fetch interceptor to make sure dynamic content is cached
 self.addEventListener('fetch', event => {
-  var request = event.request;
-  console.log(`onFetch`);
+  console.log('onFetch');
   event.respondWith(
-    caches.match(event.request).catch(function() {
-      return fetch(event.request).then(function(response) {
-        return caches.open('v1').then(function(cache) {
+    caches.match(event.request).catch(() => {
+      return fetch(event.request).then(response => {
+        return caches.open('v1').then(cache => {
           cache.put(event.request, response.clone());
           return response;
         });
@@ -173,7 +172,7 @@ self.addEventListener('fetch', event => {
       }), */
   /* caches.match(event.request).then(response => {
       return response || fetch(event.request);
-    }), 
+    }),
   );*/
 });
 

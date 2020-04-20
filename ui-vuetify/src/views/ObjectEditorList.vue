@@ -1,22 +1,22 @@
 <template>
   <v-row justify="center" align="center">
     <v-col xs="12" sm="12" md="6" class="pa-0">
-      <camera></camera>
+      <camera />
       <v-card class="purple ma-0" elevation="1">
         <v-list three-line>
           <template v-for="(item, index) in items">
-            <v-subheader v-if="item.header" :key="item.header" v-text="item.header"></v-subheader>
+            <v-subheader v-if="item.header" :key="item.header" v-text="item.header" />
 
-            <v-divider v-else-if="item.divider" :key="index" :inset="item.inset"></v-divider>
+            <v-divider v-else-if="item.divider" :key="index" :inset="item.inset" />
 
             <v-list-item v-else :key="item.title">
               <v-list-item-avatar>
-                <v-img :src="item.avatar"></v-img>
+                <v-img :src="item.avatar" />
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title v-html="item.title"></v-list-item-title>
-                <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                <v-list-item-title v-html="item.title" />
+                <v-list-item-subtitle v-html="item.subtitle" />
               </v-list-item-content>
             </v-list-item>
           </template>
@@ -28,18 +28,18 @@
         <v-card-title>Title</v-card-title>
         <v-list three-line>
           <template v-for="(item, index) in items">
-            <v-subheader v-if="item.header" :key="item.header" v-text="item.header"></v-subheader>
+            <v-subheader v-if="item.header" :key="item.header" v-text="item.header" />
 
-            <v-divider v-else-if="item.divider" :key="index" :inset="item.inset"></v-divider>
+            <v-divider v-else-if="item.divider" :key="index" :inset="item.inset" />
 
             <v-list-item v-else :key="item.title">
               <v-list-item-avatar>
-                <v-img :src="item.avatar"></v-img>
+                <v-img :src="item.avatar" />
               </v-list-item-avatar>
 
               <v-list-item-content>
-                <v-list-item-title v-html="item.title"></v-list-item-title>
-                <v-list-item-subtitle v-html="item.subtitle"></v-list-item-subtitle>
+                <v-list-item-title v-html="item.title" />
+                <v-list-item-subtitle v-html="item.subtitle" />
               </v-list-item-content>
             </v-list-item>
           </template>

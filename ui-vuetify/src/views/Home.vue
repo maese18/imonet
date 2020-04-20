@@ -1,9 +1,11 @@
 <template>
   <div class="home">
     <HelloWorld msg="immobilien netz" />
-    <v-text-field v-model="title" :counter="20" label="Title" required></v-text-field>
-    <v-text-field v-model="body" label="Body" required></v-text-field>
-    <v-btn small @click="sendSubscription">send</v-btn>
+    <v-text-field v-model="title" :counter="20" label="Title" required />
+    <v-text-field v-model="body" label="Body" required />
+    <v-btn small @click="sendSubscription">
+      send
+    </v-btn>
   </div>
 </template>
 
@@ -14,14 +16,14 @@ import HelloWorld from '@/components/HelloWorld.vue';
 
 export default {
   name: 'Home',
+  components: {
+    HelloWorld,
+  },
   data() {
     return {
       title: 'subscription title',
       body: 'subscription body',
     };
-  },
-  components: {
-    HelloWorld,
   },
   computed: {
     logo() {

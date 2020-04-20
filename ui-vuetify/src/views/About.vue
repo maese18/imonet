@@ -2,21 +2,27 @@
   <div class="about">
     <h1>Stream</h1>
     <div class="button-group">
-      <button id="btn-start" type="button" class="button" @click="startStreaming">Start Streaming</button>
-      <button id="btn-stop" type="button" class="button" @click="stopStreaming">Stop Streaming</button>
-      <button id="btn-capture" type="button" class="button" @click="captureSnapshot">Capture Image</button>
+      <button id="btn-start" type="button" class="button" @click="startStreaming">
+        Start Streaming
+      </button>
+      <button id="btn-stop" type="button" class="button" @click="stopStreaming">
+        Stop Streaming
+      </button>
+      <button id="btn-capture" type="button" class="button" @click="captureSnapshot">
+        Capture Image
+      </button>
     </div>
 
     <!-- Video Element & Canvas -->
     <div class="play-area">
       <div class="play-area-sub">
         <h3>The Stream</h3>
-        <video id="stream" width="320" height="240"></video>
+        <video id="stream" width="320" height="240" />
       </div>
       <div class="play-area-sub">
         <h3>The Capture</h3>
-        <canvas id="capture" width="320" height="240"></canvas>
-        <div id="snapshot"></div>
+        <canvas id="capture" width="320" height="240" />
+        <div id="snapshot" />
       </div>
     </div>
   </div>
@@ -41,7 +47,7 @@ export default {
   methods: {
     // Start Streaming
     startStreaming: function() {
-      var mediaSupport = 'mediaDevices' in navigator;
+      let mediaSupport = 'mediaDevices' in navigator;
 
       if (mediaSupport && null == this.cameraStream) {
         navigator.mediaDevices
@@ -62,7 +68,7 @@ export default {
     },
     stopStreaming: function() {
       if (null != this.cameraStream) {
-        var track = this.cameraStream.getTracks()[0];
+        let track = this.cameraStream.getTracks()[0];
 
         track.stop();
         this.stream.load();
@@ -73,8 +79,8 @@ export default {
     captureSnapshot: function() {
       this.$log.info('captureSnapshot');
       if (this.cameraStream) {
-        var ctx = this.capture.getContext('2d');
-        var img = new Image();
+        let ctx = this.capture.getContext('2d');
+        let img = new Image();
 
         ctx.drawImage(this.stream, 0, 0, this.capture.width, this.capture.height);
 
@@ -85,29 +91,29 @@ export default {
       }
     },
     dataURItoBlob: function(dataURI) {
-      var byteString = atob(dataURI.split(',')[1]);
-      var mimeString = dataURI
+      let byteString = atob(dataURI.split(',')[1]);
+      let mimeString = dataURI
         .split(',')[0]
         .split(':')[1]
         .split(';')[0];
 
-      var buffer = new ArrayBuffer(byteString.length);
-      var data = new DataView(buffer);
+      let buffer = new ArrayBuffer(byteString.length);
+      let data = new DataView(buffer);
 
-      for (var i = 0; i < byteString.length; i++) {
+      for (let i = 0; i < byteString.length; i++) {
         data.setUint8(i, byteString.charCodeAt(i));
       }
 
       return new Blob([buffer], { type: mimeString });
     },
     sendImage: function() {
-      var request = new XMLHttpRequest();
+      let request = new XMLHttpRequest();
 
       request.open('POST', '/upload/url', true);
 
-      var data = new FormData();
-      var dataURI = this.snapshot.firstChild.getAttribute('src');
-      var imageData = this.dataURItoBlob(dataURI);
+      let data = new FormData();
+      let dataURI = this.snapshot.firstChild.getAttribute('src');
+      let imageData = this.dataURItoBlob(dataURI);
 
       data.append('image', imageData, 'myimage');
 

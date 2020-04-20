@@ -1,5 +1,5 @@
 <template>
-  <pdf :src="url"></pdf>
+  <pdf :src="url" />
 </template>
 <script>
 import pdf from 'vue-pdf';

@@ -6,36 +6,39 @@
         https://stackoverflow.com/questions/44989162/file-upload-in-vuetify
       -->
       <v-col>
-        <v-file-input v-model="uploadFiles" small-chips multiple label="File input w/ small chips"></v-file-input>
+        <v-file-input v-model="uploadFiles" small-chips multiple label="File input w/ small chips" />
       </v-col>
-      <v-col cols="1"> <v-btn color="primary" @click="onUpload">Upload</v-btn></v-col>
+      <v-col cols="1">
+        <v-btn color="primary" @click="onUpload">
+          Upload
+        </v-btn>
+      </v-col>
     </v-row>
-    <v-row
-      ><v-col cols="12" v-if="!isLoading">
-        <div
-          v-for="(mediaFile, i) in mediaFiles"
-          :key="i"
-          elevation="5"
-          style="background:#202020;border-bottom:1px solid #151515"
-        >
-          <v-btn @click="selectedItem === i ? (selectedItem = null) : (selectedItem = i)" text color="white">{{
-            mediaFile.fileNameAlias
-          }}</v-btn>
+    <v-row>
+      <v-col v-if="!isLoading" cols="12">
+        <div v-for="(mediaFile, i) in mediaFiles" :key="i" elevation="5" style="background:#202020;border-bottom:1px solid #151515">
+          <v-btn text color="white" @click="selectedItem === i ? (selectedItem = null) : (selectedItem = i)">
+            {{ mediaFile.fileNameAlias }}
+          </v-btn>
           <div v-if="selectedItem === i">
-            <pdf-component v-if="isVisiblePdf(mediaFile.type, i)" :url="createUrl(mediaFile.fileName)"></pdf-component>
+            <pdf-component v-if="isVisiblePdf(mediaFile.type, i)" :url="createUrl(mediaFile.fileName)" />
             <img v-if="mediaFile.type.indexOf('pdf') < 0" :src="createUrl(mediaFile.fileName)" />
           </div>
         </div>
       </v-col>
     </v-row>
     <v-row>
-      <v-col v-for="file in files" :key="file"
-        ><v-btn @click="selectFile(file)">{{ file }}</v-btn></v-col
-      >
+      <v-col v-for="file in files" :key="file">
+        <v-btn @click="selectFile(file)">
+          {{ file }}
+        </v-btn>
+      </v-col>
     </v-row>
-    <v-row
-      ><v-col cols="12"> <pdf-component :v-if="selectedFileUrl" :url="selectedFileUrl"></pdf-component></v-col
-    ></v-row>
+    <v-row>
+      <v-col cols="12">
+        <pdf-component :v-if="selectedFileUrl" :url="selectedFileUrl" />
+      </v-col>
+    </v-row>
   </div>
 </template>
 <script>
@@ -54,6 +57,27 @@ export default {
       selectedFileUrl: `${process.env.VUE_APP_API_URL}/mediaFiles/file-1.pdf`,
     };
   },
+  mounted: function() {
+    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+    console.log('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+    // primitive cache mechanism
+    this.files.forEach(file => axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${file}`));
+
+    //http://localhost:4060/api/mediaFiles?tenantId=1&prettyFormat
+    this.listMediaFiles().then(() => {
+      //cache all files
+      let promises = [];
+      this.mediaFiles.forEach(mediaFile => {
+        promises.push(axios.get(this.createUrl(mediaFile.fileName)));
+      });
+      Promise.all(promises).then(() => (this.isLoading = false));
+    });
+    /*  axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles?tenantId=1`).then(mediaFilesResponse => {
+      this.$log.info('mediaFiles', mediaFilesResponse);
+      this.mediaFiles = mediaFilesResponse.data;
+      this.mediaFilePanelsOpen = [this.mediaFiles.length];
+    }); */
+  },
   methods: {
     isVisiblePdf(fileType, index) {
       let isVisPdf = this.selectedItem === index && fileType === 'application/pdf';
@@ -70,7 +94,7 @@ export default {
     onUpload() {
       this.$log.info(this.uploadFiles);
       let formData = new FormData();
-      for (var i = 0; i < this.uploadFiles.length; i++) {
+      for (let i = 0; i < this.uploadFiles.length; i++) {
         let file = this.uploadFiles[i];
 
         formData.append('mediaFile_' + i, file);
@@ -101,27 +125,6 @@ export default {
         this.mediaFilePanelsOpen = this.mediaFiles.map(() => false);
       });
     },
-  },
-  mounted: function() {
-    this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
-    console.log('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
-    // primitive cache mechanism
-    this.files.forEach(file => axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${file}`));
-
-    //http://localhost:4060/api/mediaFiles?tenantId=1&prettyFormat
-    this.listMediaFiles().then(() => {
-      //cache all files
-      let promises = [];
-      this.mediaFiles.forEach(mediaFile => {
-        promises.push(axios.get(this.createUrl(mediaFile.fileName)));
-      });
-      Promise.all(promises).then(() => (this.isLoading = false));
-    });
-    /*  axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles?tenantId=1`).then(mediaFilesResponse => {
-      this.$log.info('mediaFiles', mediaFilesResponse);
-      this.mediaFiles = mediaFilesResponse.data;
-      this.mediaFilePanelsOpen = [this.mediaFiles.length];
-    }); */
   },
 };
 </script>

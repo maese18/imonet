@@ -4,12 +4,14 @@
    -->
   <v-app-bar app dark fixed prominent fade-img-on-scroll shrink-on-scroll scroll-target="#app-bar-scroll-target" color="appBar" src="img/893-1920x1080.jpg">
     <template v-slot:img="{ props }">
-      <v-img v-bind="props" gradient="to top right, rgba(10,10,10,.7), rgba(30,30,30,.7)"></v-img>
-      <div class="d-flex justify-center" style="position:absolute;left:0;right:0;bottom:20px"><img style="padding-top:5px" alt="imonet logo" :src="logo" height="80" /></div>
+      <v-img v-bind="props" gradient="to top right, rgba(10,10,10,.7), rgba(30,30,30,.7)" />
+      <div class="d-flex justify-center" style="position:absolute;left:0;right:0;bottom:20px">
+        <img style="padding-top:5px" alt="imonet logo" :src="logo" height="80" />
+      </div>
     </template>
 
-    <v-app-bar-nav-icon @click.stop="$store.commit('toggleNavigationDrawer')"></v-app-bar-nav-icon>
-    <v-toolbar-title dark>{{ appName }} {{ appVersion }}</v-toolbar-title>
+    <v-app-bar-nav-icon @click.stop="$store.commit('toggleNavigationDrawer')" />
+    <v-toolbar-title dark> {{ appName }} {{ appVersion }} </v-toolbar-title>
 
     <!-- <v-toolbar-title
       ><v-tabs background="transparent">
@@ -19,7 +21,7 @@
       </v-tabs></v-toolbar-title
     > -->
 
-    <v-spacer></v-spacer>
+    <v-spacer />
     <v-btn icon>
       <v-icon>mdi-heart</v-icon>
     </v-btn>
@@ -40,7 +42,7 @@
           <v-list-item-title>Option {{ n }}</v-list-item-title>
         </v-list-item>
         <v-list-item>
-          <v-switch v-model="$vuetify.theme.dark" hide-details inset label="Theme Dark"></v-switch>
+          <v-switch v-model="$vuetify.theme.dark" hide-details inset label="Theme Dark" />
         </v-list-item>
       </v-list>
     </v-menu>

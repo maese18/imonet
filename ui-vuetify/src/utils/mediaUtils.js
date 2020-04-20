@@ -3,5 +3,5 @@ class MediaUtils {
     return !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
   }
 }
-
-export default mediaUtils = new MediaUtils();
+const mediaUtils = new MediaUtils();
+export default mediaUtils;

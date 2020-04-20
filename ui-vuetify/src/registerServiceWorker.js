@@ -10,7 +10,7 @@ if (process.env.NODE_ENV === 'production') {
     registered(registration) {
       console.log('Service worker has been registered.');
       console.log('Request push permission');
-      Notification.requestPermission(function(status) {
+      Notification.requestPermission(status => {
         console.log('Notification permission status:', status);
       });
       // Check every minute for app updates

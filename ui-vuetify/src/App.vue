@@ -13,10 +13,12 @@
       </v-container> -->
 
       <v-sheet id="app-bar-scroll-target" class="overflow-y-auto" max-height="600">
-        <v-container style="height: 1000px;"> <router-view /></v-container>
+        <v-container style="height: 1000px;">
+          <router-view />
+        </v-container>
       </v-sheet>
     </v-content>
-    <bottom-navigation></bottom-navigation>
+    <bottom-navigation />
 
     <v-snackbar v-model="appUpdateExists" :timeout="timeout" bottom left class="snack">
       New version available
@@ -40,6 +42,30 @@ export default {
   components: { AppBar, NavigationDrawer, BottomNavigation },
   props: {
     source: String,
+  },
+  data: () => ({
+    items: [],
+    registration: null,
+    appUpdateExists: false,
+    snackWithButtons: false,
+    timeout: 0,
+  }),
+  computed: {
+    theme() {
+      return this.$vuetify.theme.dark ? 'dark' : 'light';
+    },
+    // mix this into the outer object with the object spread operator
+    isNavigationDrawerOpen: {
+      get() {
+        return this.$store.state.isNavigationDrawerOpen;
+      },
+      set(value) {
+        this.$log.info('set navigation drawer to ', value);
+        if (value !== this.$store.state.isNavigationDrawerOpen) {
+          this.$store.commit('toggleNavigationDrawer', value);
+        }
+      },
+    },
   },
   created() {
     // default theme can be set here
@@ -80,30 +106,6 @@ export default {
         // service worker has taken control.
         window.location.reload();
       }
-    },
-  },
-  data: () => ({
-    items: [],
-    registration: null,
-    appUpdateExists: false,
-    snackWithButtons: false,
-    timeout: 0,
-  }),
-  computed: {
-    theme() {
-      return this.$vuetify.theme.dark ? 'dark' : 'light';
-    },
-    // mix this into the outer object with the object spread operator
-    isNavigationDrawerOpen: {
-      get() {
-        return this.$store.state.isNavigationDrawerOpen;
-      },
-      set(value) {
-        this.$log.info('set navigation drawer to ', value);
-        if (value !== this.$store.state.isNavigationDrawerOpen) {
-          this.$store.commit('toggleNavigationDrawer', value);
-        }
-      },
     },
   },
 };
