@@ -15,7 +15,7 @@ function subscribeUserToPush() {
     });
 }
 if (workbox) {
-  subscribeUserToPush();
+  //subscribeUserToPush();
   // adjust log level for displaying workbox logs
   //workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
