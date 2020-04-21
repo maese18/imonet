@@ -57,8 +57,9 @@ self.addEventListener('fetch', event => {
         });
       });
     }),
-  ); 
-  /*
+  );
+});
+/*
 self.addEventListener('fetch', event => {
   if (DEBUG) {
     console.log('[service-worker] fetch method=', event.request.method);
