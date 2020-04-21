@@ -47,6 +47,19 @@ self.addEventListener('activate', event => {
   );
 });
 self.addEventListener('fetch', event => {
+  console.log('onFetch');
+  event.respondWith(
+    caches.match(event.request).catch(() => {
+      return fetch(event.request).then(response => {
+        return caches.open('v1').then(cache => {
+          cache.put(event.request, response.clone());
+          return response;
+        });
+      });
+    }),
+  ); 
+  /*
+self.addEventListener('fetch', event => {
   if (DEBUG) {
     console.log('[service-worker] fetch method=', event.request.method);
   }
@@ -73,6 +86,7 @@ self.addEventListener('fetch', event => {
     })(),
   );
 });
+*/
 // Catch skipWaiting action and switch to the new service worker. This is initiated by the user.
 
 self.addEventListener('message', function(event) {
