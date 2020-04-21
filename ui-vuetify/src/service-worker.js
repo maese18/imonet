@@ -3,7 +3,6 @@
 const { registerRoute } = workbox.routing;
 const { CacheFirst } = workbox.strategies;
 const { CacheableResponse } = workbox.cacheableResponse;
-const { RangeRequestsPlugin } = workbox.RangeRequestsPlugin;
 
 function subscribeUserToPush() {
   return navigator.serviceWorker
