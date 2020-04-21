@@ -58,7 +58,7 @@ if (workbox) {
     /.*\.mp4/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mm-cache',
-      plugins: [new workbox.strategies.CacheableResponsePlugin({ statuses: [200] }), new workbox.strategies.RangeRequestsPlugin()],
+      plugins: [new CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
     }),
   );
   /*
