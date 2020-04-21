@@ -1,3 +1,4 @@
+// Custom service worker
 function subscribeUserToPush() {
   return navigator.serviceWorker
     .register('/service-worker.js')
