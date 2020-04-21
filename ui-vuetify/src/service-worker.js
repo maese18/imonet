@@ -181,6 +181,17 @@ self.addEventListener('fetch', event => {
   ); 
 */
 self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.open('dynamiccache').then(function(cache) {
+      return fetch(event.request).then(function(res) {
+        cache.put(event.request, res.clone());
+        return res;
+      });
+    }),
+  );
+});
+/*
+self.addEventListener('fetch', function(event) {
   console.log('onFetch 2');
   event.respondWith(
     caches.open('imonet-dynamic').then(function(cache) {
@@ -198,6 +209,7 @@ self.addEventListener('fetch', function(event) {
     }),
   );
 });
+*/
 /* e.respondWith(
     fetch(request)
       .then(function(res) {
