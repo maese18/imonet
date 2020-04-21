@@ -3,7 +3,6 @@
 const { registerRoute } = workbox.routing;
 const { CacheFirst } = workbox.strategies;
 const { CacheableResponse } = workbox.cacheableResponse;
-const { CacheableResponsePlugin } = workbox.CacheableResponsePlugin;
 const { RangeRequestsPlugin } = workbox.RangeRequestsPlugin;
 
 function subscribeUserToPush() {
@@ -67,7 +66,7 @@ if (workbox) {
     /.*\.mp4/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mm-cache',
-      plugins: [new CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
+      plugins: [new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
     }),
   );
   /*
