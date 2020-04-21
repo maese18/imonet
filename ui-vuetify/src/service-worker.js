@@ -61,13 +61,13 @@ if (workbox) {
   // This route will go against the network if there isn't a cache match,
   // but it won't populate the cache at runtime.
   // If there is a cache match, then it will properly serve partial responses.
-  workbox.routing.registerRoute(
+  /* workbox.routing.registerRoute(
     /.*\.mp4/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mm-cache',
       plugins: [new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
     }),
-  );
+  );*/
   /*
   // In your service worker:
   // It's up to you to either precache or explicitly call cache.add('movie.mp4')
