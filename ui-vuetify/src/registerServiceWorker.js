@@ -4,7 +4,7 @@ if (process.env.NODE_ENV === 'production') {
   let newWorker;
   if ('serviceWorker' in navigator) {
     // It makes a global variable, called 'serviceWorkerOption', which contains all the file names for caching
-    const registration = runtime.register();
+    runtime.register();
     navigator.serviceWorker
       .register(`${process.env.BASE_URL}service-worker.js`)
       .then(serviceWorker => {
