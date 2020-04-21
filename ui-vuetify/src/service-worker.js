@@ -14,6 +14,7 @@ function subscribeUserToPush() {
       return pushSubscription;
     });
 }
+
 if (workbox) {
   console.log('configure workbox routes');
   //subscribeUserToPush();
