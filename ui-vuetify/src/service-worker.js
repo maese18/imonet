@@ -54,7 +54,7 @@ if (workbox) {
   // This route will go against the network if there isn't a cache match,
   // but it won't populate the cache at runtime.
   // If there is a cache match, then it will properly serve partial responses.
-  registerRoute(
+  workbox.routing.registerRoute(
     /.*\.mp4/,
     new CacheFirst({
       cacheName: 'your-cache-name-here',
@@ -183,6 +183,7 @@ self.addEventListener('fetch', function(event) {
           fetch(event.request).then(function(response) {
             console.log('cache request ', event.request);
             cache.put(event.request, response.clone());
+
             return response;
           })
         );
