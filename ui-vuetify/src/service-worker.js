@@ -15,6 +15,7 @@ function subscribeUserToPush() {
     });
 }
 if (workbox) {
+  console.log('configure workbox routes');
   //subscribeUserToPush();
   // adjust log level for displaying workbox logs
   //workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
@@ -31,13 +32,13 @@ if (workbox) {
 
   // The following routes need explicit caching as registerNavigationRoute would avoid loading those resources
   // https://api.adivo.ch
-  workbox.routing.registerRoute(
+  /*workbox.routing.registerRoute(
     /^https:\/\/api\.adivo\.ch/,
     new workbox.strategies.NetworkFirst({
       cacheName: 'api',
     }),
   );
-
+*/
   // https://adivo.ch/img
   workbox.routing.registerRoute(
     new RegExp('/img/'),
@@ -46,6 +47,20 @@ if (workbox) {
     }),
   );
   // media
+  // In your service worker:
+  // It's up to you to either precache or explicitly call cache.add('movie.mp4')
+  // to populate the cache.
+  //
+  // This route will go against the network if there isn't a cache match,
+  // but it won't populate the cache at runtime.
+  // If there is a cache match, then it will properly serve partial responses.
+  registerRoute(
+    /.*\.mp4/,
+    new CacheFirst({
+      cacheName: 'your-cache-name-here',
+      plugins: [new CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
+    }),
+  );
   /*
   // In your service worker:
   // It's up to you to either precache or explicitly call cache.add('movie.mp4')
