@@ -56,9 +56,9 @@ if (workbox) {
   // If there is a cache match, then it will properly serve partial responses.
   workbox.routing.registerRoute(
     /.*\.mp4/,
-    new CacheFirst({
-      cacheName: 'your-cache-name-here',
-      plugins: [new CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
+    new workbox.strategies.CacheFirst({
+      cacheName: 'mm-cache',
+      plugins: [new workbox.strategies.CacheableResponsePlugin({ statuses: [200] }), new workbox.strategies.RangeRequestsPlugin()],
     }),
   );
   /*
