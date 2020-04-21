@@ -1,4 +1,11 @@
 // Custom service worker
+// https://developers.google.com/web/tools/workbox/modules/workbox-sw#avoid_async_imports
+const { registerRoute } = workbox.routing;
+const { CacheFirst } = workbox.strategies;
+const { CacheableResponse } = workbox.cacheableResponse;
+const { CacheableResponsePlugin } = workbox.CacheableResponsePlugin;
+const { RangeRequestsPlugin } = workbox.RangeRequestsPlugin;
+
 function subscribeUserToPush() {
   return navigator.serviceWorker
     .register('/service-worker.js')
@@ -42,7 +49,7 @@ if (workbox) {
   );
 */
   // https://adivo.ch/img
-  workbox.routing.registerRoute(
+  registerRoute(
     new RegExp('/img/'),
     new workbox.strategies.CacheFirst({
       cacheName: 'images',
@@ -60,7 +67,7 @@ if (workbox) {
     /.*\.mp4/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mm-cache',
-      plugins: [new workbox.cacheableResponse.CacheableResponsePlugin({ statuses: [200] }), new workbox.rangeRequests.RangeRequestsPlugin()],
+      plugins: [new CacheableResponsePlugin({ statuses: [200] }), new RangeRequestsPlugin()],
     }),
   );
   /*
