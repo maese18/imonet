@@ -144,6 +144,7 @@ self.addEventListener('install', event => {
 });
 
 // Fetch interceptor to make sure dynamic content is cached
+/*
 self.addEventListener('fetch', event => {
   console.log('onFetch');
   event.respondWith(
@@ -155,7 +156,21 @@ self.addEventListener('fetch', event => {
         });
       });
     }),
-  );
+  ); 
+*/
+  self.addEventListener('fetch', function(event) {
+    console.log('onFetch 2');
+    event.respondWith(
+      caches.open('imonet-dynamic').then(function(cache) {
+        return cache.match(event.request).then(function (response) {
+          return response || fetch(event.request).then(function(response) {
+            cache.put(event.request, response.clone());
+            return response;
+          });
+        });
+      })
+    );
+  });
   /* e.respondWith(
     fetch(request)
       .then(function(res) {
