@@ -20,6 +20,22 @@ self.addEventListener('install', event => {
           console.log('Cached assets: main', assetsToCache);
         }
       })
+      .then(() => {
+        console.log('fetch event added');
+        self.addEventListener('fetch', event => {
+          console.log('onFetch');
+          event.respondWith(
+            caches.match(event.request).catch(() => {
+              return fetch(event.request).then(response => {
+                return caches.open('v1').then(cache => {
+                  cache.put(event.request, response.clone());
+                  return response;
+                });
+              });
+            }),
+          );
+        });
+      })
       .catch(error => {
         console.error(error);
         throw error;
@@ -46,19 +62,7 @@ self.addEventListener('activate', event => {
     }),
   );
 });
-self.addEventListener('fetch', event => {
-  console.log('onFetch');
-  event.respondWith(
-    caches.match(event.request).catch(() => {
-      return fetch(event.request).then(response => {
-        return caches.open('v1').then(cache => {
-          cache.put(event.request, response.clone());
-          return response;
-        });
-      });
-    }),
-  );
-});
+
 /*
 self.addEventListener('fetch', event => {
   if (DEBUG) {
