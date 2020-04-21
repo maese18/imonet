@@ -10,9 +10,11 @@ if (process.env.NODE_ENV === 'production') {
       .then(serviceWorker => {
         serviceWorker.addEventListener('updatefound', () => {
           newWorker = serviceWorker.installing;
+
           newWorker.addEventListener('statechange', () => {
             switch (newWorker.state) {
               case 'installed':
+                console.log('registerServiceWorker: installed. Display notification');
                 if (navigator.serviceWorker.controller) {
                   // This is the point where we create a small alert, with simple plain javascript.
                   var elem = document.createElement('div');
@@ -47,6 +49,7 @@ if (process.env.NODE_ENV === 'production') {
   // Section which allows if
   let refreshing;
   navigator.serviceWorker.addEventListener('controllerchange', function() {
+    console.log('registerServiceWorker: controllerchange, refreshing=', refreshing);
     if (refreshing) return;
     window.location.reload();
     refreshing = true;
