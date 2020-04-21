@@ -158,20 +158,24 @@ self.addEventListener('fetch', event => {
     }),
   ); 
 */
-  self.addEventListener('fetch', function(event) {
-    console.log('onFetch 2');
-    event.respondWith(
-      caches.open('imonet-dynamic').then(function(cache) {
-        return cache.match(event.request).then(function (response) {
-          return response || fetch(event.request).then(function(response) {
+self.addEventListener('fetch', function(event) {
+  console.log('onFetch 2');
+  event.respondWith(
+    caches.open('imonet-dynamic').then(function(cache) {
+      return cache.match(event.request).then(function(response) {
+        return (
+          response ||
+          fetch(event.request).then(function(response) {
+            console.log('cache request ', event.request);
             cache.put(event.request, response.clone());
             return response;
-          });
-        });
-      })
-    );
-  });
-  /* e.respondWith(
+          })
+        );
+      });
+    }),
+  );
+});
+/* e.respondWith(
     fetch(request)
       .then(function(res) {
         const cacheName = cacheNames.runtime;
@@ -185,11 +189,11 @@ self.addEventListener('fetch', event => {
         console.log('Failed to fetch from network, Fallback to cache');
         return caches.match(request);
       }), */
-  /* caches.match(event.request).then(response => {
+/* caches.match(event.request).then(response => {
       return response || fetch(event.request);
     }),
   );*/
-});
+//});
 
 // This code listens for the user's confirmation to update the app.
 self.addEventListener('message', e => {
