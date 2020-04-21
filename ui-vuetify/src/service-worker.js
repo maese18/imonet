@@ -1,73 +1,129 @@
-// ---------------------------------------------------------------
-// ---------------------------------------------------------------
-// Lifecycle
-
-/*
-It's actually easy. You can add an event listeners inside your service worker that listens for the install event.
-Whenever it fires, send a message via postmessage to your main thread and show a update info to your users.
-When users presses ok send another message to the service worker back that triggers a "self.skipWaiting()" and afterwards a location.reload()
-*/
-self.addEventListener('install', event => {
-  console.log('service-worker installed', event);
+const DEBUG = false;
+// Using the generated serviceWorkerOption variable
+const { assets } = global.serviceWorkerOption;
+const CACHE_NAME = new Date().toISOString();
+let assetsToCache = [...assets, './'];
+assetsToCache = assetsToCache.map(path => {
+  return new URL(path, global.location).toString();
 });
 
-self.addEventListener('fetch', event => {
-  // Let the browser do its default thing
-  // for non-GET requests.
-  if (event.request.method != 'GET') return;
-
-  // Prevent the default, and handle the request ourselves.
-  event.respondWith(
-    (async function() {
-      // Try to get the response from a cache.
-      const cache = await caches.open('dynamic-v1');
-      const cachedResponse = await cache.match(event.request);
-
-      if (cachedResponse) {
-        // If we found a match in the cache, return it, but also
-        // update the entry in the cache in the background.
-        event.waitUntil(cache.add(event.request));
-        return cachedResponse;
-      }
-
-      // If we didn't find a match in the cache, use the network.
-      return fetch(event.request);
-    })(),
+self.addEventListener('install', event => {
+  event.waitUntil(
+    global.caches
+      .open(CACHE_NAME)
+      .then(cache => {
+        return cache.addAll(assetsToCache);
+      })
+      .then(() => {
+        if (DEBUG) {
+          console.log('Cached assets: main', assetsToCache);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+        throw error;
+      }),
   );
 });
 
-// This code listens for the user's confirmation to update the app.
-self.addEventListener('message', e => {
-  console.log('service-worker received message');
-  if (!e.data) {
-    return;
+self.addEventListener('activate', event => {
+  if (DEBUG) {
+    console.log('Service Worker activating.');
   }
+  event.waitUntil(
+    global.caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          // Delete the caches that are not the current one.
+          if (cacheName.indexOf(CACHE_NAME) === 0) {
+            return null;
+          }
 
-  switch (e.data) {
-    case 'skipWaiting':
-      console.log('message was "skipWaiting"');
-      self.skipWaiting();
-      break;
-    default:
-      // NOOP
-      break;
+          return global.caches.delete(cacheName);
+        }),
+      );
+    }),
+  );
+});
+
+// Catch skipWaiting action and switch to the new service worker. This is initiated by the user.
+
+self.addEventListener('message', function(event) {
+  if (event.data.action === 'skipWaiting') {
+    self.skipWaiting();
   }
 });
 
-// Listen to Push
-self.addEventListener('push', e => {
-  let data;
-  if (e.data) {
-    data = e.data.json();
+// Basic strategy to check if anything changed on the server-side and if yes, fetch it.
+self.addEventListener('fetch', event => {
+  const request = event.request;
+
+  // Ignore not GET request.
+  if (request.method !== 'GET') {
+    if (DEBUG) {
+      console.log(`[SW] Ignore non GET request ${request.method}`);
+    }
+    return;
   }
 
-  const options = {
-    body: data.body,
-    icon: '/img/icons/android-chrome-192x192.png',
-    image: '/img/autumn-forest.png',
-    vibrate: [300, 200, 300],
-    badge: '/img/icons/plint-badge-96x96.png',
-  };
+  const requestUrl = new URL(request.url);
 
-  e.waitUntil(self.registration.showNotification(data.title, options));
+  // Ignore difference origin.
+  if (requestUrl.origin !== location.origin) {
+    if (DEBUG) {
+      console.log(`[SW] Ignore difference origin ${requestUrl.origin}`);
+    }
+    return;
+  }
+
+  const resource = global.caches.match(request).then(response => {
+    if (response) {
+      if (DEBUG) {
+        console.log(`[SW] fetch URL ${requestUrl.href} from cache`);
+      }
+
+      return response;
+    }
+
+    // Load and cache known assets.
+    return fetch(request)
+      .then(responseNetwork => {
+        if (!responseNetwork || !responseNetwork.ok) {
+          if (DEBUG) {
+            console.log(`[SW] URL [${requestUrl.toString()}] wrong responseNetwork: ${responseNetwork.status} ${responseNetwork.type}`);
+          }
+
+          return responseNetwork;
+        }
+
+        if (DEBUG) {
+          console.log(`[SW] URL ${requestUrl.href} fetched`);
+        }
+
+        const responseCache = responseNetwork.clone();
+
+        global.caches
+          .open(CACHE_NAME)
+          .then(cache => {
+            return cache.put(request, responseCache);
+          })
+          .then(() => {
+            if (DEBUG) {
+              console.log(`[SW] Cache asset: ${requestUrl.href}`);
+            }
+          });
+
+        return responseNetwork;
+      })
+      .catch(() => {
+        // User is landing on our page.
+        if (event.request.mode === 'navigate') {
+          return global.caches.match('./');
+        }
+
+        return null;
+      });
+  });
+
+  event.respondWith(resource);
 });

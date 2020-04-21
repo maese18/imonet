@@ -1,44 +1,54 @@
-/* eslint-disable no-console */
-
-import { register } from 'register-service-worker';
+import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 if (process.env.NODE_ENV === 'production') {
-  register(`${process.env.BASE_URL}service-worker.js`, {
-    ready() {
-      console.log('App is being served from cache by a service worker.\n' + 'For more details, visit https://goo.gl/AFskqB');
-    },
-    registered(registration) {
-      console.log('Service worker has been registered.');
-      console.log('Request push permission');
-      Notification.requestPermission(status => {
-        console.log('Notification permission status:', status);
-      });
-      // Check every minute for app updates
-      setInterval(() => {
-        console.log('Check for app updates', Date.now());
-        registration.update();
-      }, 1000 * 20); // e.g. check every  20 seconds
-    },
-    cached() {
-      console.log('Content has been cached for offline use.');
-    },
-    updatefound() {
-      console.log('New content is downloading.');
-    },
-    updated(registration) {
-      console.log("New content is available! We'll show a refresh button for the user to click on and refresh", Date.now());
+  let newWorker;
+  if ('serviceWorker' in navigator) {
+    // It makes a global variable, called 'serviceWorkerOption', which contains all the file names for caching
+    const registration = runtime.register();
+    navigator.serviceWorker
+      .register(`${process.env.BASE_URL}service-worker.js`)
+      .then(serviceWorker => {
+        serviceWorker.addEventListener('updatefound', () => {
+          newWorker = serviceWorker.installing;
+          newWorker.addEventListener('statechange', () => {
+            switch (newWorker.state) {
+              case 'installed':
+                if (navigator.serviceWorker.controller) {
+                  // This is the point where we create a small alert, with simple plain javascript.
+                  var elem = document.createElement('div');
+                  var text = document.createElement('div');
+                  var button = document.createElement('div');
 
-      // The service worker has been updated.
-      // Dispatch a custom event 'swUpdated' which is caught in app.js. The app displays an update banner
-      // to request the users okay for updating.
-      //
-      document.dispatchEvent(new CustomEvent('swUpdated', { detail: registration }));
-    },
-    offline() {
-      console.log('No internet connection found. App is running in offline mode.');
-    },
-    error(error) {
-      console.error('Error during service worker registration:', error);
-    },
+                  elem.style.cssText = 'position:fixed;bottom:0;right:0;background-color:rgba(36, 38, 41, 0.9);margin:10px;border-radius:.5rem;font-weight:700;box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);min-width:320px;font-family:monospace;color:white;cursor:pointer;z-index:99999;text-align:center';
+
+                  text.innerHTML = 'A new version is available!';
+                  text.style.cssText = 'padding-top:10px;font-size:12px';
+
+                  button.innerHTML = 'Click to refresh!';
+                  button.style.cssText = 'padding:10px;background-color:transparent;border:0;color:white;font-size:10px';
+
+                  document.body.appendChild(elem);
+                  elem.appendChild(text);
+                  elem.appendChild(button);
+                  // Sends a message to the new service worker to skip waiting for the user to reload - see the next code snippet
+                  elem.addEventListener('click', function() {
+                    newWorker.postMessage({ action: 'skipWaiting' });
+                  });
+                }
+                break;
+            }
+          });
+        });
+      })
+      .catch(error => {
+        console.log('Error registering the Service Worker: ' + error);
+      });
+  }
+  // Section which allows if
+  let refreshing;
+  navigator.serviceWorker.addEventListener('controllerchange', function() {
+    if (refreshing) return;
+    window.location.reload();
+    refreshing = true;
   });
 }
