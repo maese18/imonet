@@ -1,3 +1,8 @@
+import { registerRoute } from 'workbox-routing';
+import { CacheFirst } from 'workbox-strategies';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+import { RangeRequestsPlugin } from 'workbox-range-requests';
+
 function subscribeUserToPush() {
   return navigator.serviceWorker
     .register('/service-worker.js')
@@ -54,7 +59,7 @@ if (workbox) {
   // This route will go against the network if there isn't a cache match,
   // but it won't populate the cache at runtime.
   // If there is a cache match, then it will properly serve partial responses.
-  workbox.routing.registerRoute(
+  registerRoute(
     /.*\.mp4/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mm-cache',
