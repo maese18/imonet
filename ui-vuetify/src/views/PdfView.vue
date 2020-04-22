@@ -60,18 +60,27 @@ export default {
   mounted: function() {
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
     console.log('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
+    console.log('PdfView mounted');
     // primitive cache mechanism
     this.files.forEach(file => axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${file}`));
 
     //http://localhost:4060/api/mediaFiles?tenantId=1&prettyFormat
     this.listMediaFiles().then(() => {
       //cache all files
-      let promises = [];
-      this.mediaFiles.forEach(mediaFile => {
+      //let promises = [];
+      caches.open('imonet-api').then(function(cache) {
+        console.log('Caching all media files');
+        let urls = this.mediaFiles.map(mediaFile => this.createUrl(mediaFile.fileName));
+        cache.addAll(urls);
+      });
+    });
+    /*
+     this.mediaFiles.forEach(mediaFile => {
         promises.push(axios.get(this.createUrl(mediaFile.fileName)));
       });
       Promise.all(promises).then(() => (this.isLoading = false));
-    });
+
+    });*/
     /*  axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles?tenantId=1`).then(mediaFilesResponse => {
       this.$log.info('mediaFiles', mediaFilesResponse);
       this.mediaFiles = mediaFilesResponse.data;

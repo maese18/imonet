@@ -1,0 +1,1 @@
+ ./docker-mapped.sh dev up db

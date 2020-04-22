@@ -1,9 +1,8 @@
 // Custom service worker
 // https://developers.google.com/web/tools/workbox/modules/workbox-sw#avoid_async_imports
 const { registerRoute } = workbox.routing;
-const { CacheFirst } = workbox.strategies;
-const { CacheableResponse } = workbox.cacheableResponse;
 
+/*
 function subscribeUserToPush() {
   return navigator.serviceWorker
     .register('/service-worker.js')
@@ -20,7 +19,7 @@ function subscribeUserToPush() {
       return pushSubscription;
     });
 }
-
+*/
 if (workbox) {
   console.log('configure workbox routes');
   //subscribeUserToPush();
@@ -180,6 +179,26 @@ self.addEventListener('fetch', event => {
     }),
   ); 
 */
+// different approach: cache in app and just intercept requests here
+self.addEventListener('fetch', function(event) {
+  console.log('onFetch');
+  event.respondWith(
+    caches.open('imonet-api').then(function(cache) {
+      console.log('cache imonet-api opened');
+      return cache.match(event.request).then(function(response) {
+        return (
+          response ||
+          fetch(event.request).then(function(response) {
+            console.log('executed network request and cache request');
+            cache.put(event.request, response.clone());
+            return response;
+          })
+        );
+      });
+    }),
+  );
+});
+/*
 self.addEventListener('fetch', event => {
   // Let the browser do its default thing
   // for non-GET requests.
@@ -204,6 +223,7 @@ self.addEventListener('fetch', event => {
     })(),
   );
 });
+*/
 /*
 self.addEventListener('fetch', function(event) {
   event.respondWith(
