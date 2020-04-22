@@ -68,7 +68,7 @@ export default {
     this.listMediaFiles().then(() => {
       //cache all files
       //let promises = [];
-      caches.open('imonet-api').then(function(cache) {
+      caches.open('imonet-api').then(cache => {
         console.log('Caching all media files');
         let urls = this.mediaFiles.map(mediaFile => this.createUrl(mediaFile.fileName));
         cache.addAll(urls);
