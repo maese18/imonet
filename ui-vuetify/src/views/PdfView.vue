@@ -14,6 +14,7 @@
         </v-btn>
       </v-col>
     </v-row>
+    <v-row v-if="isLoading">loading</v-row>
     <v-row>
       <v-col v-if="!isLoading" cols="12">
         <div v-for="(mediaFile, i) in mediaFiles" :key="i" elevation="5" style="background:#202020;border-bottom:1px solid #151515">
@@ -61,6 +62,7 @@ export default {
     this.$log.info('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
     console.log('VUE_APP_API_URL=' + process.env.VUE_APP_API_URL);
     console.log('PdfView mounted');
+    this.isLoading = true;
     // primitive cache mechanism
     this.files.forEach(file => axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${file}`));
 
@@ -71,7 +73,7 @@ export default {
       caches.open('imonet-api').then(cache => {
         console.log('Caching all media files');
         let urls = this.mediaFiles.map(mediaFile => this.createUrl(mediaFile.fileName));
-        cache.addAll(urls);
+        cache.addAll(urls).then(() => (this.isLoading = false));
       });
     });
     /*
