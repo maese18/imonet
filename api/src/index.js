@@ -5,9 +5,11 @@ import app from './app';
 import socket from 'socket.io';
 import migrationController from './database/migrationController';
 import mariaDbAdaptor from './database/mariaDbAdaptor';
-import sequelizeAdapter from './database/sequelizeAdapter';
+import orm from './database/orm';
 const TAG = 'index.js';
 const port = configs.server.port;
+
+orm.init();
 
 const server = app.listen(port, () => {
 	logger.info('index.js', `Node Server started at ${configs.server.protocol}://${configs.server.host}:${configs.server.port}`, {
@@ -41,10 +43,12 @@ io.on('connection', function(socket) {
 		process.exit(0);
 	});
 });
-
-process.on('beforeExit', code => {
+const closeResources = () => {
 	mariaDbAdaptor.getPool().end();
-	sequelizeAdapter.close();
+	orm.close();
+};
+process.on('beforeExit', code => {
+	closeResources();
 	// Can make asynchronous calls
 	setTimeout(() => {
 		console.log(`Process will exit with code: ${code}`);
@@ -53,22 +57,19 @@ process.on('beforeExit', code => {
 });
 
 process.on('exit', code => {
-	mariaDbAdaptor.getPool().end();
-	sequelizeAdapter.close();
+	closeResources();
 	// Only synchronous calls
 	console.log(`Process exited with code: ${code}`);
 });
 
 process.on('SIGTERM', signal => {
-	mariaDbAdaptor.getPool().end();
-	sequelizeAdapter.close();
+	closeResources();
 	console.log(`Process ${process.pid} received a SIGTERM signal`);
 	process.exit(0);
 });
 
 process.on('SIGINT', signal => {
-	mariaDbAdaptor.getPool().end();
-	sequelizeAdapter.close();
+	closeResources();
 	console.log(`Process ${process.pid} has been interrupted`);
 	process.exit(0);
 });

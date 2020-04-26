@@ -35,8 +35,11 @@ export default new Vuetify({
         appBar: colors.deepPurple,
       },
       dark: {
-        background: colors.blueGrey, //'#282828',
-        primary: colors.red,
+        background: '#202020', //'#282828', needs the following sass property to be applied to v-app element
+        // #v-app {
+        //   background-color: var(--v-background-base);
+        // }
+        primary: colors.purple,
 
         /* primary: {
           base: colors.purple.base,

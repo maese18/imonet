@@ -13,7 +13,8 @@
     "lint": "eslint --fix src/**/*.js",
     "prettier": "prettier --write src/**/*.*",
     "test": "NODE_ENV=test jest --watchAll --coverage ",
-    "test-single": "NODE_ENV=test node_modules/.bin/jest src/controllers/**/*.test.js --watch --coverage",
+    "test-single-depr": "NODE_ENV=test node_modules/.bin/jest src/controllers/realEstate/*.test.js --watch --coverage",
+    "test-single": "NODE_ENV=test jest -t 'src/controllers/realEstate/realEstateController.test.js' --watch",
     "test-single:w": "set NODE_ENV=test & node_modules/.bin/jest src/controllers/utils/controllerUtil.test.js --watch --coverage",
     "test-debug-single": "NODE_ENV=test node --inspect-brk node_modules/.bin/jest src/controllers/**/*.test.js",
     "test-debug": "NODE_ENV=test node --inspect-brk node_modules/.bin/jest --watch --coverage"

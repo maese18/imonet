@@ -1,7 +1,8 @@
 {
     "name": "imonet",
-    "theme_color": "#2982c8",
-    "background_color": "#6baadd",
+    "short_name": "inet",
+    "theme_color": "red",
+    "background_color": "blue",
     "start_url": "./index.html",
     "display": "standalone",
     "Scope": "/",

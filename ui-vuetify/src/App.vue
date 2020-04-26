@@ -3,17 +3,9 @@
     <navigation-drawer />
     <app-bar />
     <v-content id="content">
-      <!--  <v-sheet id="scrolling-techniques" class="overflow-y-auto" max-height="600"><router-view /> </v-sheet> -->
-      <!--  <v-container class="fill-height" fluid pa-0>
-        <v-row justify="center" align="center" no-gutters>
-          <v-col cols="12">
-            <router-view />
-          </v-col>
-        </v-row>
-      </v-container> -->
-
-      <v-sheet id="app-bar-scroll-target" class="overflow-y-auto" max-height="600">
-        <v-container style="height: 1000px;">
+      <v-sheet id="app-bar-scroll-target" class="overflow-y-auto" style="position:absolute;top:0px;bottom:0px;left:0;right:0">
+        <!--  <v-container style="height: 1000px;"> -->
+        <v-container fluid>
           <router-view />
         </v-container>
       </v-sheet>
@@ -118,5 +110,21 @@ body,
 /* Provide better right-edge spacing when using an icon button there. */
 .snack >>> .v-snack__content {
   padding-right: 16px;
+}
+
+/* Set autofill input backgrounds to theme background color*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 30px var(--v-background-base) inset !important;
+  -webkit-box-shadow: 0 0 0 30px var(--v-background-base) inset !important;
+}
+/* Attach these classes to text-fields with autofill enabled, but to avoid browser agent formatting*/
+.autofill-dark {
+  -webkit-text-fill-color: white !important;
+}
+.autofill-light {
+  -webkit-text-fill-color: black !important;
 }
 </style>

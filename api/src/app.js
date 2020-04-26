@@ -14,6 +14,7 @@ import configureErrorHandler from './errors/errorHandler';
 import UrlNotDefinedException from './errors/UrlNotDefinedException';
 import domainController from './controllers/domain/domainController';
 import mediaFileController from './controllers/mediaFile/mediaFileController';
+import realEstateController from './controllers/realEstate/realEstateController';
 import webpushSubscriptionHandler from './config/webPushConfig';
 const app = express();
 const TAG = 'app';
@@ -47,6 +48,7 @@ app.post('/api/subscribe', webpushSubscriptionHandler);
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/lifeSign', lifeSign);
 app.use('/api/mediaFiles', mediaFileController.getRouter());
+app.use('/api/realEstates', realEstateController.getRouter());
 app.use('/api', domainController.getRouter());
 
 logger.info(TAG, '/api/lifeSign,/api/:domainPlural, /api/users endpoints registered');

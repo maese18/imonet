@@ -55,7 +55,6 @@ export DB_ADMIN_PORT=`expr $PORT_RANGE_START + 22`
 export DB_PORT_SERVICE=3306
 # UI env variables
 export VUE_APP_API_URL=$API_SERVER_PROTOCOL://localhost:$API_SERVER_PUBLIC_PORT
-
 # ---------------------------------------------------------------------------------------------------
 # up/down for dev environment
 # ---------------------------------------------------------------------------------------------------
@@ -67,8 +66,8 @@ if [ $OPS == 'up' ]; then
     echo webapp: $API_SERVER_PROTOCOL://localhost:$WEBAPP_PORT
     echo api: $API_SERVER_PROTOCOL://localhost:$API_SERVER_PUBLIC_PORT
    fi
-   echo db running at $DB_PORT
-   echo db admin: $API_SERVER_PROTOCOL://localhost:$DB_ADMIN_PORT
+   echo DB exposed at PORT $DB_PORT
+   echo DB admin accessible at: $API_SERVER_PROTOCOL://localhost:$DB_ADMIN_PORT
    echo ------------------------------------------------------------------------------------------
   
    if [ $INTERACTIVE == 'i' ]; then

@@ -53,6 +53,7 @@ export default {
         { title: 'Objekt Verwaltung', icon: 'mdi-image', route: { params: { lang: 'en' }, name: 'ObjectListEditor' } },
         { title: 'About', icon: 'mdi-help-box', route: { params: { lang: 'en' }, name: 'About' } },
         { title: 'Pdf', icon: 'mdi-document', route: { params: { lang: 'en' }, name: 'PdfViewer' } },
+        { title: 'Portfolio', icon: 'mdi-grid', route: { params: { lang: 'en' }, name: 'Portfolio' } },
       ],
       color: 'primary',
       colors: ['primary', 'blue', 'success', 'red', 'teal'],

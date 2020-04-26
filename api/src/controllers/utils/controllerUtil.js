@@ -123,7 +123,7 @@ export function buildResponseObject(req, requestArgs, resultObject) {
 	let response = {};
 	response.query = req.query;
 
-	response.data = data;
+	response.result = data;
 
 	let pagination = {
 		totalItems: totalItemsCount,

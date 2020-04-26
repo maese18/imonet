@@ -1,0 +1,1 @@
+./no-docker.sh dev build web

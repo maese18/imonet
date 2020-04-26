@@ -2,7 +2,7 @@
 
 # Get commandline parameters
 ENV=${1:-dev}             # dev / prod
-OPS=${2:-run}          # run / debug (only api) / test
+OPS=${2:-run}          # run / debug (only api) / test / build
 SERVICE=${3:-api}         # api or web
 
 
@@ -65,7 +65,7 @@ if [ $SERVICE == 'api' ]; then
 
    if [ $OPS == 'test' ]; then
     echo run api tests
-    yarn test  
+    yarn test-single  
    fi
    echo ------------------------------------------------------------------------------------------ 
 

@@ -23,8 +23,6 @@ function subscribeUserToPush() {
 if (workbox) {
   console.log('configure workbox routes');
   //subscribeUserToPush();
-  // adjust log level for displaying workbox logs
-  //workbox.core.setLogLevel(workbox.core.LOG_LEVELS.debug);
 
   // apply precaching. In the built version, the precacheManifest will
   // be imported using importScripts (as is workbox itself) and we can
@@ -37,14 +35,7 @@ if (workbox) {
   workbox.routing.registerNavigationRoute('/index.html');
 
   // The following routes need explicit caching as registerNavigationRoute would avoid loading those resources
-  // https://api.adivo.ch
-  /*workbox.routing.registerRoute(
-    /^https:\/\/api\.adivo\.ch/,
-    new workbox.strategies.NetworkFirst({
-      cacheName: 'api',
-    }),
-  );
-*/
+
   // https://adivo.ch/img
   registerRoute(
     new RegExp('/img/'),
@@ -98,6 +89,12 @@ if (workbox) {
     /^https:\/\/randomuser\.me/,
     new workbox.strategies.CacheFirst({
       cacheName: 'randomuser',
+    }),
+  );
+  workbox.routing.registerRoute(
+    /^https:\/\/randomuser\.me/,
+    new workbox.strategies.cacheFirst({
+      cacheName: 'randomuser_alt',
     }),
   );
 
@@ -198,82 +195,6 @@ self.addEventListener('fetch', function(event) {
     }),
   );
 });
-/*
-self.addEventListener('fetch', event => {
-  // Let the browser do its default thing
-  // for non-GET requests.
-  if (event.request.method != 'GET') return;
-
-  // Prevent the default, and handle the request ourselves.
-  event.respondWith(
-    (async function() {
-      // Try to get the response from a cache.
-      const cache = await caches.open('dynamic-v1');
-      const cachedResponse = await cache.match(event.request);
-
-      if (cachedResponse) {
-        // If we found a match in the cache, return it, but also
-        // update the entry in the cache in the background.
-        event.waitUntil(cache.add(event.request));
-        return cachedResponse;
-      }
-
-      // If we didn't find a match in the cache, use the network.
-      return fetch(event.request);
-    })(),
-  );
-});
-*/
-/*
-self.addEventListener('fetch', function(event) {
-  event.respondWith(
-    caches.open('dynamiccache').then(function(cache) {
-      return fetch(event.request).then(function(res) {
-        cache.put(event.request, res.clone());
-        return res;
-      });
-    }),
-  );
-});*/
-/*
-self.addEventListener('fetch', function(event) {
-  console.log('onFetch 2');
-  event.respondWith(
-    caches.open('imonet-dynamic').then(function(cache) {
-      return cache.match(event.request).then(function(response) {
-        return (
-          response ||
-          fetch(event.request).then(function(response) {
-            console.log('cache request ', event.request);
-            cache.put(event.request, response.clone());
-
-            return response;
-          })
-        );
-      });
-    }),
-  );
-});
-*/
-/* e.respondWith(
-    fetch(request)
-      .then(function(res) {
-        const cacheName = cacheNames.runtime;
-        console.log('Resource loaded from network, store to cache named ' + cacheName);
-        return caches.open(cacheName).then(function(cache) {
-          cache.put(request.url, res.clone());
-          return res;
-        });
-      })
-      .catch(function(err) {
-        console.log('Failed to fetch from network, Fallback to cache');
-        return caches.match(request);
-      }), */
-/* caches.match(event.request).then(response => {
-      return response || fetch(event.request);
-    }),
-  );*/
-//});
 
 // This code listens for the user's confirmation to update the app.
 self.addEventListener('message', e => {

@@ -1,0 +1,123 @@
+<template>
+  <v-container fluid>
+    <v-row>
+      <v-col cols="12" sm="12" md="6" offset-md="3">
+        <v-card dark>
+          <v-card-text style="height: 100px; position: relative">
+            <v-fab-transition>
+              <v-btn v-show="!hidden" color="pink" dark absolute bottom right fab>
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </v-fab-transition>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!--  <v-btn absolute dark fab bottom right color="pink">
+      <v-icon>mdi-plus</v-icon>
+    </v-btn> -->
+    <!-- see for breakpoints: https://vuetifyjs.com/en/customization/breakpoints/-->
+    <v-dialog v-model="isEditFormVisible" :fullscreen="$vuetify.breakpoint.smAndDown" scrollable max-width="800" transition="dialog-bottom-transition" overlay-color="#404040" overlay-opacity="0.95">
+      <template v-slot:activator="{ on }">
+        <v-fab-transition>
+          <v-btn v-on="on" style="z-index:1000" class="mb-5" @click="createNew" fab dark fixed bottom right color="primary">
+            <v-icon dark>mdi-plus</v-icon>
+          </v-btn></v-fab-transition
+        >
+      </template>
+      <real-estate-edit-form :isVisible="isEditFormVisible" :realEstateItem="{}"></real-estate-edit-form>
+    </v-dialog>
+    <v-row no-gutters>
+      <v-col v-for="realEstate in realEstates" :key="realEstate.clientId" cols="12" sm="4">
+        <v-card :loading="isWorking" class="mx-auto my-12" max-width="374">
+          <v-img height="250" src="https://cdn.vuetifyjs.com/images/cards/cooking.png"></v-img>
+
+          <v-card-title>Cafe Badilico</v-card-title>
+
+          <v-card-text>
+            <v-row align="center" class="mx-0">
+              <v-rating :value="4.5" color="amber" dense half-increments readonly size="14"></v-rating>
+
+              <div class="grey--text ml-4">4.5 (413)</div>
+            </v-row>
+
+            <div class="my-4 subtitle-1">
+              $ • Italian, Cafe
+            </div>
+
+            <div>Small plates, salads & sandwiches - an intimate setting with 12 indoor seats plus patio seating.</div>
+          </v-card-text>
+
+          <v-divider class="mx-4"></v-divider>
+
+          <v-card-title>Tonight's availability</v-card-title>
+
+          <v-card-text>
+            <v-chip-group v-model="selection" active-class="deep-purple accent-4 white--text" column>
+              <v-chip>5:30PM</v-chip>
+
+              <v-chip>7:30PM</v-chip>
+
+              <v-chip>8:00PM</v-chip>
+
+              <v-chip>9:00PM</v-chip>
+            </v-chip-group>
+          </v-card-text>
+
+          <v-card-actions>
+            <v-btn color="deep-purple lighten-2" text @click="reserve">
+              Reserve
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-col>
+    </v-row>
+  </v-container>
+</template>
+
+<script>
+console.log(`LOGGER`);
+import shortid from 'shortid';
+import { mapState } from 'vuex';
+import storeTypes from '@/store/storeTypes';
+import RealEstateEditForm from './RealEstateEditForm';
+export default {
+  components: { RealEstateEditForm },
+  created() {
+    console.log('storeTypes', storeTypes);
+    this.$store.dispatch('realEstates/loadAll');
+  },
+  data() {
+    return {
+      selection: null,
+      hidden: true,
+    };
+  },
+  computed: {
+    ...mapState({ realEstates: state => state.realEstates.all, isWorking: state => state.isWorking }),
+    isEditFormVisible: {
+      get() {
+        return this.$store.state.realEstates.isEditFormVisible;
+      },
+      set(value) {
+        this.$log.info('toggle isEditFormVisible ', value);
+        if (value !== this.$store.state.isEditFormVisible) {
+          this.$store.commit('realEstates/setIsEditFormVisible', true);
+        }
+      },
+    },
+  },
+  methods: {
+    reserve() {},
+    createNew() {
+      let realEstate = {
+        clientSideId: shortid.generate(),
+      };
+      this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
+    },
+  },
+};
+</script>
+
+<style></style>
