@@ -24,7 +24,7 @@ class DomainController {
 		schema = configs.db.database;
 		this.crudRepo = domainRepository;
 		this.authenticationService = authenticationService;
-		logger.info(TAG, 'SET domainRepository as crudRepo' + JSON.stringify(domainRepository));
+		//logger.info(TAG, 'SET domainRepository as crudRepo' + JSON.stringify(domainRepository));
 	}
 
 	/* istanbul ignore next */
@@ -54,7 +54,7 @@ class DomainController {
 	 */
 	findAllByQuery = (req, res, next) => {
 		let requestArgs = getAllRequestArguments(req);
-		logger.info(TAG, `args=` + stringify(requestArgs));
+		//logger.info(TAG, `args=` + stringify(requestArgs));
 
 		this.crudRepo
 			.findAllByQuery(requestArgs)
@@ -81,7 +81,7 @@ class DomainController {
 				if (resultObject.length === 0) {
 					res.status(HttpStatusCodes.NotFound).send('Entity not found');
 				} else {
-					let responseBody = { data: resultObject };
+					let responseBody = { item: resultObject };
 					res.status(HttpStatusCodes.Ok)
 						.type('json')
 						.send(formatResponse(req, responseBody));
@@ -97,7 +97,7 @@ class DomainController {
 	createOne = (req, res, next) => {
 		let tenantId = getTenantId(req);
 		let { domain } = getDomain(req);
-		logger.info(TAG, `Post '${domain}' object: ${stringifyNoWrap(req.body)}`);
+		//logger.info(TAG, `Post '${domain}' object: ${stringifyNoWrap(req.body)}`);
 
 		if (domain === configs.domain.userDomain) {
 			logger.info(TAG, 'throw new AuthenticationException');
@@ -181,7 +181,7 @@ class DomainController {
 			.then(result => {
 				res.status(200)
 					.type('json')
-				.send(result);
+					.send(result);
 			})
 			.catch(/* istanbul ignore next */ e => next(e));
 	};

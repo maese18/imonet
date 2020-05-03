@@ -27,10 +27,10 @@ describe('domainController test suite', () => {
 		const res = await request(app).get(
 			`/${configs.api.basePath}/${configs.domain.multiTenantDomains[0]}s?tenantId=2&filters=fileName.eq(z-file),id.lt(100)&pageNum=0&pageSize=20`
 		);
-		//console.log('data', res.body.data);
+		//console.log('data', res.body.items);
 		expect(res.statusCode).toBe(HttpStatusCodes.Ok);
 		expect(res.type).toBe('application/json');
-		expect(res.body.data.length).toBe(0);
+		expect(res.body.items.length).toBe(0);
 		expect(res.body.pagination).toStrictEqual({
 			totalItems: 0,
 			pageNum: 0,
@@ -51,7 +51,7 @@ describe('domainController test suite', () => {
 		const findOne_mock = () => {
 			return new Promise(resolve => {
 				resolve({
-					data: {
+					item: {
 						id: 196,
 						client_id: 1,
 						fileName: 'File client 2-98',
@@ -66,8 +66,8 @@ describe('domainController test suite', () => {
 		const res = await request(app).get(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[0]}s/196?tenantId=2`);
 		expect(res.statusCode).toBe(HttpStatusCodes.Ok);
 		expect(res.type).toBe('application/json');
-		expect(res.body.data).toStrictEqual({
-			data: {
+		expect(res.body.item).toStrictEqual({
+			item: {
 				id: 196,
 				client_id: 1,
 				fileName: 'File client 2-98',
@@ -85,9 +85,8 @@ describe('domainController test suite', () => {
 		const res = await request(app)
 			.post(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[1]}s`)
 			.set('Accept', 'application/json')
-			.set('tenant-id', 2)
+			.set('tenantId', 2)
 			.send({ fileName: 'FileToBeDelete', type: 'doc' });
-		console.log('CREATED ', res.body);
 
 		expect(res.statusCode).toBe(HttpStatusCodes.Created);
 		expect(res.type).toBe('application/json');
@@ -106,13 +105,13 @@ describe('domainController test suite', () => {
 		const createRes = await request(app)
 			.post(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[1]}s`)
 			.set('Accept', 'application/json')
-			.set('tenant-id', 2)
+			.set('tenantId', 2)
 			.send({ fileName: 'FileToBeDelete', type: 'doc' });
 
 		// Test functionality
 		const res = await request(app)
 			.delete(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[1]}s/215`)
-			.set('tenant-id', 2)
+			.set('tenantId', 2)
 			.send();
 		expect(res.text).toBe(`{"message":"Deleted entity 'mediaFile' with id='215'"}`);
 		expect(res.statusCode).toBe(HttpStatusCodes.Ok);
@@ -131,17 +130,14 @@ describe('domainController test suite', () => {
 		const createRes = await request(app)
 			.post(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[1]}s`)
 			.set('Accept', 'application/json')
-			.set('tenant-id', 2)
+			.set('tenantId', 2)
 			.send({ fileName: 'FileToBeDelete', type: 'doc' });
-		console.log('CREATED ', createRes.body);
 
 		// Test functionality
 		const res = await request(app)
 			.put(`/${configs.api.basePath}/${configs.domain.multiTenantDomains[1]}s/215`)
-			.set('tenant-id', 2)
+			.set('tenantId', 2)
 			.send();
-		console.log('statusCode=', res.statusCode);
-		console.log('Updated=', res.body);
 		expect(res.body).toEqual({ created: { fileName: 'new file', type: 'doc', id: '6' } });
 		expect(res.statusCode).toBe(HttpStatusCodes.Created);
 	});

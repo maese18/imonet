@@ -6,8 +6,11 @@ import router from './router';
 import vuetify from './plugins/vuetify';
 import './plugins/logger';
 import store from './store';
+import axios from 'axios';
 Vue.config.productionTip = false;
-
+axios.get('http://localhost:4060/api/realEstates').then(response => {
+  console.log('-------------', response);
+});
 new Vue({
   router,
   store,

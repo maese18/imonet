@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import configDefaults from './configsDefaults.json';
 import _ from 'lodash';
 
@@ -41,5 +42,4 @@ export const configure = processEnv => {
 };
 
 let configs = configure();
-console.log(configs);
 export default configs;

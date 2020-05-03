@@ -1,8 +1,8 @@
 import Sequelize from 'sequelize';
 import bcrypt from 'bcryptjs';
 export default function userModel(sequelizeAdapter) {
-	const User = sequelizeAdapter.define(
-		'user',
+	const Individual = sequelizeAdapter.define(
+		'individual',
 		{
 			email: {
 				type: Sequelize.STRING,
@@ -29,10 +29,6 @@ export default function userModel(sequelizeAdapter) {
 				type: Sequelize.STRING,
 				// allowNull defaults to true
 			},
-			groupMember: {
-				type: Sequelize.ENUM('tenantUser', 'tenantSuperUser'),
-				defaultValue: 'tenantUser',
-			},
 		},
 		{
 			// options
@@ -46,8 +42,6 @@ export default function userModel(sequelizeAdapter) {
 			},
 		}
 	);
-	User.associate = function(models) {
-		models.Tenant.hasMany(models.User, { foreignKey: 'fk_tenant_id' });
-	};
-	return User;
+	Individual.associate = function(models) {};
+	return Individual;
 }

@@ -31,9 +31,10 @@ const mutations = {
     console.log('Saved real estates to store', state.all, state.byClientSideId);
   },
 
-  setIsEditFormVisible(state, isEditFormVisible) {
+  setIsEditFormVisible(state, { isEditFormVisible, realEstate }) {
     console.log('setIsEditFormVisible', isEditFormVisible);
     state.isEditFormVisible = isEditFormVisible;
+    state.editedRealEstate = realEstate;
   },
 };
 
@@ -54,7 +55,7 @@ const actions = {
         console.log(`created realEstate ${JSON.stringify(createdRealEstate.data)}`);
         commit('saveNewToStore', createdRealEstate.data);
         if (showFormOnCreated) {
-          commit('setIsEditFormVisible', showFormOnCreated);
+          commit('setIsEditFormVisible', { isEditFormVisible: showFormOnCreated, realEstate: createdRealEstate.data });
         }
       })
       .catch(e => {

@@ -24,9 +24,10 @@ export default class ApplicationException extends Error {
 		exceptionCount = 0;
 	}
 
-	constructor(location, message, httpMessage, error, logType = LOG_TYPES.STACK_TRACE, countException = true) {
+	constructor({ location, message, exception, httpMessage, error, logType = LOG_TYPES.STACK_TRACE, countException = true }) {
 		super(message);
 		this.httpMessage = httpMessage ? httpMessage : message;
+		this.originalException = exception;
 		this.logType = logType;
 		this.location = location;
 		this.error = error;
@@ -57,9 +58,9 @@ export default class ApplicationException extends Error {
 	// Defines how the exception is logged.
 	log(logger) {
 		if (this.logType === LOG_TYPES.STACK_TRACE) {
-			logger.printStackTrace(this.location, this.message, this);
+			logger.printStackTrace(this.location, this.message, this.originalException ? this.originalException : '');
 		} else {
-			logger.printErrorMessage(this.location, this.message, this);
+			logger.printErrorMessage(this.location, this.message, this.originalException ? this.originalException : '');
 		}
 	}
 

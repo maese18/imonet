@@ -1,7 +1,8 @@
-import { orDefaultNumber } from '../../utils/utils';
 import configs from '../../config/configs';
 import IllegalArgumentException from '../../errors/IllegalArgumentException';
 import domainTypeService from '../../services/domainTypeService';
+import { orDefaultNumber } from '../../utils/utils';
+import HttpStatusCodes from '../../utils/HttpStatusCodes';
 
 const TAG = 'controllerUtil';
 
@@ -79,6 +80,9 @@ export function getFilterArguments(query = {}) {
  * @param {*} req
  */
 export function getTenantId(req) {
+	if (req.headers && req.headers.tenantId) {
+		return req.headers.tenantId;
+	}
 	let tenantId = req.decodedToken ? req.decodedToken.client_id : req.headers['tenant-id'] ? req.headers['tenant-id'] : req.query.tenantId;
 	return tenantId;
 }
@@ -123,7 +127,7 @@ export function buildResponseObject(req, requestArgs, resultObject) {
 	let response = {};
 	response.query = req.query;
 
-	response.result = data;
+	response.items = data;
 
 	let pagination = {
 		totalItems: totalItemsCount,
@@ -178,6 +182,41 @@ export function buildResponseObject(req, requestArgs, resultObject) {
  * @param {*} responseObject
  */
 export const formatResponse = (req, responseObject) => {
-	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true');
+	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
 	return prettyFormat ? JSON.stringify(responseObject, null, 2) : responseObject;
 };
+
+export const formatResponseItem = (req, item, meta = {}) => {
+	if (process.env.NODE_ENV !== 'production') {
+		meta.requestHeaders = req.headers;
+	}
+	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
+	return prettyFormat ? JSON.stringify({ item, meta }, null, 2) : { item, meta };
+};
+export const formatResponseItems = (req, items, meta = {}) => {
+	if (process.env.NODE_ENV !== 'production') {
+		meta.requestHeaders = req.headers;
+	}
+	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
+	return prettyFormat ? JSON.stringify({ items, meta }, null, 2) : { items, meta };
+};
+export function itemHandler(req, res, items) {
+	/* istanbul ignore next */
+	res.status(HttpStatusCodes.Ok)
+		.type('json')
+		.send(formatResponseItem(req, item));
+}
+export function itemsHandler(req, res, items) {
+	/* istanbul ignore next */
+	res.status(HttpStatusCodes.Ok)
+		.type('json')
+		.send(formatResponseItems(req, items));
+}
+export function illegalArgumentHandler(TAG, next, e) {
+	/* istanbul ignore next */
+	next(new IllegalArgumentException(TAG, e.message));
+}
+
+export function right(str, length) {
+	return str.substr(str.length - length);
+}

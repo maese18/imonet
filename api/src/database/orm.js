@@ -1,9 +1,11 @@
 import configs from '../config/configs';
 import Sequelize from 'sequelize';
 import user from '../models/user';
+import individual from '../models/individual';
 import tenant from '../models/tenant';
 import mediaFile from '../models/mediaFile';
 import realEstate from '../models/realEstate';
+import individualMediaFilePermission from '../models/individualMediaFilePermission';
 class Orm {
 	constructor() {
 		this.sequelizeAdapter = null;
@@ -29,8 +31,10 @@ class Orm {
 				const Tenant = tenant(sequelizeAdapter);
 				const MediaFile = mediaFile(sequelizeAdapter);
 				const RealEstate = realEstate(sequelizeAdapter);
+				const Individual = individual(sequelizeAdapter);
+				const IndividualMediaFilePermission = individualMediaFilePermission(sequelizeAdapter);
 
-				let models = { User, Tenant, MediaFile, RealEstate };
+				let models = { User, Individual, Tenant, MediaFile, RealEstate, IndividualMediaFilePermission };
 
 				for (let key in models) {
 					models[key].associate(models);
@@ -44,7 +48,7 @@ class Orm {
 								Tenant.create({ tenantName: 'Sample Tenant' }).then(createdTenant => {
 									User.create({
 										email: 'info@adivo.ch',
-										passwordHash: 'pwHash',
+										password: 'pwHash',
 										firstName: 'Vorname',
 										lastName: 'Nachname',
 										fk_tenant_id: createdTenant.id,
@@ -73,13 +77,14 @@ class Orm {
 			this.sequelizeAdapter.close();
 		}
 	}
-	User = () => {
-		this.sequelizeAdapter.models.user;
-	};
+	User = () => this.sequelizeAdapter.models.user;
+	Individual = () => this.sequelizeAdapter.models.individual;
+	IndividualMediaFilePermission = () => this.sequelizeAdapter.models.individualMediaFilePermission;
 	/** Returns the RealEstate Model */
 	RealEstate = () => this.sequelizeAdapter.models.realEstate;
 	/** Returns the MediaFile Model */
 	MediaFile = () => this.sequelizeAdapter.models.mediaFile;
+	Tenant = () => this.sequelizeAdapter.models.tenant;
 }
 const orm = new Orm();
 export default orm;

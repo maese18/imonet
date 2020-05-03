@@ -2,7 +2,7 @@
 import ApplicationException, { ERROR, LOG_TYPES } from './ApplicationException';
 
 export default class AuthorizationException extends ApplicationException {
-	constructor(location, message) {
-		super(location, message, '', ERROR.Unauthorized, LOG_TYPES.STACK_TRACE);
+	constructor(location, message, exception) {
+		super({ location, message, httpMessage: '', error: ERROR.Unauthorized, logType: LOG_TYPES.STACK_TRACE, exception });
 	}
 }

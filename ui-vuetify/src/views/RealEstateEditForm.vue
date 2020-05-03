@@ -13,7 +13,7 @@
     </v-toolbar>
     <v-tabs show-arrows next-icon="mdi-arrow-right" prev-icon="mdi-arrow-left" v-model="tab" class="elevation-2" dark>
       <v-tab>Übersicht</v-tab>
-      <v-tab>Adresse</v-tab>
+      <v-tab><span>Adresse </span> </v-tab>
       <v-tab>Details</v-tab>
       <v-tab>Fotos</v-tab>
       <v-tab>Verkäufer</v-tab>
@@ -39,6 +39,10 @@
               </v-col>
               <v-col cols="12">
                 <v-btn color="primary" @click="onUpload">Upload</v-btn>
+              </v-col>
+              <v-col v-for="(mediaFile, index) in mediaFiles" :key="index">
+                {{ mediaFile.fileName }}
+                <v-img :src="getImageUrl(mediaFile)"></v-img>
               </v-col>
             </v-row>
           </v-tab-item>
@@ -157,6 +161,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapState } from 'vuex';
 export default {
   /*
   title: { type: Sequelize.STRING, allowNull: false },
@@ -173,6 +178,7 @@ export default {
 	
   */
   props: ['isVisible', 'realEstateItem'],
+
   data() {
     return {
       tab: null,
@@ -202,6 +208,7 @@ export default {
       lazy: false,
 
       uploadFiles: [],
+      mediaFiles: [],
     };
   },
   methods: {
@@ -217,6 +224,10 @@ export default {
     resetValidation() {
       this.$refs.form.resetValidation();
     },
+    getImageUrl(mediaFile) {
+      let realEstateId = this.editedRealEstate.id;
+      return `${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}/${mediaFile.fileName}?tenantId=1`;
+    },
     onUpload() {
       console.log('onUpload', this.uploadFiles);
       let formData = new FormData();
@@ -227,17 +238,26 @@ export default {
       }
       formData.append('mediaFile', this.uploadFiles[0]);
       let tenantId = 1;
+      let realEstateId = this.editedRealEstate.id;
+      let purpose = 'title';
       axios
-        .post(`${process.env.VUE_APP_API_URL}/mediaFiles/${tenantId}/files`, formData, {
+        .post(`${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}/files`, formData, {
           headers: {
             // Manually setting the content type leads to an exception when used with service-worker
             // See https://github.com/github/fetch/issues/505
             // 'Content-Type': 'multipart/form-data',
-            tenantId: '1',
+            purpose,
+            tenantId: tenantId,
           },
         })
-        .then(() => {
-          this.$log.info('SUCCESS!!');
+        .then(result => {
+          console.log('SUCCESS!!', result);
+          let realEstateId = this.editedRealEstate.id;
+          axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}`).then(response => {
+            this.mediaFiles = response.data.items;
+
+            console.log('mediaFiles', response);
+          });
         })
         .catch(err => {
           this.$log.info('FAILURE!!', err);
@@ -245,6 +265,8 @@ export default {
     },
   },
   computed: {
+    ...mapState({ editedRealEstate: state => state.realEstates.editedRealEstate }),
+
     isAddressDefined() {
       return this.street && (this.city || this.zipCode);
     },

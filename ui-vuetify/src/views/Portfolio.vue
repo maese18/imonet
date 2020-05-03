@@ -21,7 +21,7 @@
     <v-dialog v-model="isEditFormVisible" :fullscreen="$vuetify.breakpoint.smAndDown" scrollable max-width="800" transition="dialog-bottom-transition" overlay-color="#404040" overlay-opacity="0.95">
       <template v-slot:activator="{ on }">
         <v-fab-transition>
-          <v-btn v-on="on" style="z-index:1000" class="mb-5" @click="createNew" fab dark fixed bottom right color="primary">
+          <v-btn v-on="on" style="z-index:10" class="mb-5" @click="createNew" fab dark fixed bottom right color="primary">
             <v-icon dark>mdi-plus</v-icon>
           </v-btn></v-fab-transition
         >

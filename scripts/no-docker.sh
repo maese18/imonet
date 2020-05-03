@@ -65,7 +65,7 @@ if [ $SERVICE == 'api' ]; then
 
    if [ $OPS == 'test' ]; then
     echo run api tests
-    yarn test-single  
+    yarn test  
    fi
    echo ------------------------------------------------------------------------------------------ 
 
