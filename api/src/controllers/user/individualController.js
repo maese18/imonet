@@ -28,6 +28,7 @@ class IndividualController {
 							let token = jwtProvider.signJwt({
 								groupMember: GROUPS.individual.name,
 								groupMemberId: GROUPS.individual.id,
+								userOrIndividualId: individual.id,
 							});
 
 							res.status(HttpStatusCodes.Ok)

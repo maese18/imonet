@@ -1,4 +1,4 @@
-import { formatResponseItem, formatResponseItems } from '../utils/controllerUtil';
+import { formatResponseItem, formatResponseItems, sendResponse } from '../utils/controllerUtil';
 import orm from '../../database/orm';
 import logger from '../../utils/logger/logger';
 import HttpStatusCodes from '../../controllers/utils/HttpStatusCodes';
@@ -23,9 +23,7 @@ class RealEstateController {
 			.findAll({ where: { fk_tenant_id }, include: this.orm.MediaFile() })
 			.then(items => {
 				/* istanbul ignore next */
-				res.status(HttpStatusCodes.Ok)
-					.type('json')
-					.send(formatResponseItems(req, items));
+				sendResponse(req, res, next, HttpStatusCodes.Ok, 'items', items);
 			})
 
 			.catch(e => {
@@ -46,9 +44,7 @@ class RealEstateController {
 			.findOne({ where: { fk_tenant_id, id: realEstateId }, include: this.orm.MediaFile() })
 			.then(item => {
 				/* istanbul ignore next */
-				res.status(HttpStatusCodes.Ok)
-					.type('json')
-					.send(formatResponseItem(req, item));
+				sendResponse(req, res, next, HttpStatusCodes.Ok, 'item', item);
 			})
 			.catch(e => {
 				/* istanbul ignore next */
@@ -61,19 +57,62 @@ class RealEstateController {
 	 */
 	create = (req, res, next) => {
 		let fk_tenant_id = req.app.locals.tenantId;
-		let { clientSideId, title, description, street, zipCode, city } = req.body;
+		let { realEstate } = req.body;
 		this.orm
 			.RealEstate()
-			.create({ clientSideId, fk_tenant_id, title, description, street, zipCode, city })
+			.create({ ...realEstate, fk_tenant_id })
 			.then(created => {
-				res.status(HttpStatusCodes.Created)
-					.type('json')
-					.send(formatResponseItem(req, created));
+				sendResponse(req, res, next, HttpStatusCodes.Created, 'created', created, {
+					message: `Created RealEstate with id ${created.id}`,
+				});
 			})
 			.catch(e => {
 				/* istanbul ignore next */
 				next(new IllegalArgumentException(TAG, e.message));
 			});
+	};
+
+	/**
+	 * Saves an instance if it contains an id or creates a new object if not
+	 */
+	save = async (req, res, next) => {
+		let fk_tenant_id = req.app.locals.tenantId;
+		let { realEstate } = req.body;
+		realEstate.fk_tenant_id = fk_tenant_id;
+		if (realEstate.id) {
+			let realEstateObject = await this.orm.RealEstate().findByPk(realEstate.id);
+			realEstateObject
+				//.update({ ...realEstate, fk_tenant_id })
+				.save({ fields: Object.keys(realEstate) })
+				.then(updated => {
+					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updated, {
+						message: `Saved RealEstate with id ${updated.id}`,
+					});
+				})
+				.catch(e => {
+					/* istanbul ignore next */
+					console.log(e);
+					next(new IllegalArgumentException(TAG, e.message));
+				});
+
+			//let realEstateObject = await this.orm.RealEstate().findByPk(realEstate.id);
+			//const realEstateObject = this.orm.RealEstate().build({ ...realEstate, fk_tenant_id });
+			//let updatedRealEstateObject={...realEstateObject,...realEstate};
+			/*realEstateObject
+				.save()
+				.then(updated => {
+					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updated, {
+						message: `Saved RealEstate with id ${updated.id}`,
+					});
+				})
+				.catch(e => {
+					/* istanbul ignore next */
+			/*console.log(e);
+					next(new IllegalArgumentException(TAG, e.message));
+				});*/
+		} else {
+			this.create(req, res, next);
+		}
 	};
 }
 

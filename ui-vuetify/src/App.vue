@@ -1,8 +1,9 @@
 <template>
   <v-app id="v-app">
+    <login v-if="isLoginFormVisible"></login>
     <navigation-drawer />
     <app-bar />
-    <v-content id="content">
+    <v-content id="content" v-if="!isLoginFormVisible">
       <v-sheet id="app-bar-scroll-target" class="overflow-y-auto" style="position:absolute;top:0px;bottom:0px;left:0;right:0">
         <!--  <v-container style="height: 1000px;"> -->
         <v-container fluid>
@@ -26,12 +27,13 @@
 </template>
 
 <script>
+import Login from './views/Login';
 import AppBar from './components/ApplicationBar';
 import BottomNavigation from './components/BottomNavigation';
 import NavigationDrawer from './components/NavigationDrawer';
 
 export default {
-  components: { AppBar, NavigationDrawer, BottomNavigation },
+  components: { Login, AppBar, NavigationDrawer, BottomNavigation },
   props: {
     source: String,
   },
@@ -43,6 +45,9 @@ export default {
     timeout: 0,
   }),
   computed: {
+    isLoginFormVisible() {
+      return this.$store.state.users.isLoginFormVisible;
+    },
     theme() {
       return this.$vuetify.theme.dark ? 'dark' : 'light';
     },

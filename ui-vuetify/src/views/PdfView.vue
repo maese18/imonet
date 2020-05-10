@@ -130,11 +130,13 @@ export default {
         });
     },
     listMediaFiles() {
+      /*
       return axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles?tenantId=1`).then(mediaFilesResponse => {
         this.$log.info('mediaFiles', mediaFilesResponse);
         this.mediaFiles = mediaFilesResponse.data.data;
         this.mediaFilePanelsOpen = this.mediaFiles.map(() => false);
       });
+      */
     },
   },
 };

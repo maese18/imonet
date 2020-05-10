@@ -12,8 +12,8 @@ class JwtProvider {
 			k: configs.jwt.secret,
 		});
 	}
-	signJwt({ groupMember, groupMemberId, tenantId }) {
-		var token = jwt.sign({ groupMember, groupMemberId, tenantId }, configs.jwt.secret, {
+	signJwt({ groupMember, groupMemberId, tenantId, userOrIndividualId }) {
+		var token = jwt.sign({ groupMember, groupMemberId, tenantId, userOrIndividualId }, configs.jwt.secret, {
 			expiresIn: 86400, // expires in 24 hours
 			audience: 'imonet',
 			issuer: 'adivo',

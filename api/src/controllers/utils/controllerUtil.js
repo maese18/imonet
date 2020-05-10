@@ -200,13 +200,25 @@ export const formatResponseItems = (req, items, meta = {}) => {
 	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
 	return prettyFormat ? JSON.stringify({ items, meta }, null, 2) : { items, meta };
 };
-export function itemHandler(req, res, items) {
+export const sendResponse = (req, res, next, httpResponseCode, responseAttributeName, responseObject, meta = {}) => {
+	if (process.env.NODE_ENV !== 'production') {
+		meta.requestHeaders = req.headers;
+	}
+	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
+	let respObj = { meta };
+	respObj[responseAttributeName] = responseObject;
+	let formattedResp = prettyFormat ? JSON.stringify(respObj, null, 2) : respObj;
+	res.status(httpResponseCode)
+		.type('json')
+		.send(formattedResp);
+};
+export function sendItemResponse(req, res, item) {
 	/* istanbul ignore next */
 	res.status(HttpStatusCodes.Ok)
 		.type('json')
 		.send(formatResponseItem(req, item));
 }
-export function itemsHandler(req, res, items) {
+export function sendItemsResponse(req, res, items) {
 	/* istanbul ignore next */
 	res.status(HttpStatusCodes.Ok)
 		.type('json')

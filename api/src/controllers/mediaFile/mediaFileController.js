@@ -3,7 +3,7 @@ import path from 'path';
 import orm from '../../database/orm';
 import logger from '../../utils/logger/logger';
 import HttpStatusCodes from '../utils/HttpStatusCodes';
-import { illegalArgumentHandler, itemsHandler, right, formatResponseItem, formatResponseItems } from '../utils/controllerUtil';
+import { sendResponse, illegalArgumentHandler, sendItemsResponse, right, formatResponseItem, formatResponseItems } from '../utils/controllerUtil';
 import IllegalArgumentException from '../../errors/IllegalArgumentException';
 import AuthorizationException from '../../errors/AuthorizationException';
 import { GROUPS } from '../../config/constants';
@@ -18,26 +18,9 @@ class MediaFileController {
 		this.orm = orm;
 	}
 
-	/* istanbul ignore next */
-	getRouter() {
-		let router = Router();
-		//let checkAuth = this.authenticationService.checkAuth;
-
-		//router.get('/:realEstateId/:fileName', this.downloadFile);
-		router.get('/:realEstateId', this.listRealEstateFiles);
-		router.post('/:realEstateId', this.upload);
-		router.get('/:realEstateId/:fileName', this.downloadMediaFile);
-		router.get('/:id', this.download);
-
-		router.post('/:realEstateId/files', this.uploadFiles);
-		//router.delete('/mediaFiles/:id', this.deleteOne);
-		//router.put('/mediaFiles/:id', this.updateOne);
-
-		return router;
-	}
 	listMediaFiles = (req, res, next) => {
 		let fk_tenant_id = req.app.locals.tenantId;
-		let realEstateId = req.params.realEstateId;
+		let realEstateId = req.query.realEstateId;
 		let where = { fk_tenant_id };
 		if (realEstateId) {
 			where.fk_realEstate_id = realEstateId;
@@ -47,7 +30,8 @@ class MediaFileController {
 			.findAll({
 				where,
 			})
-			.then(items => itemsHandler(req, res, items))
+			//.then(mediaFiles => sendItemsResponse(req, res, mediaFiles))
+			.then(mediaFiles => sendResponse(req, res, next, HttpStatusCodes.Ok, 'items', mediaFiles))
 			.catch(e => illegalArgumentHandler(TAG, next, e));
 	};
 
@@ -56,40 +40,91 @@ class MediaFileController {
 		let mediaFileId = req.params.mediaFileId;
 
 		let MediaFile = this.orm.MediaFile();
-		let { authType, groupMember, groupMemberId } = req.app.locals;
+		let { authType, groupMember, groupMemberId, userOrIndividualId } = req.app.locals;
 		console.log('req.app.locals.authType=' + authType);
 		console.log('req.app.locals.groupMember=' + groupMember);
 		console.log('req.app.locals.groupMemberId=' + groupMemberId);
 
-		MediaFile.findByPk(mediaFileId)
-			.then(mediaFile => {
-				if (mediaFile === null) {
-					next(new IllegalArgumentException(TAG, `No MediaFile with id=${mediaFileId}`));
-					return;
-				}
-				try {
-					let isTenantsFile = fk_tenant_id === mediaFile.fk_tenant_id;
-					let minGroupRead = mediaFile.minGroupRead;
-					let allowed = minGroupRead <= groupMemberId;
-					if (groupMemberId >= GROUPS.tenantUser.id && !isTenantsFile) {
-						allowed = false;
-					}
-					if (allowed) {
-						let filePath = createFilePath(fk_tenant_id, mediaFileId, mediaFile.fileType);
+		let mediaFile = await MediaFile.findByPk(mediaFileId);
+		//	.then(mediaFile => {
+		if (mediaFile === null) {
+			next(new IllegalArgumentException(TAG, `No MediaFile with id=${mediaFileId}`));
+			return;
+		}
+		try {
+			let isTenantsFile = fk_tenant_id === mediaFile.fk_tenant_id;
+			let minGroupRead = mediaFile.minGroupRead;
 
-						logger.info(TAG, `Download file. Path=${filePath}`);
+			// Do not deliver file if minGroupRead is <= groupMemberId
+			let allowed = minGroupRead <= groupMemberId;
 
-						res.download(filePath); // Set disposition and send it.
-					} else {
-						next(new AuthorizationException(TAG, 'Unauthorized access'));
-					}
-				} catch (err) {
-					next(new IllegalArgumentException(TAG, 'Failed to download file', err));
+			// do not deliver file if a tenant user tries to get a file of another tenant
+			if (groupMemberId >= GROUPS.tenantUser.id && !isTenantsFile) {
+				throw new AuthorizationException(
+					TAG,
+					`Not allowed to download mediaFile of a different tenant (tenantId=${fk_tenant_id}, mediaFile.fk_tenant_id=${mediaFile.fk_tenant_id}`
+				);
+			}
+			// Override allowed flag if an individual permission is set
+			if (minGroupRead === GROUPS.individualWithGrantedPermission.id && groupMemberId === GROUPS.individual.id) {
+				// Check permissions
+				let IndividualMediaFilePermission = this.orm.IndividualMediaFilePermission();
+				let permissions = await IndividualMediaFilePermission.findAll({
+					where: { fk_individual_id: userOrIndividualId, fk_mediaFile_id: mediaFileId },
+				});
+				if (permissions.length === 0) {
+					throw new AuthorizationException(TAG, 'Unauthorized access by individual with no exact permission');
 				}
-			})
-			.catch(e => new IllegalArgumentException(TAG, `Failed to get MediaFile with id ${mediaFileId}`, e));
+				allowed = true;
+			}
+
+			if (allowed) {
+				let filePath = createFilePath(fk_tenant_id, mediaFileId, mediaFile.fileType);
+				logger.info(TAG, `Download file. Path=${filePath}`);
+				res.download(filePath); // Set disposition and send it.
+			} else {
+				next(new AuthorizationException(TAG, 'Unauthorized access'));
+			}
+		} catch (err) {
+			next(err);
+		}
 	};
 
+	allowAccess = async (req, res, next) => {
+		let mediaFileId = req.params.mediaFileId;
+		let individualId = req.params.individualId;
+		try {
+			let IndividualMediaFilePermission = this.orm.IndividualMediaFilePermission();
+			let permission = await IndividualMediaFilePermission.create({
+				fk_individual_id: individualId,
+				fk_mediaFile_id: mediaFileId,
+			});
+
+			sendResponse(req, res, next, HttpStatusCodes.Created, 'createdIndividualMediaFilePermission', permission);
+		} catch (err) {
+			next(new IllegalArgumentException(TAG, 'Failed to giveAccess. Cause:' + err.message, err));
+		}
+	};
+	revokeAccess = async (req, res, next) => {
+		let mediaFileId = req.params.mediaFileId;
+		let individualId = req.params.individualId;
+		try {
+			let IndividualMediaFilePermission = this.orm.IndividualMediaFilePermission();
+			let permissions = await IndividualMediaFilePermission.findAll({
+				where: {
+					fk_individual_id: individualId,
+					fk_mediaFile_id: mediaFileId,
+				},
+			});
+			for (let i = 0; i < permissions.length; i++) {
+				await permissions[i].destroy();
+			}
+
+			sendResponse(req, res, next, HttpStatusCodes.Created, 'revokedIndividualMediaFilePermissions', permissions);
+		} catch (err) {
+			next(new IllegalArgumentException(TAG, 'Failed to revokeAccess. Cause:' + err.message, err));
+		}
+	};
 	/**
 	 *Creates a new mediaFile item and stores the uploaded file
 	 */
@@ -114,15 +149,72 @@ class MediaFileController {
 		let { clientSideId, realEstateId, description, purpose, title } = req.body;
 
 		let RealEstate = this.orm.RealEstate();
-		RealEstate.findByPk(realEstateId)
-			.then(realEstate => {
-				// Make sure you can upload files for realEstates belonging to its own tenant
-				let belongsToSameTenant = realEstate !== null && realEstate.fk_tenant_id === fk_tenant_id;
-				if (!belongsToSameTenant) {
-					throw new AuthorizationException(TAG, `RealEstate with id ${realEstateId} does not belong to tenant with id ${fk_tenant_id}`);
-				}
-				let MediaFile = this.orm.MediaFile();
+		try {
+			let realEstate = await RealEstate.findByPk(realEstateId);
 
+			// Make sure you can upload files for realEstates belonging to its own tenant
+			let belongsToSameTenant = realEstate !== null && realEstate.fk_tenant_id === fk_tenant_id;
+			if (!belongsToSameTenant) {
+				throw new AuthorizationException(TAG, `RealEstate with id ${realEstateId} does not belong to tenant with id ${fk_tenant_id}`);
+			}
+			let MediaFile = this.orm.MediaFile();
+
+			let createdMediaFile = await MediaFile.create({
+				clientSideId,
+				fk_realEstate_id: realEstateId,
+				fk_tenant_id,
+
+				fileName: mediaFile.name,
+				size: mediaFile.size,
+				mimeType: mediaFile.mimetype,
+
+				title,
+				description,
+				fileType,
+				purpose,
+			});
+			let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
+			//Use the mv() method to place the file in upload directory (i.e. "uploads")
+			mediaFile.mv(filePath);
+			sendResponse(req, res, next, HttpStatusCodes.Created, 'createdMediaFile', createdMediaFile, {
+				message: `File metadata created and file uploaded, get file with /api/mediaFiles/${createdMediaFile.id}`,
+			});
+		} catch (err) {
+			next(new IllegalArgumentException(TAG, err.message, err));
+		}
+	};
+
+	uploadFiles = async (req, res, next) => {
+		if (!req.files) {
+			next(new IllegalArgumentException(TAG, 'No files to upload in multi-part form-data found'));
+			return;
+		}
+		let fk_tenant_id = req.app.locals.tenantId;
+
+		let responseData = [];
+		let { realEstateId } = req.body;
+		let RealEstate = this.orm.RealEstate();
+		let realEstate = await RealEstate.findByPk(realEstateId);
+
+		// Make sure you can upload files for realEstates belonging to its own tenant
+		let belongsToSameTenant = realEstate !== null && realEstate.fk_tenant_id === fk_tenant_id;
+		if (!belongsToSameTenant) {
+			next(new AuthorizationException(TAG, `RealEstate with id ${realEstateId} does not belong to tenant with id ${fk_tenant_id}`));
+			return;
+		}
+		let i = 0;
+		let mediaFile;
+		let promises = [];
+		let MediaFile = this.orm.MediaFile();
+
+		while ((mediaFile = req.files['mediaFile_' + i]) !== undefined) {
+			let clientSideId = req.body[`clientSideId_${i}`];
+			let title = req.body[`title_${i}`];
+			let description = req.body[`description_${i}`];
+			let purpose = req.body[`purpose_${i}`];
+			let fileType = right(mediaFile.name, 3);
+
+			promises.push(
 				MediaFile.create({
 					clientSideId,
 					fk_realEstate_id: realEstateId,
@@ -137,89 +229,27 @@ class MediaFileController {
 					fileType,
 					purpose,
 				})
-					.then(createdMediaFile => {
-						let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
-						//Use the mv() method to place the file in upload directory (i.e. "uploads")
-						mediaFile.mv(filePath);
+			);
 
-						res.status(HttpStatusCodes.Created)
-							.type('json')
-							.send(
-								formatResponseItem(req, createdMediaFile, {
-									message: `File metadata created and file uploaded, get file with /api/mediaFiles/${createdMediaFile.id}`,
-								})
-							);
-					})
-					.catch(err => next(new IllegalArgumentException(TAG, err.message, err)));
-			})
-			.catch(err => next(new IllegalArgumentException(TAG, err.message, err)));
-	};
-
-	uploadFiles = async (req, res, next) => {
-		let fk_tenant_id = req.headers.tenantId;
-		try {
-			if (!req.files) {
-				next(new IllegalArgumentException(TAG, 'No files to upload in multi-part form-data found'));
-			} else {
-				let fk_tenant_id = req.app.locals.tenantId;
-
-				let responseData = [];
-				let { realEstateId } = req.body;
-
+			i++;
+		}
+		Promise.all(promises)
+			.then(createdMediaFiles => {
 				let i = 0;
-				let mediaFile;
-				let promises = [];
-				let MediaFile = this.orm.MediaFile();
-
 				while ((mediaFile = req.files['mediaFile_' + i]) !== undefined) {
-					//let filePath = path.join(MEDIA_PATH, `tenant_${tenantId}`, `ID-${createdMediaFile.id}_${mediaFile.name}`);
-					let clientSideId = req.body[`clientSideId_${i}`];
-					let title = req.body[`title_${i}`];
-					let description = req.body[`description_${i}`];
-					let purpose = req.body[`purpose_${i}`];
 					let fileType = right(mediaFile.name, 3);
+					let createdMediaFile = createdMediaFiles[i];
+					let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
+					//Use the mv() method to place the file in upload directory (i.e. "uploads")
+					mediaFile.mv(filePath);
 
-					promises.push(
-						MediaFile.create({
-							clientSideId,
-							fk_realEstate_id: realEstateId,
-							fk_tenant_id,
-
-							fileName: mediaFile.name,
-							size: mediaFile.size,
-							mimeType: mediaFile.mimetype,
-
-							title,
-							description,
-							fileType,
-							purpose,
-						})
-					);
-
+					responseData.push(createdMediaFile);
 					i++;
 				}
-				Promise.all(promises)
-					.then(createdMediaFiles => {
-						let i = 0;
-						while ((mediaFile = req.files['mediaFile_' + i]) !== undefined) {
-							let fileType = right(mediaFile.name, 3);
-							let createdMediaFile = createdMediaFiles[i];
-							let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
-							//Use the mv() method to place the file in upload directory (i.e. "uploads")
-							mediaFile.mv(filePath);
-							responseData.push(createdMediaFile);
-							i++;
-						}
-						let meta = { message: `${responseData.length} MediaFiles created and uploaded` };
-						res.status(HttpStatusCodes.Created)
-							.type('json')
-							.send(formatResponseItems(req, responseData, meta));
-					})
-					.catch(err => next(err));
-			}
-		} catch (err) {
-			res.status(500).send(err);
-		}
+				let meta = { message: `${responseData.length} MediaFiles created and uploaded` };
+				sendResponse(req, res, next, HttpStatusCodes.Created, 'createdMediaFiles', responseData, meta);
+			})
+			.catch(err => next(err));
 	};
 }
 export default new MediaFileController();

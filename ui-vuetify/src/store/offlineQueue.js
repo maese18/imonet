@@ -25,7 +25,7 @@ class OfflineQueue {
               this.offlineQueue.realEstates.shift();
             })
             .catch(err => {
-              console.log(`Failed to save RealEstate object:`, realEstates[0], 'Leave in Queue');
+              console.log(`Failed to save RealEstate object:`, realEstates[0], 'Leave in Queue', err);
               errorCount++;
             });
         }

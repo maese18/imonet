@@ -16,7 +16,6 @@ import userController from './controllers/user/userController';
 import individualController from './controllers/user/individualController';
 import domainController from './controllers/domain/domainController';
 import mediaFileController from './controllers/mediaFile/mediaFileController';
-import mediaFileController_ from './controllers/mediaFile/mediaFileController_';
 import realEstateController from './controllers/realEstate/realEstateController';
 import webpushSubscriptionHandler from './config/webPushConfig';
 import authenticationService from './services/authenticationService';
@@ -63,19 +62,21 @@ app.post('/api/individuals/login', individualController.login);
 app.get('/api/realEstates', auth, realEstateController.findAll);
 app.get('/api/realEstates/:realEstateId', auth, realEstateController.findOne);
 app.post('/api/realEstates', auth, realEstateController.create);
+app.put('/api/realEstates', auth, realEstateController.save);
 //app.use('/api/realEstates/:realEstateId/mediaFiles', mediaFileController.getRouter());
 //app.use('/api/mediaFiles', mediaFileController.getRouter());
 
 app.get('/api/mediaFiles', auth, mediaFileController.listMediaFiles);
-app.get('/api/mediaFiles/:mediaFileId', optionalAuth, mediaFileController.downloadMediaFile);
 app.post('/api/mediaFiles', auth, mediaFileController.uploadFile, mediaFileController.uploadFiles);
-//app.get('/api/mediaFiles/:realEstateId', auth, mediaFileController.listMediaFiles);
-
+app.get('/api/mediaFiles/:mediaFileId', optionalAuth, mediaFileController.downloadMediaFile);
+app.put('/api/mediaFiles/:mediaFileId/action/giveAccess/:individualId', auth, mediaFileController.allowAccess);
+app.delete('/api/mediaFiles/:mediaFileId/action/revokeAccess/:individualId', auth, mediaFileController.revokeAccess);
+/*
 app.get('/api/realEstates/:realEstateId', mediaFileController_.listMediaFiles);
 app.post('/api/realEstates/:realEstateId', mediaFileController_.upload);
 app.get('/api/realEstates/:realEstateId/:fileName', mediaFileController_.downloadMediaFile);
 app.post('/api/realEstates/:realEstateId/files', mediaFileController_.uploadFiles);
-
+*/
 app.use('/api', auth, domainController.getRouter());
 
 logger.info(TAG, '/api/lifeSign,/api/:domainPlural, /api/users endpoints registered');

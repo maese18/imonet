@@ -51,8 +51,8 @@ services:
       MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_INITDB_SKIP_TZINFO: "true"
     volumes:
-      - ../db/data:/var/lib/mysql
-      - ../db/db-setup/default:/docker-entrypoint-initdb.d
+      - ../db/mysql/data:/var/lib/mysql
+      - ../db/mysql/db-setup/default:/docker-entrypoint-initdb.d
     ports:
       - ${DB_PORT}:3306
 
@@ -67,32 +67,33 @@ services:
     networks:
       - proxy
 
-  mongo:
-    image: mongo
-    restart: always
-    environment:
-      - MONGO_INITDB_DATABASE="test"
-      - MONGO_INITDB_ROOT_USERNAME="root"
-      - MONGO_INITDB_ROOT_PASSWORD="pw"
-      - MONGO_INITDB_USERNAME="dbuser"
-      - MONGO_INITDB_PASSWORD="pw"
-      - MONGODB_DATA_DIR="/data/db"
-    volumes:
-      - ./data:/data/db
-      - ./init/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
-    networks:
-      proxy:
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    ports:
-      - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: pw
-    networks:
-      proxy:
+  # mongo:
+  #   image: mongo
+  #   restart: always
+  #   environment:
+  #     - MONGO_INITDB_DATABASE="test"
+  #     - MONGO_INITDB_ROOT_USERNAME="root"
+  #     - MONGO_INITDB_ROOT_PASSWORD="pw"
+  #     #- MONGO_INITDB_USERNAME="dbuser"
+  #     #- MONGO_INITDB_PASSWORD="pw"
+  #     - MONGODB_DATA_DIR="/data/db"
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - ../db/mongo/data:/data/db
+  #     - ../db/mongo/init/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+  #   networks:
+  #     proxy:
+  # mongo-express:
+  #   image: mongo-express
+  #   restart: always
+  #   ports:
+  #     - 4023:8081
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: pw
+  #   networks:
+  #     proxy:
 
 networks:
   proxy:

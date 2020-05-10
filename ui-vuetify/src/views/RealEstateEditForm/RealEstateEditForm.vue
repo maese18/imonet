@@ -13,7 +13,8 @@
     </v-toolbar>
     <v-tabs show-arrows next-icon="mdi-arrow-right" prev-icon="mdi-arrow-left" v-model="tab" class="elevation-2" dark>
       <v-tab>Übersicht</v-tab>
-      <v-tab><span>Adresse </span> </v-tab>
+      <v-tab>Data</v-tab>
+      <v-tab><span>Adresse </span></v-tab>
       <v-tab>Details</v-tab>
       <v-tab>Fotos</v-tab>
       <v-tab>Verkäufer</v-tab>
@@ -29,10 +30,14 @@
           <v-tab-item>
             <v-row>
               <v-col cols="12">
-                <v-text-field v-model="title" autocomplete="false" :counter="255" :rules="nameRules" label="Titel" required></v-text-field>
+                <v-text-field v-model="realEstate.title" autocomplete="false" :counter="255" :rules="validations.title" label="Titel" required></v-text-field>
               </v-col>
               <v-col cols="12">
-                <v-textarea v-model="description" auto-grow label="Description" required></v-textarea>
+                <v-textarea v-model="realEstate.description" auto-grow label="Description" style="margin-top:5px" required></v-textarea>
+              </v-col>
+
+              <v-col cols="12">
+                <v-select v-model="realEstate.type" :items="types" :rules="[v => !!v || 'Item is required']" label="Typ" required></v-select>
               </v-col>
               <v-col cols="12">
                 <v-file-input v-model="uploadFiles" small-chips multiple label="File input w/ small chips" />
@@ -46,42 +51,17 @@
               </v-col>
             </v-row>
           </v-tab-item>
+          <!-- Data -->
+          <v-tab-item>
+            <json-data-view :realEstate="realEstate"></json-data-view>
+          </v-tab-item>
 
           <!-- Address -->
           <v-tab-item>
-            <v-row>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="street" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Strasse" required></v-text-field>
-                <v-text-field v-model="zipCode" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Postleitzahl" required></v-text-field>
-                <v-text-field v-model="city" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Ortschaft" required></v-text-field>
-
-                <v-select v-model="type" :items="types" :rules="[v => !!v || 'Item is required']" label="Typ" required></v-select>
-                <v-checkbox v-model="checkbox" :rules="[v => !!v || 'You must agree to continue!']" label="Do you agree?" required></v-checkbox>
-              </v-col>
-
-              <v-col cols="12" md="6" style="padding-top:30px">
-                <iframe v-if="isAddressDefined" :src="`http://maps.google.com/maps?q=${gMapsQParam}&z=20&output=embed`" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0" width="100%" height="450"></iframe>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="title" autocomplete="false" :counter="255" :rules="nameRules" label="Titel" required></v-text-field>
-                <v-textarea v-model="description" filled auto-grow label="Description" required></v-textarea>
-                <!-- Disable autocomplete with setting autocomplete to a fake field -->
-                <v-text-field v-model="email" autocomplete="fake-email" :rules="emailRules" label="E-mail" required></v-text-field>
-
-                <!-- Use v-bind class (defined in App.vue) to set text color when browser autofill is used-->
-                <v-text-field v-model="email" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" :rules="emailRules" label="E-mail" required></v-text-field>
-
-                <v-text-field v-model="street" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Strasse" required></v-text-field>
-                <v-text-field v-model="zipCode" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Postleitzahl" required></v-text-field>
-                <v-text-field v-model="city" v-bind:class="{ 'autofill-dark': darkTheme, 'autofill-light': !darkTheme }" label="Ortschaft" required></v-text-field>
-
-                <v-select v-model="type" :items="types" :rules="[v => !!v || 'Item is required']" label="Typ" required></v-select>
-                <v-checkbox v-model="checkbox" :rules="[v => !!v || 'You must agree to continue!']" label="Do you agree?" required></v-checkbox>
-              </v-col>
-            </v-row>
+            <location :realEstate="realEstate"></location>
           </v-tab-item>
 
-          <!-- -->
+          <!-- Details -->
           <v-tab-item>
             <v-row>
               <v-btn :disabled="!valid" color="success" class="mr-4" @click="validate">
@@ -97,21 +77,23 @@
               </v-btn>
             </v-row>
           </v-tab-item>
+          <!-- Fotos -->
           <v-tab-item>
+            <galerie :mediaFiles="realEstate.mediaFiles"></galerie>
             <v-row>
               <v-list three-line subheader style="border:1px solid green">
                 <v-subheader>User Controls</v-subheader>
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title>Content filtering</v-list-item-title>
-                    <v-list-item-subtitle>Set the content filtering level to restrict apps that can be downloaded</v-list-item-subtitle>
+                    <v-list-item-subtitle>Set the content filtering level to restrict apps that can be downloaded </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
 
                 <v-list-item>
                   <v-list-item-content>
                     <v-list-item-title>Password</v-list-item-title>
-                    <v-list-item-subtitle>Require password for purchase or use password to restrict purchase</v-list-item-subtitle>
+                    <v-list-item-subtitle>Require password for purchase or use password to restrict purchase </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -124,7 +106,7 @@
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Notifications</v-list-item-title>
-                    <v-list-item-subtitle>Notify me about updates to apps or games that I downloaded</v-list-item-subtitle>
+                    <v-list-item-subtitle>Notify me about updates to apps or games that I downloaded </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -133,7 +115,7 @@
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Sound</v-list-item-title>
-                    <v-list-item-subtitle>Auto-update apps at any time. Data charges may apply</v-list-item-subtitle>
+                    <v-list-item-subtitle>Auto-update apps at any time. Data charges may apply </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
                 <v-list-item>
@@ -142,7 +124,7 @@
                   </v-list-item-action>
                   <v-list-item-content>
                     <v-list-item-title>Auto-add widgets</v-list-item-title>
-                    <v-list-item-subtitle>Automatically add home screen widgets</v-list-item-subtitle>
+                    <v-list-item-subtitle>Automatically add home screen widgets </v-list-item-subtitle>
                   </v-list-item-content>
                 </v-list-item>
               </v-list>
@@ -154,31 +136,25 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn color="blue darken-1" text @click="dialog = false">Close</v-btn>
-      <v-btn color="blue darken-1" text @click="dialog = false">Save</v-btn>
+      <v-btn color="blue darken-1" text @click="save">Save</v-btn>
     </v-card-actions>
   </v-card>
   <!--  </v-row> -->
 </template>
 <script>
 import axios from 'axios';
-import { mapState } from 'vuex';
-export default {
-  /*
-  title: { type: Sequelize.STRING, allowNull: false },
-			type: {
-				type: Sequelize.ENUM('Wohnung', 'Wohnung/Haus', 'Parkplatz', 'Garagenplatz', 'Grundstück', 'MFH', 'Landwirtschaft', 'Büro/Gewerbe/Industrie'),
-				allowNull: false,
-			},
-			street: { type: Sequelize.STRING, allowNull: true },
-			zipCode: { type: Sequelize.STRING },
-			price: { type: Sequelize.DECIMAL },
-			priceType: { type: Sequelize.ENUM('fix', 'negotiationPrice', 'noPrice') },
-			priceEffective: { type: Sequelize.DECIMAL },
-			description: { type: Sequelize.TEXT },
-	
-  */
-  props: ['isVisible', 'realEstateItem'],
+import { mapGetters } from 'vuex';
+import validations from '@/validations/index.js';
+import JsonDataView from './JsonDataView';
+import Galerie from './Galerie';
+import Location from './Location';
 
+export default {
+  components: { Galerie, Location, JsonDataView },
+  props: ['isVisible', 'realEstateItem'],
+  created() {
+    this.validations = validations;
+  },
   data() {
     return {
       tab: null,
@@ -187,15 +163,7 @@ export default {
       sound: true,
       widgets: false,
 
-      title: '',
-      type: 'Wohnung/Haus',
-      street: '',
-      zipCode: '',
-      city: '',
-      price: null,
-      priceType: 'fix',
-      priceEffective: null,
-      description: '',
+      //realEstate: { title: 'Inserate Titel', type: 'Wohnung/Haus', street: '', zipCode: '', city: '', price: null, priceType: 'fix', priceEffective: null, description: '' },
 
       types: ['Wohnung', 'Wohnung/Haus', 'Parkplatz', 'Garagenplatz', 'Grundstück', 'MFH', 'Landwirtschaft', 'Büro/Gewerbe/Industrie'],
       valid: true,
@@ -225,78 +193,61 @@ export default {
       this.$refs.form.resetValidation();
     },
     getImageUrl(mediaFile) {
-      let realEstateId = this.editedRealEstate.id;
-      return `${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}/${mediaFile.fileName}?tenantId=1`;
+      //let realEstateId = this.editedRealEstate.id;
+      let token = localStorage.getItem('token');
+      return `${process.env.VUE_APP_API_URL}/mediaFiles/${mediaFile.id}?token=${token}`;
+    },
+    save() {
+      this.$store.dispatch('realEstates/save', { realEstate: this.realEstate });
     },
     onUpload() {
       console.log('onUpload', this.uploadFiles);
       let formData = new FormData();
       for (let i = 0; i < this.uploadFiles.length; i++) {
         let file = this.uploadFiles[i];
-
+        formData.append('purpose_' + i, 'title');
         formData.append('mediaFile_' + i, file);
       }
-      formData.append('mediaFile', this.uploadFiles[0]);
+      //formData.append('mediaFile', this.uploadFiles[0]);
+      formData.append('realEstateId', this.realEstate.id);
       let tenantId = 1;
-      let realEstateId = this.editedRealEstate.id;
-      let purpose = 'title';
+      //let realEstateId = this.editedRealEstate.id;
       axios
-        .post(`${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}/files`, formData, {
+        .post(`${process.env.VUE_APP_API_URL}/mediaFiles`, formData, {
           headers: {
             // Manually setting the content type leads to an exception when used with service-worker
             // See https://github.com/github/fetch/issues/505
             // 'Content-Type': 'multipart/form-data',
-            purpose,
             tenantId: tenantId,
           },
         })
-        .then(result => {
-          console.log('SUCCESS!!', result);
-          let realEstateId = this.editedRealEstate.id;
-          axios.get(`${process.env.VUE_APP_API_URL}/mediaFiles/${realEstateId}`).then(response => {
-            this.mediaFiles = response.data.items;
-
-            console.log('mediaFiles', response);
-          });
+        .then(response => {
+          let createdMediaFiles = response.data.createdMediaFiles;
+          console.log('SUCCESS!!', createdMediaFiles);
+          this.mediaFiles = createdMediaFiles;
+          this.$store.dispatch('realEstates/refreshEditedRealEstate');
         })
         .catch(err => {
           this.$log.info('FAILURE!!', err);
         });
     },
   },
-  computed: {
-    ...mapState({ editedRealEstate: state => state.realEstates.editedRealEstate }),
 
-    isAddressDefined() {
-      return this.street && (this.city || this.zipCode);
-    },
-    gMapsQParam() {
-      return this.street.replace(' ', '%20') + '%20' + this.zipCode + '%20' + this.city;
-    },
+  computed: {
+    ...mapGetters({ realEstate: 'realEstates/editedRealEstate' }),
+
     isRealEstateEditFormVisible: {
       get() {
-        return this.$store.state.isRealEstateEditFormVisible;
+        return this.$store.state.realEstates.isEditFormVisible;
       },
       set(value) {
-        this.$log.info('toggle isRealEstateEditFormVisible ', value);
-        if (value !== this.$store.state.isRealEstateEditFormVisible) {
-          this.$store.commit('toggleRealEstateEditFormVisibility');
-        }
+        this.$log.info('toggle setIsEditFormVisible ', value);
+        this.$store.commit('realEstates/setIsEditFormVisible', value);
       },
     },
     darkTheme() {
       return this.$vuetify.theme.dark;
     },
   },
-  /* watch: {
-    isVisible: function(val) {
-      console.log(`isVisible changed to ${val}`);
-      // when this form is visible create a new object on the server or if it exists do nothing
-      if (val === true && !this.realEstateItem.id) {
-        console.log('post an object');
-        // axios.post();
-      }
-    },
-  }, */
 };
 </script>

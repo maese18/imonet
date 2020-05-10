@@ -16,6 +16,7 @@ export const GROUPS = {
 	'4': { name: 'tenantSuperUser' },
 	anonymous: { id: 1, name: 'anonymous' },
 	individual: { id: 2, name: 'individual' },
-	tenantUser: { id: 3, name: 'tenantUser' },
-	tenantSuperUser: { id: 4, name: 'tenantSuperUser' },
+	individualWithGrantedPermission: { id: 3, name: 'individualWithGrantedPermission' },
+	tenantUser: { id: 4, name: 'tenantUser' },
+	tenantSuperUser: { id: 5, name: 'tenantSuperUser' },
 };

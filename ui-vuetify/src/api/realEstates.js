@@ -9,8 +9,11 @@ export default {
   findOne(id) {
     return axios.get(`${URL}/${id}`);
   },
+  saveOne(obj) {
+    return axios.put(`${URL}`, { realEstate: obj });
+  },
   createOne(obj) {
-    return axios.post(`${URL}`, obj);
+    return axios.post(`${URL}`, { realEstate: obj });
   },
   updateOne(obj) {
     console.log('update', obj);

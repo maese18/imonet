@@ -6,6 +6,7 @@ import socket from 'socket.io';
 import migrationController from './database/migrationController';
 import mariaDbAdaptor from './database/mariaDbAdaptor';
 import orm from './database/orm';
+//import mongoose from './database/mongoose';
 const TAG = 'index.js';
 const port = configs.server.port;
 

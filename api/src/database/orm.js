@@ -53,9 +53,8 @@ class Orm {
 										lastName: 'Nachname',
 										fk_tenant_id: createdTenant.id,
 									});
+									RealEstate.create({ type: 'Wohnung', title: 'First Object', fk_tenant_id: createdTenant.id });
 								});
-
-								RealEstate.create({ type: 'Wohnung', title: 'First Object' });
 							}
 						})
 						.catch(err => {

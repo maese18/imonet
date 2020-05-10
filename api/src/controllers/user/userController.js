@@ -29,6 +29,7 @@ class UserController {
 							groupMember: user.groupMember,
 							groupMemberId: GROUPS[user.groupMember].id,
 							tenantId: user.fk_tenant_id,
+							userOrIndividualId: user.id,
 						});
 
 						res.status(HttpStatusCodes.Ok)
