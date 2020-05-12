@@ -82,8 +82,7 @@ class RealEstateController {
 		if (realEstate.id) {
 			let realEstateObject = await this.orm.RealEstate().findByPk(realEstate.id);
 			realEstateObject
-				//.update({ ...realEstate, fk_tenant_id })
-				.save({ fields: Object.keys(realEstate) })
+				.update({ ...realEstate, fk_tenant_id })
 				.then(updated => {
 					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updated, {
 						message: `Saved RealEstate with id ${updated.id}`,
@@ -94,22 +93,6 @@ class RealEstateController {
 					console.log(e);
 					next(new IllegalArgumentException(TAG, e.message));
 				});
-
-			//let realEstateObject = await this.orm.RealEstate().findByPk(realEstate.id);
-			//const realEstateObject = this.orm.RealEstate().build({ ...realEstate, fk_tenant_id });
-			//let updatedRealEstateObject={...realEstateObject,...realEstate};
-			/*realEstateObject
-				.save()
-				.then(updated => {
-					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updated, {
-						message: `Saved RealEstate with id ${updated.id}`,
-					});
-				})
-				.catch(e => {
-					/* istanbul ignore next */
-			/*console.log(e);
-					next(new IllegalArgumentException(TAG, e.message));
-				});*/
 		} else {
 			this.create(req, res, next);
 		}

@@ -13,7 +13,7 @@
           </v-btn>
         </v-fab-transition>
       </template>
-      <real-estate-edit-form :isVisible="isEditFormVisible"></real-estate-edit-form>
+      <real-estate-edit-form v-if="isEditFormVisible" :editedRealEstate="editedRealEstate"></real-estate-edit-form>
     </v-dialog>
     <v-row no-gutters>
       <v-col v-for="object in realEstates" :key="object.clientId" cols="12" sm="6" md="4">
@@ -71,19 +71,30 @@ console.log(`LOGGER`);
 import shortid from 'shortid';
 import { mapState, mapGetters } from 'vuex';
 import RealEstateEditForm from './RealEstateEditForm/RealEstateEditForm';
+import api from '../api/realEstates';
 export default {
   components: { RealEstateEditForm },
   created() {
-    this.$store.dispatch('realEstates/loadAll');
+    //this.$store.dispatch('realEstates/loadAll');
+    api
+      .findAll()
+      .then(response => {
+        console.log('Received Portfolio', JSON.stringify(response.data.items, null, 2));
+        this.realEstates = response.data.items;
+      })
+      .catch(e => console.log('Failed to load RealEstates', e));
   },
   data() {
     return {
+      realEstates: [],
+      isEditFormVisible: false,
+      editedRealEstate: {},
       selection: null,
       hidden: true,
     };
   },
   computed: {
-    ...mapGetters({ realEstates: 'realEstates/getAll' }),
+    ...mapGetters({ realEstates_: 'realEstates/getAll' }),
 
     /* ...mapGetters({ realEstates_: 'realEstates/getAll' }),
     realEstates() {
@@ -97,7 +108,7 @@ export default {
       let byClientSideId = this.$store.state.realEstates.byClientSideId;
       return Object.keys(byClientSideId).map(clientSideId => byClientSideId[clientSideId]);
     },*/
-    isEditFormVisible: {
+    isEditFormVisible_: {
       get() {
         return this.$store.state.realEstates.isEditFormVisible;
       },
@@ -111,7 +122,9 @@ export default {
   },
   methods: {
     edit(realEstate) {
-      this.$store.commit('realEstates/edit', { realEstate });
+      this.editedRealEstate = realEstate;
+      this.isEditFormVisible = true;
+      //this.$store.commit('realEstates/edit', { realEstate });
     },
     titleImageUrl(realEstateObject) {
       //let realEstateId = this.editedRealEstate.id;

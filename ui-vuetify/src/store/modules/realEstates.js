@@ -12,6 +12,8 @@ const state = {
   // View states
   isEditFormVisible: false,
   editedClientSideId: '',
+  editedRealEstateItem: {},
+  lastModifiedEditedItem: Date.now(),
 };
 
 // getters
@@ -24,8 +26,9 @@ const getters = {
       .map(clientSideId => state.byClientSideId[clientSideId])
       .sort((i1, i2) => i1.title < i2.title);
   },
-  editedRealEstate: state => {
-    return state.byClientSideId[state.editedClientSideId];
+  editedRealEstateItem: state => {
+    return state.editedRealEstateItem;
+    // return state.byClientSideId[state.editedClientSideId];
   },
 };
 
@@ -42,14 +45,26 @@ const mutations = {
     Vue.set(state.byClientSideId, realEstate.clientSideId, realEstate);
   },
 
-  updateItem(state, realEstate) {
-    console.log('store/realEstates/updateItem mutation realEstate:', realEstate);
-    if (state.byClientSideId[realEstate.clientSideId]) {
+  updateItem(state, { realEstate }) {
+    console.log(`store/realEstates/updateItem mutation realEstate:${realEstate.clientSideId}`, JSON.stringify(realEstate, null, 2));
+    state.lastModifiedEditedItem = Date.now();
+    state.byClientSideId[realEstate.clientSideId] = realEstate;
+    /* if (state.byClientSideId[realEstate.clientSideId]) {
       // Item exists already and is reactive therefore
-      state.byClientSideId[realEstate.clientSideId] = realEstate;
+      console.log('Item exists already and is reactive therefore');
+      Vue.set(state.byClientSideId, realEstate.clientSideId, realEstate);
+      //state.byClientSideId[realEstate.clientSideId] = realEstate;
     } else {
       // Otherwise a new reactive item must be set
-      Vue.set(state.byClientSideId, realEstate.clientSideId, realEstate);
+      /*let byClientSideId = state.byClientSideId;
+      byClientSideId[realEstate.clientSideId] = realEstate;
+      console.log('replace byClientSideId');
+      state.byClientSideId = byClientSideId;*/
+    /*Vue.set(state.byClientSideId, realEstate.clientSideId, realEstate);
+    }*/
+    if (state.editedClientSideId === realEstate.clientSideId) {
+      console.log('update editedRealEstateItem');
+      state.editedRealEstateItem = realEstate;
     }
   },
 
@@ -60,8 +75,10 @@ const mutations = {
     let byClientSideId = {};
     realEstates.map(realEstate => {
       if (!realEstate.clientSideId) {
-        realEstate.clientSideId = shortId.generate();
+        realEstate.clientSideId = realEstate.id; //shortId.generate();
       }
+      //Vue.set(state.byClientSideId, realEstate.clientSideId, realEstate);
+
       byClientSideId[realEstate.clientSideId] = realEstate;
 
       // In case each property should be reactive, we must make items reactive by setting this:
@@ -74,6 +91,7 @@ const mutations = {
     console.log('store/realEstates/edit mutation realEstate:', realEstate);
 
     state.editedClientSideId = realEstate.clientSideId;
+    state.editedRealEstateItem = realEstate; //state.byClientSideId[realEstate.clientSideId];
     state.isEditFormVisible = true;
   },
 };
@@ -83,7 +101,7 @@ const actions = {
   save({ commit }, { realEstate }) {
     console.log('store/realEstates/save action save:', realEstate);
 
-    api.saveOne(realEstate).then(updated => commit('updateItem', updated));
+    api.saveOne(realEstate).then(response => commit('updateItem', { realEstate: response.data.updated }));
   },
   loadAll({ commit }) {
     console.log('store/realEstates/loadAll action');
@@ -103,7 +121,7 @@ const actions = {
         let createdRealEstate = response.data.created;
         commit('addItem', createdRealEstate);
         if (showFormOnCreated) {
-          commit('setIsEditFormVisible', { isEditFormVisible: showFormOnCreated });
+          commit('edit', { realEstate: createdRealEstate });
         }
       })
       .catch(e => {
@@ -117,6 +135,25 @@ const actions = {
         commit('updateItem', { realEstate: response.data.item });
       });
     }
+  },
+
+  uploadMediaFiles({ commit }, { realEstate, formData, tenantId }) {
+    api
+      .uploadMediaFiles({ formData, tenantId })
+      .then(response => {
+        let createdMediaFiles = response.data.createdMediaFiles;
+        console.log('Successfully uploaded files!', createdMediaFiles);
+
+        if (state.editedClientSideId) {
+          api.findOne(realEstate.id).then(response => {
+            console.log('reloaded realEstate of which we saved mediaFiles', JSON.stringify(response.data.item, null, 2));
+            commit('updateItem', { realEstate: response.data.item });
+          });
+        }
+      })
+      .catch(err => {
+        console.log('FAILURE!!', err);
+      });
   },
 };
 

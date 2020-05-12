@@ -9,6 +9,7 @@
       <v-spacer></v-spacer>
       <v-toolbar-items>
         <v-btn dark text @click="dialog = false">{{ tab }}</v-btn>
+        <v-badge>{{ lastModifiedEditedItem }}</v-badge>
       </v-toolbar-items>
     </v-toolbar>
     <v-tabs show-arrows next-icon="mdi-arrow-right" prev-icon="mdi-arrow-left" v-model="tab" class="elevation-2" dark>
@@ -29,6 +30,7 @@
           <!-- Overview tab-->
           <v-tab-item>
             <v-row>
+              {{ realEstate.title }}
               <v-col cols="12">
                 <v-text-field v-model="realEstate.title" autocomplete="false" :counter="255" :rules="validations.title" label="Titel" required></v-text-field>
               </v-col>
@@ -45,7 +47,7 @@
               <v-col cols="12">
                 <v-btn color="primary" @click="onUpload">Upload</v-btn>
               </v-col>
-              <v-col v-for="(mediaFile, index) in mediaFiles" :key="index">
+              <v-col v-for="(mediaFile, index) in realEstate.mediaFiles" :key="index">
                 {{ mediaFile.fileName }}
                 <v-img :src="getImageUrl(mediaFile)"></v-img>
               </v-col>
@@ -142,21 +144,25 @@
   <!--  </v-row> -->
 </template>
 <script>
-import axios from 'axios';
 import { mapGetters } from 'vuex';
 import validations from '@/validations/index.js';
 import JsonDataView from './JsonDataView';
 import Galerie from './Galerie';
 import Location from './Location';
-
+import api from '../../api/realEstates';
 export default {
   components: { Galerie, Location, JsonDataView },
-  props: ['isVisible', 'realEstateItem'],
+  props: ['isVisible', 'editedRealEstate'],
   created() {
     this.validations = validations;
+    console.log('created Dialog');
   },
   data() {
+    // let editedRealEstate = this.$store.state.realEstates.editedRealEstateItem;
+    //console.log('initiate data', JSON.stringify(editedRealEstate, null, 2));
     return {
+      realEstate: this.editedRealEstate,
+      //realEstate: { ...editedRealEstate },
       tab: null,
       dialog: false,
       notifications: false,
@@ -197,8 +203,15 @@ export default {
       let token = localStorage.getItem('token');
       return `${process.env.VUE_APP_API_URL}/mediaFiles/${mediaFile.id}?token=${token}`;
     },
-    save() {
-      this.$store.dispatch('realEstates/save', { realEstate: this.realEstate });
+    async save() {
+      //this.$store.dispatch('realEstates/save', { realEstate: this.realEstate });
+      let self = this;
+      let response = await api.saveOne(this.realEstate);
+      let updatedRealEstate = response.data.updated;
+      console.log('Updated realEstate:', JSON.stringify(updatedRealEstate, null, 4));
+      let findOneResponse = await api.findOne(self.realEstate.id);
+      console.log('Refreshed edited item after save', findOneResponse.data.item);
+      this.realEstate = { ...findOneResponse.data.item };
     },
     onUpload() {
       console.log('onUpload', this.uploadFiles);
@@ -211,8 +224,19 @@ export default {
       //formData.append('mediaFile', this.uploadFiles[0]);
       formData.append('realEstateId', this.realEstate.id);
       let tenantId = 1;
+      api.uploadMediaFiles({ formData, tenantId }).then(response => {
+        let createdMediaFiles = response.data.createdMediaFiles;
+        console.log('Successfully uploaded files!', createdMediaFiles);
+
+        api.findOne(this.realEstate.id).then(findOneResponse => {
+          console.log('Refreshed edited item after file upload', findOneResponse.data.item);
+          this.realEstate = { ...findOneResponse.data.item };
+        });
+      });
+
       //let realEstateId = this.editedRealEstate.id;
-      axios
+      //this.$store.dispatch('realEstates/uploadMediaFiles', { realEstate: this.realEstate, formData, tenantId });
+      /*axios
         .post(`${process.env.VUE_APP_API_URL}/mediaFiles`, formData, {
           headers: {
             // Manually setting the content type leads to an exception when used with service-worker
@@ -226,16 +250,23 @@ export default {
           console.log('SUCCESS!!', createdMediaFiles);
           this.mediaFiles = createdMediaFiles;
           this.$store.dispatch('realEstates/refreshEditedRealEstate');
-        })
+          //this.uploadFiles = [];
+          //this.mediaFiles = [];
+          /* createdMediaFiles.forEach(mf => {
+            this.realEstate.mediaFiles.push(mf);
+          });*/
+      /*})
         .catch(err => {
           this.$log.info('FAILURE!!', err);
-        });
+        });*/
     },
   },
 
   computed: {
-    ...mapGetters({ realEstate: 'realEstates/editedRealEstate' }),
-
+    ...mapGetters({ realEstate_: 'realEstates/editedRealEstateItem' }),
+    lastModifiedEditedItem() {
+      return this.$store.state.realEstates.lastModifiedEditedItem;
+    },
     isRealEstateEditFormVisible: {
       get() {
         return this.$store.state.realEstates.isEditFormVisible;

@@ -26,7 +26,7 @@
                 </v-tooltip> -->
               </v-toolbar>
               <v-card-text>
-                <v-form>
+                <v-form dark>
                   <v-text-field v-model="email" label="Login" name="login" prepend-icon="mdi-account" type="text" />
 
                   <v-text-field v-model="password" id="password" label="Password" name="password" prepend-icon="mdi-lock" type="password" />
