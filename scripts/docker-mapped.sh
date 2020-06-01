@@ -15,10 +15,14 @@ fi
 if [ $SERVICE_SET == 'all' ]; then
    SERVICES="db adminer api web"
 elif [ $SERVICE_SET == 'db' ]; then
-   SERVICES="db adminer"
+   SERVICES="db adminer mongo mongo-express"
+elif [ $SERVICE_SET == 'web-built' ]; then
+   SERVICES="web-built"   
+elif [ $SERVICE_SET == 'build-web' ]; then
+   SERVICES="build"   
 else
    echo SERVICE_SET ${SERVICE_SET} not defined
-   echo 'usage: docker-mapped.sh ENV(dev|prod) OPS(up|down) SERVICE_SET(all|db)'
+   echo 'usage: docker-mapped.sh ENV(dev|prod) OPS(up|down) SERVICE_SET(all|db|web-built)'
    exit 0
 fi
 
@@ -49,7 +53,7 @@ export API_SERVER_PORT=3000                                   # Cannot be change
 export API_SERVER_PUBLIC_PORT=`expr $PORT_RANGE_START + 60`   # Each customer has a specific port range
 export API_DB_PORT=$DB_PORT
 
-export WEBAPP_PORT=`expr $PORT_RANGE_START + 20`
+export WEBAPP_PORT=`expr $PORT_RANGE_START + 61`
 export DB_PORT=`expr $PORT_RANGE_START + 21`
 export DB_ADMIN_PORT=`expr $PORT_RANGE_START + 22`
 export DB_PORT_SERVICE=3306
@@ -65,6 +69,9 @@ if [ $OPS == 'up' ]; then
    if [ $SERVICE_SET == 'all' ]; then
     echo webapp: $API_SERVER_PROTOCOL://localhost:$WEBAPP_PORT
     echo api: $API_SERVER_PROTOCOL://localhost:$API_SERVER_PUBLIC_PORT
+   fi
+   if [ $SERVICE_SET == 'web-built' ]; then
+    echo webapp started with nginx using built webapp in dist: $API_SERVER_PROTOCOL://localhost:$WEBAPP_PORT
    fi
    echo DB exposed at PORT $DB_PORT
    echo DB admin accessible at: $API_SERVER_PROTOCOL://localhost:$DB_ADMIN_PORT

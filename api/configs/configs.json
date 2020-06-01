@@ -1,0 +1,27 @@
+{
+    "tenant": {
+        "name": "Immobilien Verwaltung"
+    },
+    "theme": {
+        "light": {
+            "primary": "#005CD4",
+            "primaryBg": "0083BC",
+            "secondary": "#311B92",
+            "accent": "#03A9F4",
+            "error": "#D32F2F",
+            "info": "#26A69A",
+            "success": "#4CAF50",
+            "warning": "#FFC107"
+        },
+        "dark": {
+            "primary": "#FF0000",
+            "primaryBg": "404040",
+            "secondary": "#094E66",
+            "accent": "#82B1FF",
+            "error": "#82B1FF",
+            "info": "#FF5252",
+            "success": "#4CAF50",
+            "warning": "#FFC107"
+        }
+    }
+}

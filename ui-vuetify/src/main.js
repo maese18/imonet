@@ -6,6 +6,10 @@ import router from './router';
 import vuetify from './plugins/vuetify';
 import './plugins/logger';
 import store from './store';
+import config from '@/common/config';
+
+config.loadValues();
+
 Vue.config.productionTip = false;
 new Vue({
   router,

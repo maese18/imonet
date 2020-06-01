@@ -20,18 +20,13 @@ export const ERROR = {
 };
 
 export default class ApplicationException extends Error {
-	static resetExceptionCount() {
-		exceptionCount = 0;
-	}
-
-	constructor({ location, message, exception, httpMessage, error, logType = LOG_TYPES.STACK_TRACE, countException = true }) {
+	constructor({ location, message, httpMessage, error, logType = LOG_TYPES.STACK_TRACE }) {
 		super(message);
 		this.httpMessage = httpMessage ? httpMessage : message;
-		this.originalException = exception;
 		this.logType = logType;
 		this.location = location;
 		this.error = error;
-		this.id = `[[${exceptionCount}]]`;
+
 		// see https://stackoverflow.com/questions/31089801/extending-error-in-javascript-with-es6-syntax-babel/32749533
 		this.name = this.constructor.name;
 
@@ -40,8 +35,6 @@ export default class ApplicationException extends Error {
 		} else {
 			this.stack = new Error(message).stack;
 		}
-
-		if (countException) exceptionCount++;
 	}
 
 	// Attaches exception to response
@@ -50,7 +43,6 @@ export default class ApplicationException extends Error {
 			status: this.error.http,
 			error: this.name,
 			errorCode: this.error.code,
-			id: this.id,
 			message: this.httpMessage,
 		});
 	}
@@ -58,9 +50,9 @@ export default class ApplicationException extends Error {
 	// Defines how the exception is logged.
 	log(logger) {
 		if (this.logType === LOG_TYPES.STACK_TRACE) {
-			logger.printStackTrace(this.location, this.message, this.originalException ? this.originalException : '');
+			logger.printStackTrace(this.location, this.message, this);
 		} else {
-			logger.printErrorMessage(this.location, this.message, this.originalException ? this.originalException : '');
+			logger.printErrorMessage(this.location, this.message, this);
 		}
 	}
 

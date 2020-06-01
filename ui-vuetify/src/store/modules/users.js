@@ -18,13 +18,19 @@ const mutations = {
 
 // actions
 const actions = {
-  login({ commit }, { email, password }) {
+  login({ commit }, { email, password, keepLogin }) {
     usersApi
       .login({ email, password })
       .then(response => {
         console.log(`Received token ${JSON.stringify(response.data.token)}`);
         api.setTokenInterceptor(response.data.token);
         localStorage.setItem('token', response.data.token);
+        localStorage.setItem('keepLogin', keepLogin);
+        let d = new Date();
+        d.setTime(d.getTime() + 1 * 24 * 60 * 60 * 1000);
+        let expires = 'expires=' + d.toUTCString();
+        document.cookie = 'Token=' + response.data.token + ';' + expires + ';path=/';
+
         commit('setLoginFormVisibility', false);
       })
       .catch(e => {

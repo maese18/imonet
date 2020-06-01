@@ -6,6 +6,7 @@ import socket from 'socket.io';
 import migrationController from './database/migrationController';
 import mariaDbAdaptor from './database/mariaDbAdaptor';
 import orm from './database/orm';
+import { client } from './database/mongodb';
 //import mongoose from './database/mongoose';
 const TAG = 'index.js';
 const port = configs.server.port;
@@ -47,8 +48,11 @@ io.on('connection', function(socket) {
 const closeResources = () => {
 	mariaDbAdaptor.getPool().end();
 	orm.close();
+	logger.info(TAG, 'Close mongodb client');
+	client.close();
 };
 process.on('beforeExit', code => {
+	logger.info(TAG, 'beforeExit');
 	closeResources();
 	// Can make asynchronous calls
 	setTimeout(() => {
@@ -58,19 +62,19 @@ process.on('beforeExit', code => {
 });
 
 process.on('exit', code => {
-	closeResources();
 	// Only synchronous calls
 	console.log(`Process exited with code: ${code}`);
+	closeResources();
 });
 
 process.on('SIGTERM', signal => {
-	closeResources();
 	console.log(`Process ${process.pid} received a SIGTERM signal`);
+	closeResources();
 	process.exit(0);
 });
 
 process.on('SIGINT', signal => {
-	closeResources();
 	console.log(`Process ${process.pid} has been interrupted`);
+	closeResources();
 	process.exit(0);
 });

@@ -121,7 +121,8 @@ if (env !== 'test-') {
 		},
 		printStackTrace: (location, message, error = {}) => {
 			winstonLogger.error(error.stack, {
-				facility: location + (error.id ? ` ID${error.id}` : ''),
+				message,
+				facility: location,
 				error: error.stack,
 			});
 		},

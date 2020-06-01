@@ -2,7 +2,7 @@
   <v-navigation-drawer v-model="isNavigationDrawerOpen" clipped-left app :expand-on-hover="expandOnHover" :mini-variant="miniVariant">
     <v-list dense nav class="py-0">
       <div class="d-flex ma-5 justify-center" @click.stop="$store.commit('toggleNavigationDrawer')">
-        <img class="mt-1 ml-4 mr-4" alt="imonet logo" :src="logo" height="50" />
+        <!-- <img class="mt-1 ml-4 mr-4" alt="imonet logo" :src="logo" height="50" /> -->
 
         <v-icon @click.stop="$store.commit('toggleNavigationDrawer')">
           mdi-close

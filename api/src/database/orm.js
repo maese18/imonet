@@ -21,6 +21,8 @@ class Orm {
 				acquire: 30000,
 				idle: 10000,
 			},
+			// disable logging; default: console.log
+			logging: false,
 		});
 		sequelizeAdapter
 			.authenticate()
@@ -48,7 +50,7 @@ class Orm {
 								Tenant.create({ tenantName: 'Sample Tenant' }).then(createdTenant => {
 									User.create({
 										email: 'info@adivo.ch',
-										password: 'pwHash',
+										password: 'pw',
 										firstName: 'Vorname',
 										lastName: 'Nachname',
 										fk_tenant_id: createdTenant.id,

@@ -15,10 +15,12 @@ import UrlNotDefinedException from './errors/UrlNotDefinedException';
 import userController from './controllers/user/userController';
 import individualController from './controllers/user/individualController';
 import domainController from './controllers/domain/domainController';
+import configsController from './controllers/config/configsController';
 import mediaFileController from './controllers/mediaFile/mediaFileController';
 import realEstateController from './controllers/realEstate/realEstateController';
 import webpushSubscriptionHandler from './config/webPushConfig';
 import authenticationService from './services/authenticationService';
+import mongoDomainController from './controllers/mongo-domain/mongo-domain-controller';
 const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
@@ -48,6 +50,15 @@ app.use(
 const auth = authenticationService.checkAuth;
 const optionalAuth = authenticationService.checkOptionalAuth;
 /* Routes */
+
+app.post('/m-api/:collection', mongoDomainController.insert);
+app.put('/m-api/:collection/:id', mongoDomainController.updateOne);
+app.get('/m-api/:collection/:id', mongoDomainController.findByPk);
+app.post('/m-api/:collection/:id', mongoDomainController.findByPk);
+app.get('/m-api/:collection', mongoDomainController.findAllAsGet);
+app.post('/m-api/:collection', mongoDomainController.findAllAsPost);
+
+app.get('/api/configs', configsController.getConfigs);
 app.post('/api/subscribe', webpushSubscriptionHandler);
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/lifeSign', lifeSign);

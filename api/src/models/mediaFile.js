@@ -11,12 +11,12 @@ export default function mediaFile(sequelizeAdapter) {
 			minGroupDelete: { type: Sequelize.INTEGER, defaultValue: 3 },
 			//viewPermission: { type: Sequelize.ENUM(VISIBILITY.PUBLIC, VISIBILITY.PRIVATE, VISIBILITY.RESTRICTED), defaultValue: VISIBILITY.PRIVATE },
 			// The filename at the time of uploading. Can be changed as the file is stored using its id and file type: {id}.{fileType}
-			fileName: { type: Sequelize.STRING, allowNull: false },
+			fileName: { type: Sequelize.STRING, allowNull: true },
 			title: { type: Sequelize.STRING },
 			description: { type: Sequelize.TEXT },
-			fileType: { type: Sequelize.STRING, allowNull: false },
-			mimeType: { type: Sequelize.STRING, allowNull: false },
-			size: { type: Sequelize.DECIMAL, allowNull: false },
+			fileType: { type: Sequelize.STRING, allowNull: true },
+			mimeType: { type: Sequelize.STRING, allowNull: true },
+			size: { type: Sequelize.DECIMAL, allowNull: true },
 			// purpose of the media file
 			purpose: { type: Sequelize.ENUM('title', 'kitchen', 'bathroom', 'room', 'other', 'outside', 'location'), defaultValue: 'other', allowNull: true },
 		},

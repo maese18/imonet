@@ -13,7 +13,7 @@ if [ $OPS == 'help' ]; then
 fi
 # Assert SERVICE_SET is all or db
 if [ $SERVICE_SET == 'all' ]; then
-   SERVICES="db adminer api web pwa proxy"
+   SERVICES="db adminer api web proxy"
 elif [ $SERVICE_SET == 'web' ]; then
    SERVICES="web"   
 elif [ $SERVICE_SET == 'proxy' ]; then
@@ -75,9 +75,9 @@ if [ $OPS == 'up' ]; then
    echo ------------------------------------------------------------------------------------------
   
    if [ $INTERACTIVE == 'i' ]; then
-    INTERACTIVE_FLAG='' # '-d' for background
+      INTERACTIVE_FLAG='' # '-d' for background
    else
-       INTERACTIVE_FLAG='-d' # '-d' for background
+      INTERACTIVE_FLAG='-d' # '-d' for background
    fi
 
    # Start stack

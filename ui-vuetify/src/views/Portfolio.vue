@@ -5,7 +5,7 @@
     </v-btn> -->
     <!-- see for breakpoints: https://vuetifyjs.com/en/customization/breakpoints/-->
     <!-- Fab button with Real Estate dialog -->
-    <v-dialog v-model="isEditFormVisible" :fullscreen="$vuetify.breakpoint.smAndDown" style="border:1px solid white" scrollable max-width="800" transition="dialog-bottom-transition" overlay-color="#404040" overlay-opacity="0.95">
+    <v-dialog v-model="isEditFormVisible" :fullscreen="$vuetify.breakpoint.smAndDown" style="border:1px solid white" scrollable max-width="1200" transition="dialog-bottom-transition" overlay-color="#404040" overlay-opacity="0.95">
       <template v-slot:activator="{ on }">
         <v-fab-transition>
           <v-btn v-on="on" style="z-index:10" class="mb-5" @click="createNew" fab dark fixed bottom right color="primary">
@@ -13,13 +13,15 @@
           </v-btn>
         </v-fab-transition>
       </template>
-      <real-estate-edit-form v-if="isEditFormVisible" :editedRealEstate="editedRealEstate"></real-estate-edit-form>
+
+      <real-estate-edit-form v-if="isEditFormVisible"></real-estate-edit-form>
     </v-dialog>
     <v-row no-gutters>
-      <v-col v-for="object in realEstates" :key="object.clientId" cols="12" sm="6" md="4">
+      <v-col v-for="object in realEstates" :key="object.clientId" cols="12" sm="6" md="4" xl="2">
         <!--<v-card :loading="isWorking" class="mx-auto my-12" max-width="374">-->
         <v-card :loading="isWorking" class="mx-auto my-12 px-2">
-          <v-img height="250" :src="titleImageUrl(object)"></v-img>
+          <!-- <v-img height="250" :src="titleImageUrl(object)"></v-img> -->
+          <galerie :mediaFiles="object.mediaFiles" hide-delimiters height="250"></galerie>
 
           <v-card-title>{{ object.title }}</v-card-title>
 
@@ -71,43 +73,26 @@ console.log(`LOGGER`);
 import shortid from 'shortid';
 import { mapState, mapGetters } from 'vuex';
 import RealEstateEditForm from './RealEstateEditForm/RealEstateEditForm';
-import api from '../api/realEstates';
+import Galerie from './RealEstateEditForm/Galerie';
+//import api from '@/api/realEstates';
+//import Vue from 'vue';
 export default {
-  components: { RealEstateEditForm },
+  components: { RealEstateEditForm, Galerie },
   created() {
-    //this.$store.dispatch('realEstates/loadAll');
-    api
-      .findAll()
-      .then(response => {
-        console.log('Received Portfolio', JSON.stringify(response.data.items, null, 2));
-        this.realEstates = response.data.items;
-      })
-      .catch(e => console.log('Failed to load RealEstates', e));
+    this.$store.dispatch('realEstates/loadAll');
   },
   data() {
     return {
-      realEstates: [],
       isEditFormVisible: false,
-      editedRealEstate: {},
+      //editedRealEstate: {},
       selection: null,
       hidden: true,
     };
   },
   computed: {
-    ...mapGetters({ realEstates_: 'realEstates/getAll' }),
+    ...mapGetters({ realEstates: 'realEstates/getAll' }),
 
-    /* ...mapGetters({ realEstates_: 'realEstates/getAll' }),
-    realEstates() {
-      let realEstatesItems = this.$store.getters['realEstates/getAll'];
-      return realEstatesItems;
-    },*/
-    // ...mapState({ realEstates: state => state.realEstates.getters.getAllHouses, isWorking: state => state.isLoading }),
-    ...mapState({ isWorking: state => state.isLoading }),
-    /*realEstates() {
-      console.log('get RealEstates');
-      let byClientSideId = this.$store.state.realEstates.byClientSideId;
-      return Object.keys(byClientSideId).map(clientSideId => byClientSideId[clientSideId]);
-    },*/
+    ...mapState({ isWorking: state => state.isLoading, editedRealEstate: state => state.realEstates.editedRealEstate }),
     isEditFormVisible_: {
       get() {
         return this.$store.state.realEstates.isEditFormVisible;
@@ -122,9 +107,35 @@ export default {
   },
   methods: {
     edit(realEstate) {
-      this.editedRealEstate = realEstate;
+      // this.editedRealEstate = realEstate;
       this.isEditFormVisible = true;
-      //this.$store.commit('realEstates/edit', { realEstate });
+      this.$store.commit('realEstates/edit', { realEstate });
+    },
+    createNew() {
+      let realEstate = {
+        clientSideId: shortid.generate(),
+        mediaFiles: [],
+      };
+      this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
+      /*this.realEstate = realEstate;
+      api
+        .createOne(realEstate)
+        .then(response => {
+          let editedRealEstate = response.data.created;
+          editedRealEstate.mediaFiles = [];
+          this.editedRealEstate = editedRealEstate;
+          //Vue.set(this, 'editedRealEstate', editedRealEstate);
+          console.log('created ', response.data.meta);
+          console.log('created ', JSON.stringify(this.editedRealEstate, null, 2));
+
+          this.isEditFormVisible = true;
+          this.$store.commit('realEstates/saveItem', { realEstate: this.editedRealEstate });
+
+          //this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
+        })
+        .catch(e => {
+          console.log(e);
+        });*/
     },
     titleImageUrl(realEstateObject) {
       //let realEstateId = this.editedRealEstate.id;
@@ -139,12 +150,6 @@ export default {
       }
 
       return 'https://cdn.vuetifyjs.com/images/cards/cooking.png';
-    },
-    createNew() {
-      let realEstate = {
-        clientSideId: shortid.generate(),
-      };
-      this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
     },
   },
 };

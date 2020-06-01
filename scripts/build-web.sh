@@ -1,1 +1,1 @@
-./no-docker.sh dev build web
+./no-docker.sh prod build web

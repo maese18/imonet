@@ -1,16 +1,22 @@
 <template>
   <v-app id="v-app">
-    <login v-if="isLoginFormVisible"></login>
-    <navigation-drawer />
-    <app-bar />
-    <v-content id="content" v-if="!isLoginFormVisible">
-      <v-sheet id="app-bar-scroll-target" class="overflow-y-auto" style="position:absolute;top:0px;bottom:0px;left:0;right:0">
+    <v-content id="content" class="fill-height" v-if="!isLoginFormVisible" style="border:1px solid red">
+      <v-sheet id="app-bar-scroll-target" v-if="!isLoginFormVisible" class="overflow-y-auto" style="position:absolute;top:0px;bottom:0px;left:0;right:0">
         <!--  <v-container style="height: 1000px;"> -->
         <v-container fluid>
           <router-view />
         </v-container>
       </v-sheet>
     </v-content>
+
+    <v-row justify="center">
+      <v-dialog v-model="isLoginFormVisible" persistent max-width="500px">
+        <login v-if="isLoginFormVisible"></login>
+      </v-dialog>
+    </v-row>
+    <navigation-drawer />
+    <app-bar v-if="!isLoginFormVisible" />
+
     <bottom-navigation />
 
     <v-snackbar v-model="appUpdateExists" :timeout="timeout" bottom left class="snack">
@@ -127,7 +133,7 @@ input:-webkit-autofill:active {
 }
 /* Attach these classes to text-fields with autofill enabled, but to avoid browser agent formatting*/
 .autofill-dark {
-  -webkit-text-fill-color: white !important;
+  -webkit-text-fill-color: #d0d0d0 !important;
 }
 .autofill-light {
   -webkit-text-fill-color: black !important;

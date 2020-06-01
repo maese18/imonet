@@ -1,27 +1,14 @@
-// Custom service worker
-// https://developers.google.com/web/tools/workbox/modules/workbox-sw#avoid_async_imports
-const { registerRoute } = workbox.routing;
+//importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
 
-/*
-function subscribeUserToPush() {
-  return navigator.serviceWorker
-    .register('/service-worker.js')
-    .then(registration => {
-      const subscribeOptions = {
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array('BFeD5yPAsk5ife9147C9vI6ENZAZeFJtXVg6UUq7lXJSlJvT2-rPcWvlUlJK45ctcNW80Y23F0_0a6g6RPubTKE'),
-      };
-
-      return registration.pushManager.subscribe(subscribeOptions);
-    })
-    .then(pushSubscription => {
-      console.log('Received PushSubscription: ', JSON.stringify(pushSubscription));
-      return pushSubscription;
-    });
+if (workbox) {
+  console.log(`Yay! Workbox is loaded 🎉`);
+} else {
+  console.log(`Boo! Workbox didn't load 😬`);
 }
-*/
+
 if (workbox) {
   console.log('configure workbox routes');
+  const registerRoute = workbox.routing.registerRoute;
   //subscribeUserToPush();
 
   // apply precaching. In the built version, the precacheManifest will
@@ -33,7 +20,11 @@ if (workbox) {
   // Since we have a SPA here, this should be index.html always.
   // https://stackoverflow.com/questions/49963982/vue-router-history-mode-with-pwa-in-offline-mode
   workbox.routing.registerNavigationRoute('/index.html');
+  // const handler = workbox.precaching.createHandlerBoundToURL('/index.html');
 
+  // const navigationRoute = new workbox.routing.NavigationRoute(handler);
+
+  // workbox.routing.registerRoute(navigationRoute);
   // The following routes need explicit caching as registerNavigationRoute would avoid loading those resources
 
   // https://adivo.ch/img
@@ -77,7 +68,8 @@ if (workbox) {
     }),
   );*/
 
-  workbox.routing.registerRoute(
+  //workbox.routing.registerRoute(
+  registerRoute(
     '/img/',
     new workbox.strategies.CacheFirst({
       cacheName: 'img',
@@ -85,21 +77,21 @@ if (workbox) {
   );
 
   // eg. https://randomuser.me/api/portraits/men/81.jpg
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/randomuser\.me/,
     new workbox.strategies.CacheFirst({
       cacheName: 'randomuser',
     }),
   );
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/randomuser\.me/,
-    new workbox.strategies.cacheFirst({
+    new workbox.strategies.CacheFirst({
       cacheName: 'randomuser_alt',
     }),
   );
 
   // https://cdn.vuetifyjs.com/images/lists/2.jpg
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/cdn\.vuetifyjs\.com/,
     new workbox.strategies.CacheFirst({
       cacheName: 'vuetifyjs',
@@ -108,7 +100,7 @@ if (workbox) {
 
   // eg. https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css
   // Setup cache strategy for Material Design Icons.
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/cdn\.jsdelivr\.net/,
     new workbox.strategies.CacheFirst({
       cacheName: 'mdi-icons',
@@ -118,14 +110,14 @@ if (workbox) {
   // Setup cache strategy for Google Fonts. They consist of two parts, a static one
   // coming from fonts.gstatic.com (strategy CacheFirst) and a more ferquently updated on
   // from fonts.googleapis.com. Hence, split in two registerroutes
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/fonts\.googleapis\.com/,
     new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'google-fonts-stylesheets',
     }),
   );
 
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/fonts\.gstatic\.com/,
     new workbox.strategies.CacheFirst({
       cacheName: 'google-fonts-webfonts',
@@ -141,7 +133,7 @@ if (workbox) {
     }),
   );
 
-  workbox.routing.registerRoute(
+  registerRoute(
     /^https:\/\/stackpath\.bootstrapcdn\.com/,
     new workbox.strategies.StaleWhileRevalidate({
       cacheName: 'fontawesome',

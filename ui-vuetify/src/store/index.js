@@ -4,6 +4,7 @@ import realEstates from './modules/realEstates';
 //const API_URL = process.env.VUE_APP_API_URL;
 export default new Vuex.Store({
   state: {
+    isConfigLoaded: false,
     isNavigationDrawerOpen: false,
     isLoading: false, // Indicates whether the application is in a state of loading
     exception: { code: -1, message: '' },
@@ -11,6 +12,10 @@ export default new Vuex.Store({
   modules: { users, realEstates },
 
   mutations: {
+    configsLoaded(state) {
+      state.isConfigLoaded = true;
+      console.log('configs loade');
+    },
     setIsLoading(state, { isLoading }) {
       state.isLoading = isLoading;
     },

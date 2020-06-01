@@ -22,6 +22,6 @@ export default (app, configs) => {
 			},
 		};
 
-		app.use(morgan('combined', { stream: loggerStream }));
+		//app.use(morgan('combined', { stream: loggerStream }));
 	}
 };

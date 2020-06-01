@@ -61,7 +61,8 @@ class UserController {
 			})
 			.then(count => {
 				if (count > 0) {
-					next(new SignupException(TAG, `Failed to signup user. Reason: email ${req.body.email} exists`));
+					//next(new SignupException(TAG, `Failed to signup user. Reason: email ${req.body.email} exists`));
+					throw new SignupException(TAG, `Failed to signup user. Reason: email ${req.body.email} exists`);
 				} else {
 					User.create({ email, firstName, lastName, password, fk_tenant_id: tenantId })
 						.then(created => {
@@ -73,7 +74,7 @@ class UserController {
 				}
 			})
 			.catch(e => {
-				console.log(e);
+				//console.log(e);
 				next(e);
 			});
 	};

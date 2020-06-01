@@ -6,7 +6,7 @@ export default class SignupException extends ApplicationException {
 		super({
 			location,
 			message,
-			httpMessage: message,
+			httpMessage: 'Signup failed with undefined error. See error logs for more details',
 			exception,
 			error: ERROR.Authentication,
 			logType: LOG_TYPES.STACK_TRACE,

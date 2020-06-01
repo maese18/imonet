@@ -1,15 +1,19 @@
 <template>
   <div>
-    <v-carousel v-model="model">
+    <v-carousel v-model="model" :show-arrows="mediaFiles.length > 1" :hide-delimiters="hideDelimiters">
       <v-carousel-item v-for="(mediaFile, i) in mediaFiles" :key="i">
         <v-sheet height="100%" tile>
           <v-row class="fill-height" align="center" justify="center">
             <v-col cols="12">
-              <v-img cover :src="imageUrl(mediaFile)"></v-img>
-              <div style="position:absolute; background:#202020;opacity:0.8;left:0;right:0;top:10px;padding:20px">
+              <v-img :height="height" cover :src="imageUrl(mediaFile)"></v-img>
+              <div style="position:absolute; background:#202020;opacity:0.8;left:0;right:0;top:0px;padding:20px">
                 <h1>{{ mediaFile.purpose }}</h1>
                 <p>{{ mediaFile.description }}</p>
               </div>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field v-if="showFieldEditor" v-model="mediaFile.purpose" label="purpose"></v-text-field>
+              <v-text-field v-if="showFieldEditor" v-model="mediaFile.description" label="Description"></v-text-field>
             </v-col>
           </v-row>
         </v-sheet>
@@ -21,7 +25,14 @@
 <script>
 export default {
   props: {
-    mediaFiles: Array,
+    mediaFiles: {
+      type: Array,
+      default: () => [],
+    },
+
+    hideDelimiters: Boolean,
+    height: String,
+    showFieldEditor: Boolean,
   },
   data() {
     return {
@@ -31,7 +42,6 @@ export default {
   },
   methods: {
     imageUrl(mediaFile) {
-      //let realEstateId = this.editedRealEstate.id;
       let token = localStorage.getItem('token');
       return `${process.env.VUE_APP_API_URL}/mediaFiles/${mediaFile.id}?token=${token}`;
     },

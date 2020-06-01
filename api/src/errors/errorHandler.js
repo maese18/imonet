@@ -4,7 +4,7 @@ export function logErrors(err, req, res, next) {
 	if (err.log) {
 		err.log(logger);
 	} /* istanbul ignore next */ else {
-		logger.error('location not defined', err.stack, err);
+		logger.error('caught by errorHandler', err.stack, err);
 	}
 	next(err);
 }

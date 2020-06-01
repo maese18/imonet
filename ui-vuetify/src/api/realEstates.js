@@ -23,7 +23,21 @@ export default {
   deleteOne(obj) {
     console.log('delete', obj);
   },
-
+  /*addMediaFile({ mediaFile }) {
+    return axios.post();
+  },*/
+  updateMediaFile({ mediaFile, fileToUpload }) {
+    let formData = new FormData();
+    //formData.append('files', fileToUpload, fileToUpload.name);
+    formData.append('mediaFile', fileToUpload);
+    formData.append('realEstateId', mediaFile.fk_realEstate_id);
+    formData.append('id', mediaFile.id);
+    console.log('execute updateMediaFile');
+    return axios.post(`${MEDIA_FILES_URL}`, formData);
+  },
+  deleteMediaFile({ mediaFile }) {
+    return axios.delete(mediaFile.id);
+  },
   uploadMediaFiles({ formData, tenantId }) {
     return axios.post(`${MEDIA_FILES_URL}`, formData, {
       headers: {

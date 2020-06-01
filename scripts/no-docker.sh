@@ -36,7 +36,7 @@ export API_HOST_SCHEME=localhost # Allows WebApp to derive correct API url
 export API_SERVER_PORT=`expr $PORT_RANGE_START + 60`                                   # Cannot be changed because docker-compose maps port 3000 to API-SERVER_PUBLIC_PORT
 export API_DB_PORT=$DB_PORT
 
-export WEBAPP_PORT=`expr $PORT_RANGE_START + 20`
+export WEBAPP_PORT=`expr $PORT_RANGE_START + 61`
 export DB_HOST=localhost
 export DB_PORT_SERVICE=`expr $PORT_RANGE_START + 21`
 # UI env variables

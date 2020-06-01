@@ -7,7 +7,8 @@ import colors from 'vuetify/lib/util/colors';
 Vue.use(Vuetify);
 
 Vue.use(Vuex);
-
+console.log('colors.blue.darken2', colors.blue.darken2);
+console.log('colors.blue.darken2', colors['blue']['darken2']);
 export default new Vuetify({
   components: {
     VAppBar,
@@ -26,7 +27,7 @@ export default new Vuetify({
     },
     themes: {
       light: {
-        background: '#fff',
+        background: '#459200',
         primary: colors.blue.darken2,
         secondary: colors.grey.darken1,
         accent: colors.shades.black,
@@ -49,7 +50,7 @@ export default new Vuetify({
         secondary: colors.indigo,
         // All keys will generate theme styles,
         // Here we add a custom `tertiary` color
-        tertiary: colors.pink.base,
+        tertiary: colors.indigo.accent4,
         appBar: '#202020',
       },
     },

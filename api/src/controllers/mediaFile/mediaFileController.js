@@ -7,6 +7,8 @@ import { sendResponse, illegalArgumentHandler, sendItemsResponse, right, formatR
 import IllegalArgumentException from '../../errors/IllegalArgumentException';
 import AuthorizationException from '../../errors/AuthorizationException';
 import { GROUPS } from '../../config/constants';
+import { fstat } from 'fs';
+import fs from 'fs';
 const MEDIA_PATH = path.join(process.env.PWD, 'media');
 const TAG = 'MediaFileController';
 
@@ -17,7 +19,6 @@ class MediaFileController {
 	constructor() {
 		this.orm = orm;
 	}
-
 	listMediaFiles = (req, res, next) => {
 		let fk_tenant_id = req.app.locals.tenantId;
 		let realEstateId = req.query.realEstateId;
@@ -41,9 +42,9 @@ class MediaFileController {
 
 		let MediaFile = this.orm.MediaFile();
 		let { authType, groupMember, groupMemberId, userOrIndividualId } = req.app.locals;
-		console.log('req.app.locals.authType=' + authType);
-		console.log('req.app.locals.groupMember=' + groupMember);
-		console.log('req.app.locals.groupMemberId=' + groupMemberId);
+		logger.info(TAG, 'req.app.locals.authType=' + authType);
+		logger.info(TAG, 'req.app.locals.groupMember=' + groupMember);
+		logger.info(TAG, 'req.app.locals.groupMemberId=' + groupMemberId);
 
 		let mediaFile = await MediaFile.findByPk(mediaFileId);
 		//	.then(mediaFile => {
@@ -130,6 +131,7 @@ class MediaFileController {
 	 */
 	uploadFile = async (req, res, next) => {
 		if (!req.files) {
+			logger.info(TAG, 'No files to upload in multi-part form-data found');
 			next(new IllegalArgumentException(TAG, 'No files to upload in multi-part form-data found'));
 			return;
 		}
@@ -140,13 +142,13 @@ class MediaFileController {
 			next(); //treat by uploadFiles --> multiple file upload
 			return;
 		}
-
+		// Get tenant id from req.app.locals, which was set by the auth middleware
 		let fk_tenant_id = req.app.locals.tenantId;
 
 		let mediaFile = req.files.mediaFile;
 
 		let fileType = right(mediaFile.name, 3);
-		let { clientSideId, realEstateId, description, purpose, title } = req.body;
+		let { id, clientSideId, realEstateId, description, purpose, title } = req.body;
 
 		let RealEstate = this.orm.RealEstate();
 		try {
@@ -159,28 +161,53 @@ class MediaFileController {
 			}
 			let MediaFile = this.orm.MediaFile();
 
-			let createdMediaFile = await MediaFile.create({
-				clientSideId,
-				fk_realEstate_id: realEstateId,
-				fk_tenant_id,
+			if (id) {
+				// existing id, therefore update MediaFile
+				let existingMediaFile = await MediaFile.findByPk(id);
+				if (existingMediaFile) {
+					let existingFilesPath = createFilePath(fk_tenant_id, existingMediaFile.id, existingMediaFile.fileType);
+					await existingMediaFile.update({ fileName: mediaFile.name, size: mediaFile.size, mimeType: mediaFile.mimetype, fileType });
 
-				fileName: mediaFile.name,
-				size: mediaFile.size,
-				mimeType: mediaFile.mimetype,
+					// delete existing file
+					fs.unlink(existingFilesPath, err => {
+						if (err) throw new IllegalArgumentException(TAG, err.message, err);
 
-				title,
-				description,
-				fileType,
-				purpose,
-			});
-			let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
-			//Use the mv() method to place the file in upload directory (i.e. "uploads")
-			mediaFile.mv(filePath);
-			sendResponse(req, res, next, HttpStatusCodes.Created, 'createdMediaFile', createdMediaFile, {
-				message: `File metadata created and file uploaded, get file with /api/mediaFiles/${createdMediaFile.id}`,
-			});
+						//file removed
+
+						let filePath = createFilePath(fk_tenant_id, id, fileType);
+						//Use the mv() method to place the file in upload directory (i.e. "uploads")
+						mediaFile.mv(filePath);
+						sendResponse(req, res, next, HttpStatusCodes.Created, 'updatedMediaFile', existingMediaFile, {
+							message: `File metadata updated and file uploaded, get file with /api/mediaFiles/${existingMediaFile.id}`,
+						});
+					});
+				} else {
+					throw new IllegalArgumentException(TAG, 'MediaFile with id ' + id + ' does not exist', new Error('update File failed'));
+				}
+			} else {
+				let createdMediaFile = await MediaFile.create({
+					clientSideId,
+					fk_realEstate_id: realEstateId,
+					fk_tenant_id,
+
+					fileName: mediaFile.name,
+					size: mediaFile.size,
+					mimeType: mediaFile.mimetype,
+
+					title,
+					description,
+					fileType,
+					purpose,
+				});
+				let filePath = createFilePath(fk_tenant_id, createdMediaFile.id, fileType);
+				//Use the mv() method to place the file in upload directory (i.e. "uploads")
+				mediaFile.mv(filePath);
+				sendResponse(req, res, next, HttpStatusCodes.Created, 'createdMediaFile', createdMediaFile, {
+					message: `File metadata created and file uploaded, get file with /api/mediaFiles/${createdMediaFile.id}`,
+				});
+			}
 		} catch (err) {
-			next(new IllegalArgumentException(TAG, err.message, err));
+			next(err);
 		}
 	};
 

@@ -23,7 +23,7 @@
 
     <v-spacer />
     <v-btn icon>
-      <v-icon>mdi-heart</v-icon>
+      <v-icon color="tertiary">mdi-heart</v-icon>
     </v-btn>
 
     <v-btn icon>

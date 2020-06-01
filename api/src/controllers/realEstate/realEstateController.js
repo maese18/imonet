@@ -81,10 +81,52 @@ class RealEstateController {
 		realEstate.fk_tenant_id = fk_tenant_id;
 		if (realEstate.id) {
 			let realEstateObject = await this.orm.RealEstate().findByPk(realEstate.id);
+
 			realEstateObject
-				.update({ ...realEstate, fk_tenant_id })
-				.then(updated => {
-					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updated, {
+				.update(
+					{ ...realEstate, fk_tenant_id },
+					{
+						include: [
+							{
+								association: this.orm.RealEstate(),
+								include: [this.orm.MediaFile],
+							},
+						],
+					}
+				)
+				.then(async updated => {
+					let mediaFiles = [];
+					if (realEstate.mediaFiles) {
+						for (let i = 0; i < realEstate.mediaFiles.length; i++) {
+							let mediaFile = realEstate.mediaFiles[i];
+							let MediaFile = this.orm.MediaFile();
+							mediaFile.fk_tenant_id = fk_tenant_id;
+							mediaFile.fk_realEstate_id = realEstate.id;
+
+							if (mediaFile.id) {
+								let updatedMediaFile = await MediaFile.update(
+									{ ...mediaFile },
+									{
+										where: {
+											id: {
+												$eq: mediaFile.id,
+											},
+										},
+									}
+								);
+								logger.info(TAG, updatedMediaFile);
+								mediaFiles.push(updatedMediaFile);
+							} else {
+								let createdMediaFile = await MediaFile.create(mediaFile);
+								logger.info(TAG, 'created MediaFile =' + JSON.stringify(createdMediaFile));
+								mediaFiles.push(createdMediaFile);
+							}
+						}
+						updated.mediaFiles = mediaFiles;
+					}
+					let updatedRealEstate = { ...updated, mediaFiles };
+					console.log('updated', updated);
+					sendResponse(req, res, next, HttpStatusCodes.Created, 'updated', updatedRealEstate, {
 						message: `Saved RealEstate with id ${updated.id}`,
 					});
 				})
