@@ -69,7 +69,7 @@
   </v-card>
 </template>
 <script>
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters } from 'vuex';
 import validations from '@/validations/index.js';
 import JsonDataView from './JsonDataView';
 import Galerie from './Galerie';
@@ -83,7 +83,7 @@ export default {
   props: ['isVisible'],
   created() {
     this.validations = validations;
-    //this.realEstate = this.editedRealEstate;
+
     console.log('created Dialog with property editedRealEstate=', JSON.stringify(this.editedRealEstate, null, 2));
   },
   data() {
@@ -94,7 +94,7 @@ export default {
       tab: null,
       lazy: false,
       valid: true,
-      //realEstate: { title: 'Inserate Titel', type: 'Wohnung/Haus', street: '', zipCode: '', city: '', price: null, priceType: 'fix', priceEffective: null, description: '' },
+      // realEstate: {},
 
       types: ['Wohnung', 'Wohnung/Haus', 'Parkplatz', 'Garagenplatz', 'Grundstück', 'MFH', 'Landwirtschaft', 'Büro/Gewerbe/Industrie'],
 
@@ -104,8 +104,10 @@ export default {
   },
   computed: {
     ...mapGetters({ realEstate_: 'realEstates/editedRealEstateItem' }),
-    ...mapState({ realEstate: state => state.realEstates.editedRealEstate }),
-
+    // ...mapState({ realEstate: state => state.realEstates.editedRealEstate }),
+    realEstate() {
+      return this.$store.state.realEstates.editedRealEstate;
+    },
     lastModifiedEditedItem() {
       return this.$store.state.realEstates.lastModifiedEditedItem;
     },
@@ -140,7 +142,11 @@ export default {
       let token = localStorage.getItem('token');
       return `${process.env.VUE_APP_API_URL}/mediaFiles/${mediaFile.id}?token=${token}`;
     },
-    async save() {
+    save() {
+      console.log('save edited item');
+      this.$store.dispatch('realEstates/saveEdited', { realEstate: this.realEstate });
+    },
+    async saveDepr() {
       //this.$store.dispatch('realEstates/save', { realEstate: this.realEstate });
       let self = this;
       let response = await api.saveOne(this.realEstate);

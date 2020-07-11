@@ -185,7 +185,12 @@ export const formatResponse = (req, responseObject) => {
 	let prettyFormat = req.query && (req.query.prettyFormat === '' || req.query.prettyFormat === 'true' || req.query.pretty === '');
 	return prettyFormat ? JSON.stringify(responseObject, null, 2) : responseObject;
 };
-
+/**
+ *
+ * @param {HttpRequest} req
+ * @param {Object} item to format
+ * @param {Object} meta data of this request/response
+ */
 export const formatResponseItem = (req, item, meta = {}) => {
 	if (process.env.NODE_ENV !== 'production') {
 		meta.requestHeaders = req.headers;

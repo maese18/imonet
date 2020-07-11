@@ -1,21 +1,23 @@
 import axios from 'axios';
-
-const API_URL = process.env.VUE_APP_API_URL;
-const URL = `${API_URL}/realEstates`;
+import config from '@/common/config';
+const API_URL = config.mongoApiUrl;
+const URL = `m-api/realEstates`;
 const MEDIA_FILES_URL = `${API_URL}/mediaFiles`;
 
 export default {
   findAll() {
-    return axios.get(`${URL}?tenantId=1`);
+    console.log('realEstates.findAll() ', URL);
+    let query = { collection: 'realEstates', where: {} };
+    return axios.get(`${URL}?query=${JSON.stringify(query)}`);
   },
   findOne(id) {
     return axios.get(`${URL}/${id}`);
   },
-  saveOne(obj) {
-    return axios.put(`${URL}`, { realEstate: obj });
+  saveOne(realEstate) {
+    return axios.post(URL, { method: 'updateOne', data: realEstate });
   },
   createOne(obj) {
-    return axios.post(`${URL}`, { realEstate: obj });
+    return axios.post(URL, { method: 'insert', data: obj });
   },
   updateOne(obj) {
     console.log('update', obj);

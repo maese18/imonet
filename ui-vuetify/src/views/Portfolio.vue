@@ -70,72 +70,41 @@
 
 <script>
 console.log(`LOGGER`);
-import shortid from 'shortid';
+
 import { mapState, mapGetters } from 'vuex';
 import RealEstateEditForm from './RealEstateEditForm/RealEstateEditForm';
 import Galerie from './RealEstateEditForm/Galerie';
+import RealEstateStore from '../store/modules/real-estates-store';
 //import api from '@/api/realEstates';
 //import Vue from 'vue';
 export default {
   components: { RealEstateEditForm, Galerie },
   created() {
-    this.$store.dispatch('realEstates/loadAll');
+    RealEstateStore.loadAll(this.$store);
+    //this.$store.dispatch('realEstates/loadAll');
   },
   data() {
     return {
       isEditFormVisible: false,
-      //editedRealEstate: {},
       selection: null,
       hidden: true,
     };
   },
   computed: {
     ...mapGetters({ realEstates: 'realEstates/getAll' }),
-
     ...mapState({ isWorking: state => state.isLoading, editedRealEstate: state => state.realEstates.editedRealEstate }),
-    isEditFormVisible_: {
-      get() {
-        return this.$store.state.realEstates.isEditFormVisible;
-      },
-      set(value) {
-        this.$log.info('toggle isEditFormVisible ', value);
-        //if (value !== this.$store.state.isEditFormVisible) {
-        this.$store.commit('realEstates/setIsEditFormVisible', value);
-        // }
-      },
-    },
   },
   methods: {
     edit(realEstate) {
-      // this.editedRealEstate = realEstate;
       this.isEditFormVisible = true;
-      this.$store.commit('realEstates/edit', { realEstate });
+      RealEstateStore.edit(store, realEstate);
+      //this.$store.commit('realEstates/edit', { realEstate });
     },
     createNew() {
       let realEstate = {
-        clientSideId: shortid.generate(),
         mediaFiles: [],
       };
-      this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
-      /*this.realEstate = realEstate;
-      api
-        .createOne(realEstate)
-        .then(response => {
-          let editedRealEstate = response.data.created;
-          editedRealEstate.mediaFiles = [];
-          this.editedRealEstate = editedRealEstate;
-          //Vue.set(this, 'editedRealEstate', editedRealEstate);
-          console.log('created ', response.data.meta);
-          console.log('created ', JSON.stringify(this.editedRealEstate, null, 2));
-
-          this.isEditFormVisible = true;
-          this.$store.commit('realEstates/saveItem', { realEstate: this.editedRealEstate });
-
-          //this.$store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
-        })
-        .catch(e => {
-          console.log(e);
-        });*/
+      RealEstateStore.createOne(this.$store, realEstate);
     },
     titleImageUrl(realEstateObject) {
       //let realEstateId = this.editedRealEstate.id;

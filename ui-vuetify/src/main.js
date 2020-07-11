@@ -5,9 +5,11 @@ import './registerServiceWorker';
 import router from './router';
 import vuetify from './plugins/vuetify';
 import './plugins/logger';
+import axiosConfiguration from '@/api/axios-configuration';
 import store from './store';
 import config from '@/common/config';
 
+axiosConfiguration.configureAxios();
 config.loadValues();
 
 Vue.config.productionTip = false;

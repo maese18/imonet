@@ -2,6 +2,7 @@
 import configDefaults from './configsDefaults.json';
 import _ from 'lodash';
 
+const TAG = 'configs.js';
 // application.properties may take reference on environment variables by preceding a $ sign,
 function isEnvVarPlaceholder(attrValue) {
 	return attrValue && typeof attrValue === 'string' && attrValue.indexOf('$') >= 0;
@@ -42,4 +43,6 @@ export const configure = processEnv => {
 };
 
 let configs = configure();
+console.log('configs', configs);
+//logger.info(TAG, configs);
 export default configs;

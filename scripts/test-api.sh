@@ -14,7 +14,7 @@ source ./.env-${ENV}
 set +o allexport
 # END IMPORT
 
-export DEPLOYMENT=docker-mapped
+export DEPLOYMENT=run-docker-services
 export API_HOST_SCHEME=localhost # Allows WebApp to derive correct API url
 
 # Calculate and set specific values to run with docker-compose with mapped ports

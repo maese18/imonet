@@ -9,6 +9,7 @@ import GelfTransport from 'winston-gelf';
 const transports = [];
 let env = process.env.NODE_ENV;
 
+console.log('configs=', configs);
 // see https://www.npmjs.com/package/winston-daily-rotate-file for configuration params
 // see https://blog.abelotech.com/posts/rotate-winston-logs-based-on-time/
 // Rotating file for all levels
@@ -110,7 +111,7 @@ if (env !== 'test-') {
 		debug: (location, message) => {
 			winstonLogger.debug(message, { facility: location });
 		},
-		error: (location, message, error) => {
+		error: (location, message, error = {}) => {
 			winstonLogger.error(message, { facility: location, error: error.stack });
 		},
 		printErrorMessage: (location, message, error = {}) => {

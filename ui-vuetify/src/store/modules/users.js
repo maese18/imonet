@@ -1,5 +1,5 @@
 //import mutatationTypes from '../mutationTypes';
-import api from '@/api/index.js';
+import axiosConfiguration from '@/api/axios-configuration.js';
 import usersApi from '@/api/users.js';
 // initial state
 const state = {
@@ -23,7 +23,7 @@ const actions = {
       .login({ email, password })
       .then(response => {
         console.log(`Received token ${JSON.stringify(response.data.token)}`);
-        api.setTokenInterceptor(response.data.token);
+        axiosConfiguration.setTokenInterceptor(response.data.token);
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('keepLogin', keepLogin);
         let d = new Date();

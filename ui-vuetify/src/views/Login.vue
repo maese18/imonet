@@ -40,17 +40,14 @@
 
 <script>
 export default {
-  created() {
-    console.log('login created email=', this.email);
-  },
   props: {
     source: String,
   },
   data() {
     return {
       storeLogin: true,
-      email: '',
-      password: '',
+      email: 'info@ad.ch',
+      password: 'pw',
     };
   },
   computed: {

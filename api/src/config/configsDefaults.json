@@ -23,6 +23,13 @@
     "connectionLimit": 0,
     "migrationsMode": "$DB_MIGRATIONS_MODE|up"
   },
+  "mongo": {
+    "host": "$API_MONGO_HOST",
+    "port": "$API_MONGO_DB_PORT",
+    "user": "$DB_USER",
+    "password": "$DB_PASSWORD",
+    "database": "$DB_DATABASE"
+  },
   "domain": {
     "tenantDomain": "tenant",
     "tenantIdField": "fk_tenant_id",

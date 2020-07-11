@@ -21,6 +21,7 @@ import realEstateController from './controllers/realEstate/realEstateController'
 import webpushSubscriptionHandler from './config/webPushConfig';
 import authenticationService from './services/authenticationService';
 import mongoDomainController from './controllers/mongo-domain/mongo-domain-controller';
+import mongoUserController from './controllers/user/userControllerMongoDb';
 const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
@@ -51,14 +52,16 @@ const auth = authenticationService.checkAuth;
 const optionalAuth = authenticationService.checkOptionalAuth;
 /* Routes */
 
-app.post('/m-api/:collection', mongoDomainController.insert);
+app.get('/m-api/configs', configsController.getConfigs);
+app.post('/m-api/:collection', mongoDomainController.dispatchPostRequests);
+app.get('/m-api/:collection', mongoDomainController.findAllAsGet);
+//app.post('/m-api/:collection', mongoDomainController.findAllAsPost);
 app.put('/m-api/:collection/:id', mongoDomainController.updateOne);
 app.get('/m-api/:collection/:id', mongoDomainController.findByPk);
-app.post('/m-api/:collection/:id', mongoDomainController.findByPk);
-app.get('/m-api/:collection', mongoDomainController.findAllAsGet);
-app.post('/m-api/:collection', mongoDomainController.findAllAsPost);
+//app.post('/m-api/:collection/:id', mongoDomainController.findByPk);
+app.post('/m-api/users/signup', mongoUserController.signup);
+app.post('/m-api/users/login', mongoUserController.login);
 
-app.get('/api/configs', configsController.getConfigs);
 app.post('/api/subscribe', webpushSubscriptionHandler);
 app.use('/static', express.static(path.join(__dirname, '..', 'public')));
 app.use('/api/lifeSign', lifeSign);

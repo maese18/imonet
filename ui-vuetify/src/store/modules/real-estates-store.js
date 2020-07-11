@@ -37,7 +37,9 @@ const mutations = {
       state.isEditFormVisible = value;
     }
   },
-
+  setEditedItem(state, { realEstate }) {
+    state.editedRealEstate = realEstate;
+  },
   saveItem(state, { realEstate }) {
     if (!realEstate.clientSideId) {
       realEstate.clientSideId = realEstate.id;
@@ -96,8 +98,20 @@ const actions = {
     //api.saveOne(realEstate).then(response => commit('updateItem', { realEstate: response.data.updated }));
     api.saveOne(realEstate).then(response => commit('saveItem', { realEstate: response.data.updated }));
   },
+  async saveEdited({ commit }, { realEstate }) {
+    //this.$store.dispatch('realEstates/save', { realEstate: this.realEstate });
+
+    let response = await api.saveOne(realEstate);
+    let updatedRealEstate = response.data.updated;
+    console.log('Updated realEstate:', JSON.stringify(updatedRealEstate, null, 4));
+    //let findOneResponse = await api.findOne(self.realEstate.id);
+    //console.log('Refreshed edited item after save', findOneResponse.data.item);
+    //this.realEstate = { ...findOneResponse.data.item };
+    commit('realEstates/setEditedItem', { realEstate: this.realEstate });
+  },
+
   loadAll({ commit }) {
-    console.log('store/realEstates/loadAll action');
+    console.log('store/realEstates/loadAll action executes');
 
     api
       .findAll()
@@ -108,11 +122,14 @@ const actions = {
     console.log('store/realEstates/create action', realEstate);
 
     realEstate.clientSideId = shortId.generate();
+
     api
       .createOne(realEstate)
       .then(response => {
-        let createdRealEstate = response.data.created;
+        let createdRealEstate = response.data.inserted[0];
+        console.log('created createdRealEstate', createdRealEstate);
         commit('saveItem', { realEstate: createdRealEstate });
+
         if (showFormOnCreated) {
           commit('edit', { realEstate: createdRealEstate });
         }
@@ -142,10 +159,29 @@ const actions = {
   },
 };
 
-export default {
+export const module = {
   namespaced: true,
   state,
   getters,
   actions,
   mutations,
+};
+
+export default {
+  module,
+  /**
+   * Load all realEstate objects.
+   */
+  loadAll: store => store.dispatch('realEstates/loadAll'),
+  /**
+   * Creates one RealEstate item, stores it on the remote database.
+   */
+  createOne: (store, realEstate) => {
+    realEstate.clientSideId = shortId.generate();
+    store.dispatch('realEstates/create', { realEstate, showFormOnCreated: true });
+  },
+
+  edit: (store, realEstate) => {
+    store.commit('realEstates/edit', { realEstate });
+  },
 };

@@ -1,5 +1,5 @@
 # Use root/example as user/password credentials
-version: "3.1"
+version: "3.8"
 
 services:
   web-built:
@@ -15,6 +15,7 @@ services:
       VUE_APP_THEME_COLOR: ${VUE_APP_THEME_COLOR}
     networks:
       proxy:
+
   web:
     image: node:13.6.0-alpine3.10
     restart: "no"
@@ -31,6 +32,7 @@ services:
       - ${WEBAPP_PORT}:8080
     networks:
       proxy:
+
   api:
     image: node:13.6.0-alpine3.10
     restart: "no"
@@ -44,6 +46,8 @@ services:
       - ./.env-${ENV}
     environment:
       API_SERVER_PORT: ${API_SERVER_PORT}
+      API_MONGO_DB_PORT: ${API_MONGO_DB_PORT}
+      API_MONGO_HOST: ${API_MONGO_HOST}
     ports:
       - ${API_SERVER_PUBLIC_PORT}:${API_SERVER_PORT}
     depends_on:
@@ -80,67 +84,36 @@ services:
     networks:
       - proxy
 
-  prisma:
-    image: prismagraphql/prisma:1.34
-    restart: always
-    ports:
-      - "4466:4466"
-    environment:
-      PRISMA_CONFIG: |
-        port: 4466
-        databases:
-          default:
-            connector: mongo
-            uri: mongodb://prisma:prisma@mongo
   mongo:
     image: mongo
-    restart: always
+    deploy:
+      restart_policy:
+        condition: none
+        delay: 5s
+        max_attempts: 3
+        window: 120s
     environment:
       MONGO_INITDB_ROOT_USERNAME: imonet
       MONGO_INITDB_ROOT_PASSWORD: imonet
       MONGO_INITDB_DATABASE: imonet
     ports:
-      - "27017:27017"
+      - $MONGO_DB_EXPOSED_PORT:27017
     volumes:
       - ../db/mongo/data:/var/lib/mongo
       - ../db/mongo/db-setup:/docker-entrypoint-initdb.d
+    networks:
+      - proxy
+
   mongo-express:
     image: mongo-express
     restart: always
     ports:
-      - 3001:8081
+      - $MONGO_EXPRESS_UI_EXPOSED_PORT:8081
     environment:
       ME_CONFIG_MONGODB_ADMINUSERNAME: imonet
       ME_CONFIG_MONGODB_ADMINPASSWORD: imonet
-
-  # mongo:
-  #   image: mongo
-  #   restart: always
-  #   environment:
-  #     - MONGO_INITDB_DATABASE="test"
-  #     - MONGO_INITDB_ROOT_USERNAME="root"
-  #     - MONGO_INITDB_ROOT_PASSWORD="pw"
-  #     #- MONGO_INITDB_USERNAME="dbuser"
-  #     #- MONGO_INITDB_PASSWORD="pw"
-  #     - MONGODB_DATA_DIR="/data/db"
-  #   ports:
-  #     - "27017:27017"
-  #   volumes:
-  #     - ../db/mongo/data:/data/db
-  #     - ../db/mongo/init/mongodb/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
-  #   networks:
-  #     proxy:
-  # mongo-express:
-  #   image: mongo-express
-  #   restart: always
-  #   ports:
-  #     - 4023:8081
-  #   environment:
-  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
-  #     ME_CONFIG_MONGODB_ADMINPASSWORD: pw
-  #   networks:
-  #     proxy:
-
+    networks:
+      - proxy
 networks:
   proxy:
 volumes:

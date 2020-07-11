@@ -1,5 +1,9 @@
 import axios from 'axios';
 export default {
+  configureAxios() {
+    console.log('Set axios baseURL=', process.env.VUE_APP_API_URL);
+    axios.defaults.baseURL = process.env.VUE_APP_API_URL;
+  },
   setTokenInterceptor(token) {
     // Add a request interceptor
     axios.interceptors.request.use(

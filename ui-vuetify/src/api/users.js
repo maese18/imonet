@@ -1,8 +1,5 @@
 import axios from 'axios';
-import config from '@/common/config';
-//const API_URL = process.env.VUE_APP_API_URL;
-const URL = `${config.apiUrl}/users`;
-//const URL = `${API_URL}/users`;
+const URL = `m-api/users`;
 
 export default {
   login({ email, password }) {

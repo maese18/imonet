@@ -1,25 +1,39 @@
-import { MongoClient, ObjectID } from 'mongodb';
-import assert from 'assert';
+import { MongoClient } from 'mongodb';
 import logger from '../utils/logger/logger';
+import configs from '../config/configs';
+import mongoDbInitializer from '../processes/mongodb-initializer';
 
 const TAG = 'mongodb';
 
 // Connection URL
-const url = 'mongodb://imonet:imonet@localhost:27017/imonet';
-
-// Database Name
-const dbName = 'imonet';
+const c = configs.mongo;
+const dbName = c.database;
+const CONNECTION_URL = `mongodb://${c.user}:${c.password}@${c.host}:${c.port}/${dbName}`;
 
 // Create a new MongoClient
-const client = new MongoClient(url);
+// const client = new MongoClient(CONNECTION_URL);
 
-// Use connect method to connect to the Server
-let db;
-client.connect(function(err) {
-	assert.equal(null, err);
-	logger.info(TAG, 'Successfully connected to mongodb ' + url);
+class MongoDb {
+	constructor() {
+		this.db;
+		this.client;
+	}
+	async init() {
+		try {
+			logger.info(TAG, `Try to connect ${CONNECTION_URL}`);
 
-	db = client.db(dbName);
-});
+			// Use connect method to connect to the Server
+			this.client = await MongoClient.connect(CONNECTION_URL);
 
-export { db, client, ObjectID };
+			this.db = this.client.db(dbName);
+			logger.info(TAG, 'Successfully connected to mongodb ' + CONNECTION_URL);
+
+			mongoDbInitializer.init();
+		} catch (err) {
+			console.log('failed to connect to mongodb', err.stack);
+		}
+	}
+}
+const mongoDb = new MongoDb();
+mongoDb.init();
+export default mongoDb;

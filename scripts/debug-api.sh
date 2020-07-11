@@ -1,1 +1,1 @@
-./no-docker.sh dev debug api
+./run-native-service.sh dev debug api

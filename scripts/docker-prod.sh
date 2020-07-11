@@ -8,7 +8,7 @@ INTERACTIVE=${3:-no}      # no for not-interactive / i for interactive
 IMAGE_PREFIX="imonet"
 
 if [ $OPS == 'help' ]; then
-   echo 'usage: docker-mapped.sh OPS(up|down|build) SERVICE_SET(all|db) INTERACTIVE(i|no)'
+   echo 'usage: run-docker-services.sh OPS(up|down|build) SERVICE_SET(all|db) INTERACTIVE(i|no)'
    exit 0
 fi
 # Assert SERVICE_SET is all or db
@@ -24,7 +24,7 @@ elif [ $SERVICE_SET == 'db' ]; then
    SERVICES="db adminer"
 else
    echo SERVICE_SET ${SERVICE_SET} not defined
-   echo 'usage: docker-mapped.sh OPS(up|down) SERVICE_SET(all|db)'
+   echo 'usage: run-docker-services.sh OPS(up|down) SERVICE_SET(all|db)'
    exit 0
 fi
 
@@ -43,7 +43,7 @@ set +o allexport
 export ENV=prod
 export NODE_ENV=production
 
-export DEPLOYMENT=docker-mapped
+export DEPLOYMENT=run-docker-services
 export API_HOST_SCHEME=localhost # Allows WebApp to derive correct API url
 
 # Calculate and set specific values to run with docker-compose with mapped ports

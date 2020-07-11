@@ -1,1 +1,1 @@
-./no-docker.sh dev run web
+./run-native-service.sh dev run web

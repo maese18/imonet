@@ -1,1 +1,0 @@
- ./docker-mapped.sh dev down db

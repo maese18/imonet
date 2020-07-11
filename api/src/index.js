@@ -1,16 +1,19 @@
 'use strict';
 import configs from './config/configs';
 import logger from './utils/logger/logger';
-import app from './app';
+
 import socket from 'socket.io';
 import migrationController from './database/migrationController';
 import mariaDbAdaptor from './database/mariaDbAdaptor';
+import mongoDb from './database/mongodb';
 import orm from './database/orm';
-import { client } from './database/mongodb';
-//import mongoose from './database/mongoose';
+
+import app from './app';
+
 const TAG = 'index.js';
 const port = configs.server.port;
 
+console.log('mongodb.init() executed ', mongoDb.db);
 orm.init();
 
 const server = app.listen(port, () => {
@@ -49,7 +52,6 @@ const closeResources = () => {
 	mariaDbAdaptor.getPool().end();
 	orm.close();
 	logger.info(TAG, 'Close mongodb client');
-	client.close();
 };
 process.on('beforeExit', code => {
 	logger.info(TAG, 'beforeExit');
