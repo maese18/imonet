@@ -57,7 +57,7 @@ export default {
     theme() {
       return this.$vuetify.theme.dark ? 'dark' : 'light';
     },
-
+    mergeTest() {},
     rebase() {
       return 'rebase';
     },
