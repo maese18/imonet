@@ -61,7 +61,7 @@ export default {
     rebase() {
       return 'rebase';
     },
-
+    rebase3() {},
     rebase2() {
       return 'rebase2';
     },
