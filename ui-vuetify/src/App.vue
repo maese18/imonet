@@ -57,14 +57,7 @@ export default {
     theme() {
       return this.$vuetify.theme.dark ? 'dark' : 'light';
     },
-    mergeTest() {},
-    rebase() {
-      return 'rebase';
-    },
-    rebase3() {},
-    rebase2() {
-      return 'rebase2';
-    },
+
     // mix this into the outer object with the object spread operator
     isNavigationDrawerOpen: {
       get() {
