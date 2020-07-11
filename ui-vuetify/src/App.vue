@@ -61,6 +61,10 @@ export default {
     rebase() {
       return 'rebase';
     },
+
+    rebase2() {
+      return 'rebase2';
+    },
     // mix this into the outer object with the object spread operator
     isNavigationDrawerOpen: {
       get() {
