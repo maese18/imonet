@@ -7,8 +7,9 @@ const MEDIA_FILES_URL = `${API_URL}/mediaFiles`;
 export default {
   findAll() {
     console.log('realEstates.findAll() ', URL);
-    let query = { collection: 'realEstates', where: {} };
-    return axios.get(`${URL}?query=${JSON.stringify(query)}`);
+    // let query = { collection: 'realEstates', where: {} };
+    //return axios.get(`${URL}?query=${JSON.stringify(query)}`);
+    return axios.get(`${URL}`);
   },
   findOne(id) {
     return axios.get(`${URL}/${id}`);

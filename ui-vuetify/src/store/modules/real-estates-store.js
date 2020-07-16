@@ -115,7 +115,7 @@ const actions = {
 
     api
       .findAll()
-      .then(realEstates => commit('setItems', { realEstates: realEstates.data.items }))
+      .then(({ data }) => commit('setItems', { realEstates: data.data }))
       .catch(e => console.log('Failed to load RealEstates', e));
   },
   create({ commit }, { realEstate, showFormOnCreated }) {

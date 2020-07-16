@@ -78,6 +78,7 @@ import MediaFilesEditor from './MediaFilesEditor';
 import Details from './Details';
 import Overview from './Overview';
 import api from '../../api/realEstates';
+
 export default {
   components: { Galerie, MediaFilesEditor, Location, JsonDataView, Details, Overview },
   props: ['isVisible'],

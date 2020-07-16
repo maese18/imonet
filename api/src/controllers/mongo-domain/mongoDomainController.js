@@ -139,7 +139,7 @@ class MongoDomainController {
 	findAll = ({ query = {}, sort = {}, project = {}, req, res, next }) => {
 		let collection = req.params.collection;
 
-		let cursor = this.mongoDbAdapter.db.collection(collection).find({});
+		let cursor = this.mongoDbAdapter.db.collection(collection).find(query);
 
 		if (Object.keys(sort).length > 0) {
 			cursor = cursor.sort(sort);

@@ -12,7 +12,7 @@ import app from './app';
 
 const TAG = 'index.js';
 const port = configs.server.port;
-
+mariaDbAdaptor.getPool();
 console.log('mongodb.init() executed ', mongoDb.db);
 orm.init();
 
@@ -50,33 +50,31 @@ io.on('connection', function(socket) {
 });
 const closeResources = () => {
 	mariaDbAdaptor.getPool().end();
+	mongoDb.close();
 	orm.close();
-	logger.info(TAG, 'Close mongodb client');
 };
 process.on('beforeExit', code => {
 	logger.info(TAG, 'beforeExit');
 	closeResources();
 	// Can make asynchronous calls
 	setTimeout(() => {
-		console.log(`Process will exit with code: ${code}`);
+		console.log(`Process will exit with code ${code}`);
 		process.exit(code);
 	}, 100);
 });
 
 process.on('exit', code => {
 	// Only synchronous calls
-	console.log(`Process exited with code: ${code}`);
+	logger.info(TAG, `Process exited with code ${code}`);
 	closeResources();
 });
 
 process.on('SIGTERM', signal => {
-	console.log(`Process ${process.pid} received a SIGTERM signal`);
-	closeResources();
+	logger.info(TAG, `Process ${process.pid} received a SIGTERM signal ${signal}`);
 	process.exit(0);
 });
 
 process.on('SIGINT', signal => {
-	console.log(`Process ${process.pid} has been interrupted`);
-	closeResources();
+	logger.info(TAG, `Process ${process.pid} has been interrupted with signal ${signal}`);
 	process.exit(0);
 });

@@ -33,6 +33,10 @@ class MongoDb {
 			console.log('failed to connect to mongodb', err.stack);
 		}
 	}
+	async close() {
+		logger.info(TAG, 'Close mongo connection');
+		this.client.close();
+	}
 }
 const mongoDb = new MongoDb();
 mongoDb.init();

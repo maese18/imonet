@@ -20,7 +20,7 @@ export function sendExceptionToClient(err, req, res, next) {
 	} else {
 		res.status(500).json({
 			status: 500,
-			error: err.name,
+			error: err.name ? err.name : 'error',
 			message: err.message,
 		});
 	}

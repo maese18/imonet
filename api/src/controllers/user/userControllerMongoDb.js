@@ -65,7 +65,8 @@ class UserControllerMongoDb {
 					throw new SignupException(TAG, `Failed to signup user. Reason: email ${email} exists`);
 				}
 
-				let user = User.create({ email, firstName, lastName, password, fk_tenant_id: tenantId });
+				let user = User.create({ email, firstName, lastName, password, tenantId });
+				console.log('create User ', JSON.stringify(user, null, 2));
 				users
 					.insertOne(user)
 					.then(result => {

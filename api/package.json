@@ -45,7 +45,7 @@
     "properties-reader": "^0.3.1",
     "sendmail": "^1.6.1",
     "sequelize": "^5.21.6",
-    "short-unique-id": "^2.0.7",
+    "short-unique-id": "^3.0.3",
     "shortid": "^2.2.15",
     "socket.io": "^2.3.0",
     "web-push": "^3.4.3",

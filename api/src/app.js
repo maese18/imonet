@@ -1,27 +1,31 @@
 //import 'dotenv/config';
-import path from 'path';
-import express from 'express';
-import helmet from 'helmet';
-import cors from 'cors';
 import bodyParser from 'body-parser';
+import cors from 'cors';
+import express from 'express';
 import fileUpload from 'express-fileupload';
+import helmet from 'helmet';
+import path from 'path';
+
+import authenticationService from './services/authenticationService';
 import compressionConfig from './config/compressionConfig';
-import morganRequestLogger from './utils/logger/morganRequestLogger';
-import logger from './utils/logger/logger';
 import configs from './config/configs';
-import lifeSign from './controllers/lifeSign';
+import configsController from './controllers/config/configsController';
 import configureErrorHandler from './errors/errorHandler';
+import domainController from './controllers/domain/domainController';
+import individualController from './controllers/user/individualController';
+import lifeSign from './controllers/lifeSign';
+import logger from './utils/logger/logger';
+import mediaFileController from './controllers/mediaFile/mediaFileController';
+import mongoDomainController from './controllers/mongo-domain/mongoDomainController';
+import mongoUserController from './controllers/user/userControllerMongoDb';
+import morganRequestLogger from './utils/logger/morganRequestLogger';
+import realEstateController from './controllers/realEstate/realEstateController';
+import mongoRestDomainController from './mcontrollers/domainController';
+import mongoRealEstateController from './mcontrollers/realEstateController';
 import UrlNotDefinedException from './errors/UrlNotDefinedException';
 import userController from './controllers/user/userController';
-import individualController from './controllers/user/individualController';
-import domainController from './controllers/domain/domainController';
-import configsController from './controllers/config/configsController';
-import mediaFileController from './controllers/mediaFile/mediaFileController';
-import realEstateController from './controllers/realEstate/realEstateController';
 import webpushSubscriptionHandler from './config/webPushConfig';
-import authenticationService from './services/authenticationService';
-import mongoDomainController from './controllers/mongo-domain/mongo-domain-controller';
-import mongoUserController from './controllers/user/userControllerMongoDb';
+
 const app = express();
 const TAG = 'app';
 logger.info(TAG, `Configure app for env=${configs.env}`);
@@ -53,11 +57,13 @@ const optionalAuth = authenticationService.checkOptionalAuth;
 /* Routes */
 
 app.get('/m-api/configs', configsController.getConfigs);
-app.post('/m-api/:collection', mongoDomainController.dispatchPostRequests);
-app.get('/m-api/:collection', mongoDomainController.findAllAsGet);
+//app.post('/m-api/:collection', mongoDomainController.dispatchPostRequests);
+app.post('/m-api/:collection', auth, mongoRestDomainController.insert);
+app.put('/m-api/:collection/:id', auth, mongoRestDomainController.updateOne);
+app.get('/m-api/:collection', mongoRestDomainController.findAll);
+app.get('/m-api/:collection/:id', mongoRestDomainController.findByPk);
 //app.post('/m-api/:collection', mongoDomainController.findAllAsPost);
 app.put('/m-api/:collection/:id', mongoDomainController.updateOne);
-app.get('/m-api/:collection/:id', mongoDomainController.findByPk);
 //app.post('/m-api/:collection/:id', mongoDomainController.findByPk);
 app.post('/m-api/users/signup', mongoUserController.signup);
 app.post('/m-api/users/login', mongoUserController.login);
@@ -77,6 +83,9 @@ app.get('/api/realEstates', auth, realEstateController.findAll);
 app.get('/api/realEstates/:realEstateId', auth, realEstateController.findOne);
 app.post('/api/realEstates', auth, realEstateController.create);
 app.put('/api/realEstates', auth, realEstateController.save);
+
+app.post('/m-api/realEstates/:id', auth, mongoRealEstateController.uploadFiles);
+app.delete('/m-api/realEstates/:id/files/:fileId', auth, mongoRealEstateController.deleteFile);
 //app.use('/api/realEstates/:realEstateId/mediaFiles', mediaFileController.getRouter());
 //app.use('/api/mediaFiles', mediaFileController.getRouter());
 

@@ -2,7 +2,7 @@ import AuthenticationException from '../errors/AuthenticationException';
 import AuthorizationException from '../errors/AuthorizationException';
 import jwtProvider from './jwtProvider';
 import { AUTH_TYPES, GROUPS } from '../config/constants';
-
+import logger from '../utils/logger/logger';
 const TAG = 'AuthenticationService';
 /**
  * Provides the checkAuth method used as middleware. It verifies the provided JWT token stored in the authorizationHeader (formatted as  "Bearer {JWT}"")
@@ -22,7 +22,7 @@ class AuthenticationService {
 				if (groupMemberId < GROUPS.tenantUser.id) {
 					throw new AuthorizationException(TAG, `Token verified successfully, but a user of group ${groupMember} cannot access this route`);
 				}
-				console.log(tenantId, groupMember, groupMemberId);
+				logger.info(TAG, `checkAuth with tenantId=${tenantId}, groupMember=${groupMember}, groupMemberId=${groupMemberId}`);
 				req.app.locals.tenantId = tenantId;
 				req.app.locals.groupMember = groupMember;
 				req.app.locals.groupMemberId = groupMemberId;
