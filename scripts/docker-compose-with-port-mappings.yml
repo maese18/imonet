@@ -86,9 +86,10 @@ services:
 
   mongo:
     image: mongo
+
     deploy:
       restart_policy:
-        condition: none
+        condition: on-failure
         delay: 5s
         max_attempts: 3
         window: 120s
